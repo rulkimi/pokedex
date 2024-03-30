@@ -1,11 +1,10 @@
 <template>
-  <div class="grid grid-cols-5 gap-4">
+  <div class="grid grid-cols-8 gap-4">
     <div
-      class="text-decoration-none"
+      class="cursor-pointer"
       v-for="(pokemon, index) in pokemons" 
       :key="pokemon.name"
       @click="pokemonDetail(index + 1)"
-      style="display: inline-block;"
     >
       <img :src="pokemon.image" :alt="pokemon.name + ' picture.'" class="mt-2">
       <div>{{ pokemon.name }}</div>
