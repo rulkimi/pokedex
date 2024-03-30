@@ -1,19 +1,23 @@
 <template>
-  <div class="grid grid-cols-8 gap-4">
+  <div>
     <div
-      class="cursor-pointer"
+      class="cursor-pointer inline-flex"
       v-for="(pokemon, index) in pokemons" 
       :key="pokemon.name"
       @click="pokemonDetail(index + 1)"
     >
-      <img :src="pokemon.image" :alt="pokemon.name + ' picture.'" class="mt-2">
-      <div>{{ pokemon.name }}</div>
+      <div>
+        <img :src="pokemon.image" :alt="pokemon.name + ' picture.'" class="mt-2">
+        <span class="text-gray-400">{{ '#' + formatIndex(index + 1) }}</span>
+        <div v-html="formatName(pokemon.name)"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
+import { formatIndex, formatName } from '../utils/formatHelper';
 
 const pokemons = ref([]);
 
@@ -46,7 +50,6 @@ const getPokemons = async () => {
       };
     });
 
-    // Wait for all promises to resolve
     const resolvedPokemons = await Promise.all(pokemonDetailsPromises);
     pokemons.value = resolvedPokemons;
 
