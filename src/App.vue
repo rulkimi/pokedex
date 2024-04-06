@@ -1,8 +1,9 @@
+<template>
+  <ThePokedex />
+</template>
+
 <script setup>
-import Pokedex from './components/Pokedex.vue'
+import ThePokedex from './views/ThePokedex.vue'
 </script>
 
-<template>
-  <Pokedex />
-</template>
 
