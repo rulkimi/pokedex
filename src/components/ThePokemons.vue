@@ -8,16 +8,18 @@
         :name="pokemon.name"
         :types="pokemon.types"
         :picture="pokemon.image"
+        @click="pokemonDetail(index + 1)"
       />
     </ul>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, defineEmits } from 'vue';
 import PokeList from './PokeList.vue';
 
 const pokemons = ref([]);
+const emit = defineEmits(['pokemonDetailsFetched']);
 
 onMounted(() => {
   getPokemons();
@@ -73,7 +75,7 @@ const pokemonDetail = async (index) => {
       pokemons.value[pokemonIndex].image = responseData.sprites.front_default;
     }
 
-    console.log(responseData)
+    emit('pokemonDetailsFetched', responseData);
 
   } catch (error) {
     console.error(error);
