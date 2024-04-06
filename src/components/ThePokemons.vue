@@ -1,14 +1,16 @@
 <template>
-  <ul>
-    <PokeList
-      v-for="(pokemon, index) in pokemons"
-      :key="pokemon.name"
-      :index="index + 1"
-      :name="pokemon.name"
-      :types="pokemon.types"
-      :picture="pokemon.image"
-    />
-  </ul>
+  <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
+    <ul>
+      <PokeList
+        v-for="(pokemon, index) in pokemons"
+        :key="pokemon.name"
+        :index="index + 1"
+        :name="pokemon.name"
+        :types="pokemon.types"
+        :picture="pokemon.image"
+      />
+    </ul>
+  </div>
 </template>
 
 <script setup>

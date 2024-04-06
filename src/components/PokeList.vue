@@ -3,14 +3,14 @@
     <div class="flex flex-col mr-4">
       <div class="flex items-center">
         <div class="text-sm text-gray-500 mr-2">{{ '#' + formatIndex(index) }}</div>
-        <div class="font-semibold">{{ formatName(name) }}</div>
+        <div class="font-semibold" v-html="formatName(name)"></div>
       </div>
       
       <div class="flex flex-wrap mt-2">
         <div
           v-for="pokemonType in types"
           :class="[typeColor(pokemonType)]"
-          class="rounded-full text-white text-xs px-2 py-1 mr-2 mb-2"
+          class="rounded-full text-white text-xs px-2 py-1 mr-1 mb-1"
         >
           {{ pokemonType }}
         </div>
@@ -48,7 +48,7 @@ const typeColor = computed(() => {
   return (pokemonType) => {
     switch(pokemonType) {
       case 'grass':
-        return 'bg-green-400';
+        return 'bg-emerald-500';
       case 'fire':
         return 'bg-red-700';
       case 'water':
@@ -58,7 +58,7 @@ const typeColor = computed(() => {
       case 'bug':
         return 'bg-green-700';
       case 'poison':
-        return 'bg-fuchsia-500';
+        return 'bg-fuchsia-800';
       case 'normal':
         return 'bg-gray-400';
       case 'ice':
