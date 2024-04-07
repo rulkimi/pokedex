@@ -21,4 +21,34 @@ export const formatName = name => {
   return icon ? `${capitalizedString} ${icon}` : capitalizedString;
 }
 
+export const formatStat = stat => {
+  switch(stat) {
+    case 'hp':
+      return 'HP';
+    case 'attack':
+      return 'ATK';
+    case 'defense':
+      return 'DEF';
+    case 'special-attack':
+      return 'SATK';
+    case 'special-defense':
+      return 'SDEF';
+    case 'speed':
+      return 'SPD';
+    default:
+      return 'N/A';
+  }
+}
+
+export const getMaxStat = stat => {
+  if (stat.stat.name === 'hp') {
+    return (stat.base_stat * 2 + 204).toFixed(0);
+  } 
+  const maxStat = (stat.base_stat * 2 + 99) * 1.1;
+  return maxStat.toFixed(0);
+}
+
+export const getStatWidth = stat => {
+  return (stat.base_stat / getMaxStat(stat) * 200);
+}
 

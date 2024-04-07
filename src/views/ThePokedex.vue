@@ -1,9 +1,22 @@
 <template>
   <div class="grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemonDetailsFetched="handlePokemonDetailsFetched" />
-    <div class="flex border border-gray-300 rounded-xl items-center justify-center">
+    <div class="flex border border-gray-300 rounded-xl p-6">
       <!-- Placeholder for pokemon details -->
-      <p class="">Pokemon details area</p>
+      <div v-if="pokemonDetail" class="w-full">
+        <div class="flex justify-between">
+          <span class="text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
+          <span class="text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
+        </div>
+        <img :src="pokemonDetail.sprites.front_default" width="300" :alt="'Picture of ' + pokemonDetail.name" />
+        <div v-for="stat in pokemonDetail.stats" class="flex items-center">
+          <div class="flex-none text-start" style="width: 50px;">{{ formatStat(stat.stat.name) }}</div>
+          <div class="flex-grow bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+            <div class="bg-blue-600 h-4 rounded-full text-white text-xs" :style="{ width: getStatWidth(stat) + '%' }">{{ stat.base_stat + ' / ' + getMaxStat(stat) }}</div>
+          </div>
+        </div>
+      </div>
+      <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
     </div>
   </div>
@@ -11,21 +24,22 @@
 
 <script setup>
 import { ref } from 'vue';
+import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
 
-const pokemonDetail = ref([]);
+const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
 
 const handlePokemonDetailsFetched = (responseData) => {
-  console.log('Received pokemon details:', responseData);
-  // Handle the received pokemon details here
+  pokemonDetail.value = responseData;
+  console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
 }
 
 const playPokemonCry = (id) => {
   audioSrc.value = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
-  const volumeLevel = 0.01;
+  const volumeLevel = 0.03;
 
   if (audio.value) {
     // Reset the audio element
