@@ -28,6 +28,12 @@ onMounted(() => {
 
 const getPokemons = async () => {
   try {
+    const cachedPokemons = localStorage.getItem('pokemons');
+    if (cachedPokemons) {
+      pokemons.value = JSON.parse(cachedPokemons);
+      return;
+    }
+
     const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
 
     if (!response.ok) {
@@ -56,6 +62,7 @@ const getPokemons = async () => {
     const resolvedPokemons = await Promise.all(pokemonDetailsPromises);
     pokemons.value = resolvedPokemons;
 
+    localStorage.setItem('pokemons', JSON.stringify(resolvedPokemons));
   } catch (error) {
     console.error(error);
   }
