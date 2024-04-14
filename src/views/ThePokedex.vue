@@ -24,14 +24,23 @@
           <div class="flex items-center">TOTAL STATS:</div>
           <div class="bg-blue-600 h-4 px-2 ml-2 rounded-full text-white text-xs">{{ getTotalStats(pokemonDetail.stats) }}</div>
         </div>
-        
+
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
         <h2 class="text-xl text-start font-bold">Evolutions</h2>
-        <PokeEvolutions :pokemonEvolutions="pokemonEvolutions" @pokemonDetail="handlePokemonDetail"/>
+
+        <!-- evolution placeholder -->
+        <div v-if="loadingEvolution" class="grid grid-cols-3 gap-4 mt-4">
+          <div v-for="index in 3" :key="index" class="flex flex-col items-center animate-pulse">
+            <div class="bg-gray-200 rounded-full h-28 w-28 mb-2"></div>
+            <div class="bg-gray-300 h-6 w-20 rounded mb-1"></div>
+          </div>
+        </div>
+
+        <PokeEvolutions v-else :pokemonEvolutions="pokemonEvolutions" @pokemonDetail="handlePokemonDetail"/>
       </div>
 
     </div>
@@ -43,7 +52,6 @@ import { ref } from 'vue';
 import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
-import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
@@ -57,6 +65,7 @@ const handlePokemonDetail = (selectedPokemon) => {
 }
 
 const handlePokemonDetailsFetched = async (responseData) => {
+  loadingEvolution.value = true;
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
@@ -114,6 +123,10 @@ const getSprite = async (pokemonName) => {
   } catch (error) {
     console.error('Error fetching sprite:', error);
     return null;
+  } finally {
+    setTimeout(() => {
+      loadingEvolution.value = false;
+    }, 1000);
   }
 }
 
