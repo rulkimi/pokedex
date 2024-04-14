@@ -10,7 +10,7 @@
         <div
           v-for="pokemonType in types"
           :class="[typeColor(pokemonType)]"
-          class="rounded-full text-white text-xs px-2 py-1 mr-1 mb-1"
+          class="rounded-full text-white text-xs px-2 py-1 pb-1.5 mr-1 mb-1"
         >
           {{ pokemonType }}
         </div>

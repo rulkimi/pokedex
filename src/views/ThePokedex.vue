@@ -18,6 +18,15 @@
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
+
+      <!-- Display Evolutions -->
+      <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
+        <h2 class="text-xl font-bold mb-2">Evolutions</h2>
+        <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex items-center">
+          <img :src="evolution.url" width="50" height="50" :alt="'Picture of ' + evolution.name" />
+          <span class="ml-2">{{ evolution.name }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -30,12 +39,70 @@ import ThePokemons from '../components/ThePokemons.vue';
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
+const pokemonEvolutions = ref([]);
 
 const handlePokemonDetailsFetched = (responseData) => {
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
+  fetchPokemonSpecies(responseData.species.url);
 }
+
+const fetchPokemonSpecies = async (speciesUrl) => {
+  try {
+    const response = await fetch(speciesUrl);
+    const data = await response.json();
+    console.log(data)
+    fetchEvolutionChain(data.evolution_chain.url);
+  } catch (error) {
+    console.error('Error fetching pokemon species:', error);
+  }
+}
+
+const fetchEvolutionChain = async (evolutionChainUrl) => {
+  try {
+    const response = await fetch(evolutionChainUrl);
+    const data = await response.json();
+    console.log(data);
+
+    const allEvolutions = await Promise.all(
+      collectEvolutions(data.chain).map(async (pokemon) => {
+        pokemon.url = await getSprite(pokemon.name);
+        return pokemon;
+      })
+    );
+    pokemonEvolutions.value = allEvolutions;
+    console.log('All evolutions:', allEvolutions);
+  } catch (error) {
+    console.error('Error fetching evolution chains:', error);
+  }
+}
+
+
+// Function to recursively traverse the evolution chain and collect evolution names
+const collectEvolutions = (evolutionData, result = []) => {
+  if (evolutionData.species) {
+    result.push({ name: evolutionData.species.name });
+  }
+  if (evolutionData.evolves_to && evolutionData.evolves_to.length > 0) {
+    for (const evolution of evolutionData.evolves_to) {
+      collectEvolutions(evolution, result);
+    }
+  }
+  return result;
+};
+
+const getSprite = async (pokemonName) => {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const data = await response.json();
+    return data.sprites.front_default;
+  } catch (error) {
+    console.error('Error fetching sprite:', error);
+    return null;
+  }
+}
+
 
 const playPokemonCry = (id) => {
   audioSrc.value = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
@@ -67,5 +134,4 @@ const handleAudioError = (error) => {
   console.error('Audio error:', error);
   console.log('Audio source:', audioSrc.value);
 }
-
 </script>
