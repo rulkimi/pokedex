@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats } from '../utils/formatHelper';
+import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats, getTypeColor } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
 
