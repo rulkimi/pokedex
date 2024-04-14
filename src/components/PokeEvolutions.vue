@@ -1,5 +1,4 @@
 <template>
-  <h2 class="text-xl text-start font-bold">Evolutions</h2>
   <div class="grid grid-cols-3 gap-4">
     <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex flex-col items-center cursor-pointer" @click="sendPokemonDetail(evolution.name)">
       <img :src="evolution.url" width="100" :alt="'Picture of ' + evolution.name" class="mb-2" />

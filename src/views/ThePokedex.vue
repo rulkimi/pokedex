@@ -26,6 +26,7 @@
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
+        <h2 class="text-xl text-start font-bold">Evolutions</h2>
         <PokeEvolutions :pokemonEvolutions="pokemonEvolutions" @pokemonDetail="handlePokemonDetail"/>
       </div>
 
@@ -33,17 +34,18 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue';
 import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
+import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
+const loadingEvolution = ref(false);
 
 const handlePokemonDetail = (selectedPokemon) => {
   pokemonDetail.value = selectedPokemon;
