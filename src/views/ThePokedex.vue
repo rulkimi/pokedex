@@ -28,7 +28,7 @@
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
         <h2 class="text-xl text-start font-bold mb-2">Evolutions</h2>
         <div class="grid grid-cols-3 gap-4">
-          <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex flex-col items-center">
+          <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex flex-col items-center cursor-pointer" @click="getPokemonDetail(evolution.name)">
             <img :src="evolution.url" width="100" :alt="'Picture of ' + evolution.name" class="mb-2" />
             <span>{{ formatName(evolution.name) }}</span>
           </div>
@@ -63,6 +63,19 @@ const handlePokemonDetailsFetched = async (responseData) => {
     sumStats += stat.base_stat;
   });
   totalStats.value = sumStats;
+}
+
+const getPokemonDetail = async (pokemonName) => {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const data = await response.json();
+
+    pokemonDetail.value = data;
+    playPokemonCry(data.id);
+    
+  } catch (error) {
+    console.error('Error fetching pokemon detail');
+  }
 }
 
 const fetchPokemonSpecies = async (speciesUrl) => {
