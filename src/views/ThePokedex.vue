@@ -1,34 +1,44 @@
 <template>
   <div class="grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemonDetailsFetched="handlePokemonDetailsFetched" />
-    <div class="flex border border-gray-300 rounded-xl p-6">
+    <div class="flex border border-gray-300 rounded-xl p-6 flex-col">
       <div v-if="pokemonDetail" class="w-full">
         <div class="flex justify-between">
           <span class="text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
           <span class="text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
         </div>
-        <img :src="pokemonDetail.sprites.front_default" width="300" :alt="'Picture of ' + pokemonDetail.name" />
+
+        <div class="flex justify-center">
+          <img :src="pokemonDetail.sprites.front_default" width="300" :alt="'Picture of ' + pokemonDetail.name" />
+        </div>
+
+        <h2 class="text-xl text-start font-bold mb-2">Base Stats</h2>
         <div v-for="stat in pokemonDetail.stats" :key="stat.stat.name" class="flex items-center">
           <div class="flex-none text-start" style="width: 50px;">{{ formatStat(stat.stat.name) }}</div>
           <div class="flex-grow bg-gray-200 rounded-full h-4 dark:bg-gray-700">
             <div class="bg-blue-600 h-4 rounded-full text-white text-xs" :style="{ width: getStatWidth(stat) + '%' }">{{ stat.base_stat + ' / ' + getMaxStat(stat) }}</div>
           </div>
         </div>
+
         <div class="flex items-center">Total stats: {{ totalStats }}</div>
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
-        <h2 class="text-xl font-bold mb-2">Evolutions</h2>
-        <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex items-center">
-          <img :src="evolution.url" width="50" height="50" :alt="'Picture of ' + evolution.name" />
-          <span class="ml-2">{{ evolution.name }}</span>
+        <h2 class="text-xl text-start font-bold mb-2">Evolutions</h2>
+        <div class="grid grid-cols-3 gap-4">
+          <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex flex-col items-center">
+            <img :src="evolution.url" width="100" :alt="'Picture of ' + evolution.name" class="mb-2" />
+            <span>{{ formatName(evolution.name) }}</span>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref } from 'vue';
