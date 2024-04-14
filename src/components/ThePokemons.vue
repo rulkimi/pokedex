@@ -10,7 +10,28 @@
         </div>
       </div>
     </div>
-    <ul class="mt-4">
+
+    <!-- pokemon list placeholder -->
+    <ul v-if="loadPlaceholder" class="mt-4">
+      <li v-for="n in 8" class="border border-gray-300 rounded-xl px-5 py-2 mb-2 flex items-center animate-pulse">
+        <div class="flex flex-col mr-4">
+          <div class="flex items-center">
+            <div class="w-12 h-5 bg-gray-200 rounded-md mr-2"></div>
+            <div class="w-32 h-5 bg-gray-200 rounded-md"></div>
+          </div>
+      
+          <div class="flex flex-wrap mt-2">
+            <div class="bg-gray-200 rounded-full text-white text-xs px-2 py-1 pb-1.5 mr-1 mb-1 w-14"></div>
+            <div class="bg-gray-200 rounded-full text-white text-xs px-2 py-1 pb-1.5 mr-1 mb-1 w-14"></div>
+            <div class="bg-gray-200 rounded-full text-white text-xs px-2 py-1 pb-1.5 mr-1 mb-1 w-14"></div>
+          </div>
+        </div>
+      
+        <div class="w-20 h-20 bg-gray-200 rounded-full ml-auto"></div>
+      </li>
+    </ul>
+
+    <ul v-else class="mt-4">
       <PokeList
         v-for="(pokemon, index) in pokemons"
         :key="pokemon.name"
@@ -21,6 +42,7 @@
         @click="pokemonDetail(index + 1 + generationLimits[selectedGeneration].offset)"
       />
     </ul>
+
   </div>
 </template>
 
@@ -31,6 +53,7 @@ import PokeList from './PokeList.vue';
 const pokemons = ref([]);
 const emit = defineEmits(['pokemonDetailsFetched']);
 const selectedGeneration = ref(1);
+const loadPlaceholder = ref(false);
 
 const generationLimits = ref({
   1: { limit: 151, offset: 0 }, // Generation 1
@@ -49,6 +72,7 @@ onMounted(() => {
 });
 
 const getPokemons = async (generation) => {
+  loadPlaceholder.value = true;
   try {
     const cachedPokemons = localStorage.getItem(`pokemons-gen-${generation}`);
     if (cachedPokemons) {
@@ -88,6 +112,8 @@ const getPokemons = async (generation) => {
     localStorage.setItem(`pokemons-gen-${generation}`, JSON.stringify(resolvedPokemons));
   } catch (error) {
     console.error(error);
+  } finally {
+    loadPlaceholder.value = false;
   }
 }
 
