@@ -20,7 +20,11 @@
           </div>
         </div>
 
-        <div class="flex items-center">Total stats: {{ getTotalStats(pokemonDetail.stats) }}</div>
+        <div class="flex items-center">
+          <div class="flex items-center">TOTAL STATS:</div>
+          <div class="bg-blue-600 h-4 px-2 ml-2 rounded-full text-white text-xs">{{ getTotalStats(pokemonDetail.stats) }}</div>
+        </div>
+        
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
