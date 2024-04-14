@@ -1,18 +1,16 @@
 <template>
   <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
-    <select v-model="selectedGeneration" @change="getPokemons(selectedGeneration)">
-      <option value="1">Generation 1</option>
-      <option value="2">Generation 2</option>
-      <option value="3">Generation 3</option>
-      <option value="4">Generation 4</option>
-      <option value="5">Generation 5</option>
-      <option value="6">Generation 6</option>
-      <option value="7">Generation 7</option>
-      <option value="8">Generation 8</option>
-      <option value="9">Generation 9</option>
-      <!-- Add more options for other generations -->
-    </select>
-    <ul>
+    <div class="sticky top-0 z-10 bg-white w-full">
+      <div class="inline-block text-left w-full">
+        <select v-model="selectedGeneration" @change="getPokemons(selectedGeneration)" class="block w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500">
+          <option v-for="(n, index) in 9" :key="index" :value="index + 1">{{ `Generation ${n}` }}</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z"/></svg>
+        </div>
+      </div>
+    </div>
+    <ul class="mt-4">
       <PokeList
         v-for="(pokemon, index) in pokemons"
         :key="pokemon.name"

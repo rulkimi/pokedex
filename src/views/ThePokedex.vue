@@ -20,7 +20,7 @@
           </div>
         </div>
 
-        <div class="flex items-center">Total stats: {{ totalStats }}</div>
+        <div class="flex items-center">Total stats: {{ getTotalStats(pokemonDetail.stats) }}</div>
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
@@ -42,27 +42,19 @@
 
 <script setup>
 import { ref } from 'vue';
-import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat } from '../utils/formatHelper';
+import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
 
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
-const totalStats = ref(null);
 
 const handlePokemonDetailsFetched = async (responseData) => {
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
   await fetchPokemonSpecies(responseData.species.url);
-
-  // calculate total stats
-  let sumStats = 0;
-  responseData.stats.forEach(stat => {
-    sumStats += stat.base_stat;
-  });
-  totalStats.value = sumStats;
 }
 
 const getPokemonDetail = async (pokemonName) => {

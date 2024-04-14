@@ -52,3 +52,11 @@ export const getStatWidth = stat => {
   return (stat.base_stat / getMaxStat(stat) * 200);
 }
 
+export const getTotalStats = stats => {
+  let sumStats = 0;
+  stats.forEach(stat => {
+    sumStats += stat.base_stat;
+  });
+  
+  return sumStats;
+}
