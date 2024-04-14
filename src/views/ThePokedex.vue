@@ -26,13 +26,7 @@
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
-        <h2 class="text-xl text-start font-bold mb-2">Evolutions</h2>
-        <div class="grid grid-cols-3 gap-4">
-          <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex flex-col items-center cursor-pointer" @click="getPokemonDetail(evolution.name)">
-            <img :src="evolution.url" width="100" :alt="'Picture of ' + evolution.name" class="mb-2" />
-            <span>{{ formatName(evolution.name) }}</span>
-          </div>
-        </div>
+        <PokeEvolutions :pokemonEvolutions="pokemonEvolutions" @pokemonDetail="handlePokemonDetail"/>
       </div>
 
     </div>
@@ -44,30 +38,23 @@
 import { ref } from 'vue';
 import { formatIndex, formatName, formatStat, getStatWidth, getMaxStat, getTotalStats } from '../utils/formatHelper';
 import ThePokemons from '../components/ThePokemons.vue';
+import PokeEvolutions from '../components/PokeEvolutions.vue';
 
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
 
+const handlePokemonDetail = (selectedPokemon) => {
+  pokemonDetail.value = selectedPokemon;
+  playPokemonCry(pokemonDetail.value.id);
+}
+
 const handlePokemonDetailsFetched = async (responseData) => {
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
   await fetchPokemonSpecies(responseData.species.url);
-}
-
-const getPokemonDetail = async (pokemonName) => {
-  try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    const data = await response.json();
-
-    pokemonDetail.value = data;
-    playPokemonCry(data.id);
-    
-  } catch (error) {
-    console.error('Error fetching pokemon detail');
-  }
 }
 
 const fetchPokemonSpecies = async (speciesUrl) => {
