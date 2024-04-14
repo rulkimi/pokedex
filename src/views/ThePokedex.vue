@@ -14,6 +14,7 @@
             <div class="bg-blue-600 h-4 rounded-full text-white text-xs" :style="{ width: getStatWidth(stat) + '%' }">{{ stat.base_stat + ' / ' + getMaxStat(stat) }}</div>
           </div>
         </div>
+        <div class="flex items-center">Total stats: {{ totalStats }}</div>
       </div>
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
@@ -38,12 +39,20 @@ const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
+const totalStats = ref(null);
 
 const handlePokemonDetailsFetched = async (responseData) => {
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
   await fetchPokemonSpecies(responseData.species.url);
+
+  // calculate total stats
+  let sumStats = 0;
+  responseData.stats.forEach(stat => {
+    sumStats += stat.base_stat;
+  });
+  totalStats.value = sumStats;
 }
 
 const fetchPokemonSpecies = async (speciesUrl) => {
