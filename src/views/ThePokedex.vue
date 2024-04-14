@@ -2,14 +2,13 @@
   <div class="grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemonDetailsFetched="handlePokemonDetailsFetched" />
     <div class="flex border border-gray-300 rounded-xl p-6">
-      <!-- Placeholder for pokemon details -->
       <div v-if="pokemonDetail" class="w-full">
         <div class="flex justify-between">
           <span class="text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
           <span class="text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
         </div>
         <img :src="pokemonDetail.sprites.front_default" width="300" :alt="'Picture of ' + pokemonDetail.name" />
-        <div v-for="stat in pokemonDetail.stats" class="flex items-center">
+        <div v-for="stat in pokemonDetail.stats" :key="stat.stat.name" class="flex items-center">
           <div class="flex-none text-start" style="width: 50px;">{{ formatStat(stat.stat.name) }}</div>
           <div class="flex-grow bg-gray-200 rounded-full h-4 dark:bg-gray-700">
             <div class="bg-blue-600 h-4 rounded-full text-white text-xs" :style="{ width: getStatWidth(stat) + '%' }">{{ stat.base_stat + ' / ' + getMaxStat(stat) }}</div>
@@ -19,7 +18,6 @@
       <p v-else class="">Pokemon details area</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
-      <!-- Display Evolutions -->
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
         <h2 class="text-xl font-bold mb-2">Evolutions</h2>
         <div v-for="evolution in pokemonEvolutions" :key="evolution.name" class="flex items-center">
@@ -41,11 +39,11 @@ const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
 
-const handlePokemonDetailsFetched = (responseData) => {
+const handlePokemonDetailsFetched = async (responseData) => {
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
   playPokemonCry(responseData.id);
-  fetchPokemonSpecies(responseData.species.url);
+  await fetchPokemonSpecies(responseData.species.url);
 }
 
 const fetchPokemonSpecies = async (speciesUrl) => {
@@ -53,7 +51,7 @@ const fetchPokemonSpecies = async (speciesUrl) => {
     const response = await fetch(speciesUrl);
     const data = await response.json();
     console.log(data)
-    fetchEvolutionChain(data.evolution_chain.url);
+    await fetchEvolutionChain(data.evolution_chain.url);
   } catch (error) {
     console.error('Error fetching pokemon species:', error);
   }
@@ -77,7 +75,6 @@ const fetchEvolutionChain = async (evolutionChainUrl) => {
     console.error('Error fetching evolution chains:', error);
   }
 }
-
 
 // Function to recursively traverse the evolution chain and collect evolution names
 const collectEvolutions = (evolutionData, result = []) => {
