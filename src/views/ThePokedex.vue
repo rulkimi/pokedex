@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemonDetailsFetched="handlePokemonDetailsFetched" />
-    <div class="flex border border-gray-300 rounded-xl p-6 flex-col">
+    <div class="flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
       <div v-if="pokemonDetail" class="w-full">
         <div class="flex justify-between">
           <span class="text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
@@ -9,7 +9,7 @@
         </div>
 
         <div class="flex justify-center">
-          <img :src="pokemonDetail.sprites.front_default" width="300" :alt="'Picture of ' + pokemonDetail.name" />
+          <img :src="pokemonDetail.sprites.front_default" width="200" :alt="'Picture of ' + pokemonDetail.name" />
         </div>
 
         <h2 class="text-xl text-start font-bold mb-2">Base Stats</h2>
