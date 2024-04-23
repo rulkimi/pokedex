@@ -1,12 +1,12 @@
 <template>
-  <li class="border border-gray-300 rounded-xl px-5 mb-2 cursor-pointer hover:bg-gray-100 flex items-center">
+  <li class="border border-gray-300 rounded-xl px-5 py-2 md:py-0 mb-2 cursor-pointer hover:bg-gray-100 flex items-center">
     <div class="flex flex-col mr-4">
       <div class="flex items-center">
         <div class="text-sm text-gray-500 mr-2">{{ '#' + formatIndex(index) }}</div>
         <div class="font-semibold" v-html="formatName(name)"></div>
       </div>
       
-      <div class="flex flex-wrap mt-2">
+      <div class="hidden md:flex flex-wrap mt-2">
         <div
           v-for="pokemonType in types"
           :class="[getTypeColor(pokemonType)]"
@@ -17,7 +17,7 @@
       </div>
     </div>
     
-    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto">
+    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto hidden md:block">
   </li>
 </template>
 
