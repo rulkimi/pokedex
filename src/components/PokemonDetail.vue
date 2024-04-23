@@ -29,7 +29,7 @@ import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMa
 
 defineProps({
   pokemonDetail: {
-    type: Array,
+    type: Object,
     required: true
   }
 });
