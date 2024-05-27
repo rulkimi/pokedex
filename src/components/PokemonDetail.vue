@@ -19,7 +19,7 @@
 
   <div class="flex items-center">
     <div class="flex items-center text-xs md:text-sm">TOTAL STATS:</div>
-    <div class="bg-blue-600 h-3 md:h-4 px-2 ml-2 rounded-full text-white text-xxs md:text-xs">{{ getTotalStats(pokemonDetail.stats) }}</div>
+    <div class="flex items-center bg-blue-600 h-3 md:h-4 px-2 ml-2 rounded-full text-white text-xxs md:text-xs">{{ getTotalStats(pokemonDetail.stats) }}</div>
   </div>
 </template>
 
