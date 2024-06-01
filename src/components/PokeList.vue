@@ -17,7 +17,7 @@
       </div>
     </div>
     
-    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto">
+    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto w-20 md:w-full">
   </li>
 </template>
 
