@@ -6,7 +6,7 @@
         <div class="font-semibold" v-html="formatName(name)"></div>
       </div>
       
-      <div class="hidden md:flex flex-wrap mt-2">
+      <div class="flex flex-wrap mt-2">
         <div
           v-for="pokemonType in types"
           :class="[getTypeColor(pokemonType)]"
@@ -17,7 +17,7 @@
       </div>
     </div>
     
-    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto hidden md:block">
+    <img :src="picture" :alt="'Picture of ' + name" class="ml-auto">
   </li>
 </template>
 

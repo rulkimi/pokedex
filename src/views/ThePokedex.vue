@@ -1,7 +1,7 @@
 <template>
-  <div class="grid grid-cols-[auto,1fr] gap-4 h-full">
+  <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemon-details-fetched="handlePokemonDetailsFetched" />
-    <div class="flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
+    <div class="hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
       <div v-if="pokemonDetail" class="w-full">
         <PokemonDetail :pokemon-detail="pokemonDetail" />
       </div>
