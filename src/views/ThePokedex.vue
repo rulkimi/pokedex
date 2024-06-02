@@ -43,7 +43,7 @@ const isMobileView = ref(false);
 const isPokemonClicked = ref(false);
 
 const screenSize = () => {
-  return window.innerWidth <= 768;
+  return window.innerWidth < 768;
 };
 
 onMounted(() => {
