@@ -64,7 +64,7 @@ const generationLimits = ref({
   6: { limit: 72, offset: 649 }, // Generation 6
   7: { limit: 88, offset: 721 }, // Generation 7
   8: { limit: 96, offset: 809 }, // Generation 8
-  9: { limit: 120, offset: 905 }, // Generation 8
+  9: { limit: 120, offset: 905 }, // Generation 9
 });
 
 onMounted(() => {

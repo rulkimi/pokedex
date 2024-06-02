@@ -1,7 +1,7 @@
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemon-details-fetched="handlePokemonDetailsFetched" />
-    <div class="hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
+    <div v-if="!isMobileView" class="hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
       <div v-if="pokemonDetail" class="w-full">
         <PokemonDetail :pokemon-detail="pokemonDetail" />
       </div>
@@ -21,13 +21,15 @@
 
         <PokeEvolutions v-else :pokemon-evolutions="pokemonEvolutions" @pokemon-detail="handlePokemonDetail"/>
       </div>
-
+    </div>
+    <div v-if="isMobileView && isPokemonClicked" class="fixed top-0 left-0 w-full h-full bg-white flex justify-center items-center z-10">
+      hello
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
 import PokemonDetail from '../components/PokemonDetail.vue';
@@ -37,6 +39,20 @@ const audioSrc = ref(null);
 const audio = ref(null);
 const pokemonEvolutions = ref([]);
 const loadingEvolution = ref(false);
+const isMobileView = ref(false);
+const isPokemonClicked = ref(false);
+
+const screenSize = () => {
+  return window.innerWidth <= 768;
+};
+
+onMounted(() => {
+  isMobileView.value = screenSize();
+  window.addEventListener('resize', () => {
+    isMobileView.value = screenSize();
+  });
+});
+
 
 const handlePokemonDetail = (selectedPokemon) => {
   pokemonDetail.value = selectedPokemon;
@@ -44,6 +60,7 @@ const handlePokemonDetail = (selectedPokemon) => {
 }
 
 const handlePokemonDetailsFetched = async (responseData) => {
+  if (isMobileView.value) isPokemonClicked.value = true;
   loadingEvolution.value = true;
   pokemonDetail.value = responseData;
   console.log('Received pokemon details:', pokemonDetail.value);
