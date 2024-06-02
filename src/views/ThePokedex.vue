@@ -1,9 +1,15 @@
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons @pokemon-details-fetched="handlePokemonDetailsFetched" />
-    <div v-if="!isMobileView" class="hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto">
+    <div
+      :class="
+        isMobileView && isPokemonClicked ?
+        'fixed top-0 left-0 w-full h-full bg-white z-10 p-5' : 
+        'hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto'
+      "
+    >
       <div v-if="pokemonDetail" class="w-full">
-        <PokemonDetail :pokemon-detail="pokemonDetail" />
+        <PokemonDetail :pokemon-detail="pokemonDetail" @go-back="goBack" />
       </div>
       <p v-else class="w-full h-full text-lg md:text-2xl flex justify-center items-center">Select a Pokemon.</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
@@ -21,9 +27,6 @@
 
         <PokeEvolutions v-else :pokemon-evolutions="pokemonEvolutions" @pokemon-detail="handlePokemonDetail"/>
       </div>
-    </div>
-    <div v-if="isMobileView && isPokemonClicked" class="fixed top-0 left-0 w-full h-full bg-white flex justify-center items-center z-10">
-      hello
     </div>
   </div>
 </template>
@@ -52,6 +55,10 @@ onMounted(() => {
     isMobileView.value = screenSize();
   });
 });
+
+const goBack = () => {
+  isPokemonClicked.value = false;
+}
 
 
 const handlePokemonDetail = (selectedPokemon) => {

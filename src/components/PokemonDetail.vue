@@ -1,5 +1,6 @@
 <template>
-  <div class="flex justify-between">
+  <div class="flex items-center justify-between">
+    <img src="/arrow-left.svg" alt="go back" class="mr-2" @click="goBack">
     <span class="text-2xl md:text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
     <span class="text-2xl md:text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
   </div>
@@ -24,7 +25,10 @@
 </template>
 
 <script setup>
+import { defineEmits } from 'vue';
 import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../utils/formatHelper';
+
+const emit = defineEmits(['go-back']);
 
 defineProps({
   pokemonDetail: {
@@ -32,6 +36,10 @@ defineProps({
     required: true
   }
 });
+
+const goBack = () => {
+  emit('go-back');
+}
 </script>
 
 <style scoped>

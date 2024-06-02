@@ -51,7 +51,7 @@ import { onMounted, ref, defineEmits } from 'vue';
 import PokeList from './PokeList.vue';
 
 const pokemons = ref([]);
-const emit = defineEmits(['pokemonDetailsFetched']);
+const emit = defineEmits(['pokemon-details-fetched']);
 const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
 
@@ -131,7 +131,7 @@ const pokemonDetail = async (index) => {
       pokemons.value[pokemonIndex].image = responseData.sprites.front_default;
     }
 
-    emit('pokemonDetailsFetched', responseData);
+    emit('pokemon-details-fetched', responseData);
 
   } catch (error) {
     console.error(error);
