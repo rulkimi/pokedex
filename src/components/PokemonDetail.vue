@@ -12,7 +12,7 @@
   <h2 class="text-lg md:text-xl text-start font-bold mb-2">Base Stats</h2>
   <div v-for="stat in pokemonDetail.stats" :key="stat.stat.name" class="flex items-center">
     <div class="flex-none text-start md:w-1/6 sm:w-1/5 text-xs md:text-sm" style="width: 50px;">{{ formatStat(stat.stat.name) }}</div>
-    <div class="flex-grow bg-gray-200 rounded-full h-3 md:h-4 dark:bg-gray-700">
+    <div class="flex-grow bg-gray-200 rounded-full h-3 md:h-4">
       <div class="flex justify-center bg-blue-600 h-3 md:h-4 rounded-full text-white text-xxs md:text-xs" :style="{ width: getStatWidth(stat) + '%' }">
         <span class="flex items-center">{{ stat.base_stat + ' / ' + getMaxStat(stat) }}</span>
       </div>
