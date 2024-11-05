@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between">
-    <img src="/arrow-left.svg" alt="go back" class="mr-2" @click="goBack">
+    <img src="/arrow-left.svg" alt="go back" class="mr-2 md:hidden" @click="goBack">
     <span class="text-2xl md:text-4xl text-gray-500">{{ '#' + formatIndex(pokemonDetail.id) }}</span>
     <span class="text-2xl md:text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
   </div>
