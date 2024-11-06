@@ -59,7 +59,19 @@ export const getTotalStats = stats => {
   });
   
   return sumStats;
-}
+};
+
+export const arrangeType = (types) => {
+  const normalIndex = types.indexOf('normal');
+
+  if (normalIndex !== -1) {
+    const normalElement = types.splice(normalIndex, 1)[0];
+    types.push(normalElement);
+  };
+
+  return types;
+};
+
 
 export const getTypeColor = (pokemonType) => {
   switch(pokemonType) {

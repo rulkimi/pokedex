@@ -1,5 +1,6 @@
 <script setup>
 import PokeList from './templates/PokeList.vue';
+import { arrangeType } from '../utils/formatHelper';
 
 import axios from 'axios';
 import { onMounted, ref, defineEmits } from 'vue';
@@ -135,7 +136,7 @@ const pokemonDetail = async (index) => {
         :key="pokemon.name"
         :index="index + 1 + generationLimits[selectedGeneration].offset"
         :name="pokemon.name"
-        :types="pokemon.types"
+        :types="arrangeType(pokemon.types)"
         :picture="pokemon.image"
         @click="pokemonDetail(index + 1 + generationLimits[selectedGeneration].offset)"
         @mouseover="emit('hovered', index + 1 + generationLimits[selectedGeneration].offset)"
