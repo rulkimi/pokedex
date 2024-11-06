@@ -8,14 +8,13 @@ import axios from 'axios';
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
 const audio = ref(null);
-const pokemonEvolutions = ref([]);
+const pokemonEvolutions = ref([]);  // Holds evolutions of selected Pokémon
+const hoveredPokemonEvolutions = ref([]); // Holds evolutions of hovered Pokémon
 const loadingEvolution = ref(false);
 const isMobileView = ref(false);
 const isPokemonClicked = ref(false);
 
-const screenSize = () => {
-  return window.innerWidth < 768;
-};
+const screenSize = () => window.innerWidth < 768;
 
 onMounted(() => {
   isMobileView.value = screenSize();
@@ -28,10 +27,12 @@ const goBack = () => {
   isPokemonClicked.value = false;
 }
 
-
 const handlePokemonDetail = (selectedPokemon) => {
   pokemonDetail.value = selectedPokemon;
   playPokemonCry(pokemonDetail.value.id);
+
+  // Update displayed evolutions with hovered evolutions on selection
+  pokemonEvolutions.value = [...hoveredPokemonEvolutions.value];
 }
 
 const handlePokemonDetailsFetched = async (responseData) => {
@@ -43,22 +44,21 @@ const handlePokemonDetailsFetched = async (responseData) => {
   await fetchPokemonSpecies(responseData.species.url);
 }
 
-const fetchPokemonSpecies = async (speciesUrl) => {
+const fetchPokemonSpecies = async (speciesUrl, isHover = false) => {
   try {
     const response = await axios.get(speciesUrl);
     const { data } = response;
-    console.log(data)
-    await fetchEvolutionChain(data.evolution_chain.url);
+    await fetchEvolutionChain(data.evolution_chain.url, isHover);
   } catch (error) {
     console.error('Error fetching pokemon species:', error);
   }
 }
 
-const fetchEvolutionChain = async (evolutionChainUrl) => {
+const fetchEvolutionChain = async (evolutionChainUrl, isHover = false) => {
   try {
+    loadingEvolution.value = true;
     const response = await axios.get(evolutionChainUrl);
     const { data } = response;
-    console.log(data);
 
     const allEvolutions = await Promise.all(
       collectEvolutions(data.chain).map(async (pokemon) => {
@@ -66,14 +66,20 @@ const fetchEvolutionChain = async (evolutionChainUrl) => {
         return pokemon;
       })
     );
-    pokemonEvolutions.value = allEvolutions;
-    console.log('All evolutions:', allEvolutions);
+
+    if (isHover) {
+      hoveredPokemonEvolutions.value = allEvolutions;
+    } else {
+      pokemonEvolutions.value = allEvolutions;
+    }
+    console.log(isHover ? 'Hovered evolutions:' : 'Selected evolutions:', allEvolutions);
   } catch (error) {
     console.error('Error fetching evolution chains:', error);
+  } finally {
+    loadingEvolution.value = false;
   }
 }
 
-// Function to recursively traverse the evolution chain and collect evolution names
 const collectEvolutions = (evolutionData, result = []) => {
   if (evolutionData.species) {
     result.push({ name: evolutionData.species.name });
@@ -89,15 +95,10 @@ const collectEvolutions = (evolutionData, result = []) => {
 const getSprite = async (pokemonName) => {
   try {
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    const { data } = response;
-    return data.sprites.front_default;
+    return response.data.sprites.front_default;
   } catch (error) {
     console.error('Error fetching sprite:', error);
     return null;
-  } finally {
-    setTimeout(() => {
-      loadingEvolution.value = false;
-    }, 1000);
   }
 }
 
@@ -106,35 +107,28 @@ const playPokemonCry = (id) => {
   const volumeLevel = 0.03;
 
   if (audio.value) {
-    // Reset the audio element
     audio.value.pause();
     audio.value.currentTime = 0;
-
-    // Preload the audio and handle the "canplaythrough" event
     audio.value.preload = 'auto';
     audio.value.src = audioSrc.value;
     audio.value.load();
     audio.value.addEventListener('canplaythrough', () => {
-      // Once the audio is ready, play it
       audio.value.volume = volumeLevel;
       audio.value.play().catch(handleAudioError);
     });
-
-    // Listen for other error events
-    audio.value.addEventListener('error', (event) => {
-      handleAudioError(event);
-    });
+    audio.value.addEventListener('error', handleAudioError);
   }
 }
 
 const handleAudioError = (error) => {
   console.error('Audio error:', error);
-  console.log('Audio source:', audioSrc.value);
 }
 
 const fetchDataOnHover = (index) => {
-  console.log(index)
-  fetchPokemonSpecies(`https://pokeapi.co/api/v2/pokemon-species/${index}/`)
+  console.log('Hover on index:', index);
+  loadingEvolution.value = true;
+  hoveredPokemonEvolutions.value = []; // Clear previous hovered evolutions
+  fetchPokemonSpecies(`https://pokeapi.co/api/v2/pokemon-species/${index}/`, true);
 }
 </script>
 
@@ -160,7 +154,6 @@ const fetchDataOnHover = (index) => {
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
         <h2 class="text-lg md:text-xl text-start font-bold">Evolutions</h2>
 
-        <!-- evolution placeholder -->
         <div v-if="loadingEvolution" class="grid grid-cols-3 gap-4 mt-4">
           <div v-for="index in 3" :key="index" class="flex flex-col items-center animate-pulse">
             <div class="bg-gray-200 rounded-full h-28 w-28 mb-2"></div>
