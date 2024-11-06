@@ -87,7 +87,7 @@ const pokemonDetail = async (index) => {
 </script>
 
 <template>
-  <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
+  <div>
 
     <div class="sticky top-0 z-10 bg-white w-full">
       <div class="inline-block text-left w-full">
@@ -129,7 +129,7 @@ const pokemonDetail = async (index) => {
       </li>
     </ul>
 
-    <ul v-else class="mt-4">
+    <ul v-else class="mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
       <PokeList
         v-for="(pokemon, index) in pokemons"
         :key="pokemon.name"

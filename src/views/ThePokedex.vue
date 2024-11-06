@@ -141,7 +141,7 @@ const fetchDataOnHover = (index) => {
       :class="
         isMobileView && isPokemonClicked ?
         'fixed top-0 left-0 w-full h-full bg-white z-10 p-5' : 
-        'hidden md:flex border border-gray-300 rounded-xl p-6 flex-col max-h-[calc(100vh-100px)] overflow-y-auto'
+        'hidden md:flex border border-gray-300 rounded-xl p-6 flex-col overflow-y-auto'
       "
     >
       <div v-if="pokemonDetail" class="w-full">
