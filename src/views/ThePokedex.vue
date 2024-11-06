@@ -36,6 +36,7 @@ import { ref, onMounted } from 'vue';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
 import PokemonDetail from '../components/PokemonDetail.vue';
+import axios from 'axios';
 
 const pokemonDetail = ref(null);
 const audioSrc = ref(null);
@@ -77,8 +78,8 @@ const handlePokemonDetailsFetched = async (responseData) => {
 
 const fetchPokemonSpecies = async (speciesUrl) => {
   try {
-    const response = await fetch(speciesUrl);
-    const data = await response.json();
+    const response = await axios.get(speciesUrl);
+    const { data } = response;
     console.log(data)
     await fetchEvolutionChain(data.evolution_chain.url);
   } catch (error) {
@@ -88,8 +89,8 @@ const fetchPokemonSpecies = async (speciesUrl) => {
 
 const fetchEvolutionChain = async (evolutionChainUrl) => {
   try {
-    const response = await fetch(evolutionChainUrl);
-    const data = await response.json();
+    const response = await axios.get(evolutionChainUrl);
+    const { data } = response;
     console.log(data);
 
     const allEvolutions = await Promise.all(
@@ -120,8 +121,8 @@ const collectEvolutions = (evolutionData, result = []) => {
 
 const getSprite = async (pokemonName) => {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    const data = await response.json();
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const { data } = response;
     return data.sprites.front_default;
   } catch (error) {
     console.error('Error fetching sprite:', error);

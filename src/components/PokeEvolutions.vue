@@ -10,6 +10,7 @@
 <script setup>
 import { formatName } from '../utils/formatHelper';
 import { defineProps, defineEmits } from 'vue';
+import axios from 'axios';
 
 defineProps({
   pokemonEvolutions: {
@@ -22,9 +23,9 @@ const emit  = defineEmits(['pokemonDetail']);
 
 const sendPokemonDetail = async (pokemonName) => {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
     console.log(response)
-    const data = await response.json();
+    const { data } = response;
     console.log(data)
 
     emit('pokemonDetail', data);

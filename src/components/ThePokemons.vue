@@ -49,6 +49,7 @@
 <script setup>
 import { onMounted, ref, defineEmits } from 'vue';
 import PokeList from './PokeList.vue';
+import axios from 'axios';
 
 const pokemons = ref([]);
 const emit = defineEmits(['pokemon-details-fetched']);
@@ -82,26 +83,19 @@ const getPokemons = async (generation) => {
 
     const { limit, offset } = generationLimits.value[generation];
 
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch');
-    }
-
-    const responseData = await response.json();
-    const pokemonsData = responseData.results;
+    const { data } = response;
+    const pokemonsData = data.results;
 
     const pokemonDetailsPromises = pokemonsData.map(async (pokemonData) => {
-      const pokemonResponse = await fetch(pokemonData.url);
-      if (!pokemonResponse.ok) {
-        throw new Error('Failed to fetch Pokémon details');
-      }
-      const pokemonDetails = await pokemonResponse.json();
-      const pokemonTypes = pokemonDetails.types.map(detail => detail.type.name);
+      const pokemonResponse = await axios.get(pokemonData.url);
+      const { data } = pokemonResponse;
+      const pokemonTypes = data.types.map(detail => detail.type.name);
       return {
         name: pokemonData.name,
         url: pokemonData.url,
-        image: pokemonDetails.sprites.front_default,
+        image: data.sprites.front_default,
         types: pokemonTypes,
       };
     });
@@ -119,19 +113,15 @@ const getPokemons = async (generation) => {
 
 const pokemonDetail = async (index) => {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${index}`);
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${index}`);
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch');
-    }
-
-    const responseData = await response.json();
-    const pokemonIndex = pokemons.value.findIndex(pokemon => pokemon.name === responseData.name);
+    const { data } = response;
+    const pokemonIndex = pokemons.value.findIndex(pokemon => pokemon.name === data.name);
     if (pokemonIndex !== -1) {
-      pokemons.value[pokemonIndex].image = responseData.sprites.front_default;
+      pokemons.value[pokemonIndex].image = data.sprites.front_default;
     }
 
-    emit('pokemon-details-fetched', responseData);
+    emit('pokemon-details-fetched', data);
 
   } catch (error) {
     console.error(error);
