@@ -56,7 +56,7 @@ const fetchPokemonSpecies = async (speciesUrl, isHover = false) => {
 
 const fetchEvolutionChain = async (evolutionChainUrl, isHover = false) => {
   try {
-    loadingEvolution.value = true;
+    if (!isHover) loadingEvolution.value = true;
     const response = await axios.get(evolutionChainUrl);
     const { data } = response;
 
@@ -76,7 +76,7 @@ const fetchEvolutionChain = async (evolutionChainUrl, isHover = false) => {
   } catch (error) {
     console.error('Error fetching evolution chains:', error);
   } finally {
-    loadingEvolution.value = false;
+    if (!isHover) loadingEvolution.value = false;
   }
 }
 
@@ -126,7 +126,6 @@ const handleAudioError = (error) => {
 
 const fetchDataOnHover = (index) => {
   console.log('Hover on index:', index);
-  loadingEvolution.value = true;
   hoveredPokemonEvolutions.value = []; // Clear previous hovered evolutions
   fetchPokemonSpecies(`https://pokeapi.co/api/v2/pokemon-species/${index}/`, true);
 }
