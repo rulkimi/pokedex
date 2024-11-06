@@ -131,11 +131,19 @@ const handleAudioError = (error) => {
   console.error('Audio error:', error);
   console.log('Audio source:', audioSrc.value);
 }
+
+const fetchDataOnHover = (index) => {
+  console.log(index)
+  fetchPokemonSpecies(`https://pokeapi.co/api/v2/pokemon-species/${index}/`)
+}
 </script>
 
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
-    <ThePokemons @pokemon-details-fetched="handlePokemonDetailsFetched" />
+    <ThePokemons
+      @pokemon-details-fetched="handlePokemonDetailsFetched"
+      @hovered="fetchDataOnHover"
+    />
     <div
       :class="
         isMobileView && isPokemonClicked ?

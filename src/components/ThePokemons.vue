@@ -4,7 +4,7 @@ import PokeList from './templates/PokeList.vue';
 import axios from 'axios';
 import { onMounted, ref, defineEmits } from 'vue';
 
-const emit = defineEmits(['pokemon-details-fetched']);
+const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
 
 const pokemons = ref([]);
 const selectedGeneration = ref(1);
@@ -61,6 +61,9 @@ const getPokemons = async (generation) => {
   } catch (error) {
     console.error(error);
   } finally {
+
+    console.log(pokemons.value)
+
     loadPlaceholder.value = false;
   }
 };
@@ -135,6 +138,7 @@ const pokemonDetail = async (index) => {
         :types="pokemon.types"
         :picture="pokemon.image"
         @click="pokemonDetail(index + 1 + generationLimits[selectedGeneration].offset)"
+        @mouseover="emit('hovered', index + 1 + generationLimits[selectedGeneration].offset)"
       />
     </ul>
 
