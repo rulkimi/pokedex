@@ -1,3 +1,21 @@
+<script setup>
+import { defineEmits } from 'vue';
+import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../utils/formatHelper';
+
+const emit = defineEmits(['go-back']);
+
+defineProps({
+  pokemonDetail: {
+    type: Object,
+    required: true
+  }
+});
+
+const goBack = () => {
+  emit('go-back');
+}
+</script>
+
 <template>
   <div class="flex items-center justify-between">
     <img src="/arrow-left.svg" alt="go back" class="mr-2 md:hidden" @click="goBack">
@@ -25,24 +43,6 @@
     <div class="flex items-center bg-blue-600 h-3 md:h-4 px-2 ml-2 rounded-full text-white text-xxs md:text-xs">{{ getTotalStats(pokemonDetail.stats) }}</div>
   </div>
 </template>
-
-<script setup>
-import { defineEmits } from 'vue';
-import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../utils/formatHelper';
-
-const emit = defineEmits(['go-back']);
-
-defineProps({
-  pokemonDetail: {
-    type: Object,
-    required: true
-  }
-});
-
-const goBack = () => {
-  emit('go-back');
-}
-</script>
 
 <style scoped>
 .text-xxs {
