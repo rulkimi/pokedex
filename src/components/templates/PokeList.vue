@@ -1,5 +1,5 @@
 <script setup>
-import { formatIndex, formatName, getTypeColor } from '../utils/formatHelper';
+import { formatIndex, formatName, getTypeColor } from '../../utils/formatHelper';
 
 defineProps({
   index: {

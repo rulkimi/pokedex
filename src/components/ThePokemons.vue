@@ -1,5 +1,5 @@
 <script setup>
-import PokeList from './PokeList.vue';
+import PokeList from './templates/PokeList.vue';
 
 import axios from 'axios';
 import { onMounted, ref, defineEmits } from 'vue';

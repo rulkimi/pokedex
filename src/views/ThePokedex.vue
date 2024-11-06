@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
-import PokemonDetail from '../components/PokemonDetail.vue';
+import PokemonDetail from '../components/templates/PokemonDetail.vue';
 import axios from 'axios';
 
 const pokemonDetail = ref(null);

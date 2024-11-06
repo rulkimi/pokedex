@@ -1,6 +1,6 @@
 <script setup>
 import { defineEmits } from 'vue';
-import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../utils/formatHelper';
+import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../../utils/formatHelper';
 
 const emit = defineEmits(['go-back']);
 
