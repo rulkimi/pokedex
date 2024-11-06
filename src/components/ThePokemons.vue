@@ -1,10 +1,12 @@
 <script setup>
-import { onMounted, ref, defineEmits } from 'vue';
 import PokeList from './PokeList.vue';
+
 import axios from 'axios';
+import { onMounted, ref, defineEmits } from 'vue';
+
+const emit = defineEmits(['pokemon-details-fetched']);
 
 const pokemons = ref([]);
-const emit = defineEmits(['pokemon-details-fetched']);
 const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
 
@@ -31,7 +33,7 @@ const getPokemons = async (generation) => {
     if (cachedPokemons) {
       pokemons.value = JSON.parse(cachedPokemons);
       return;
-    }
+    };
 
     const { limit, offset } = generationLimits.value[generation];
 
@@ -41,8 +43,8 @@ const getPokemons = async (generation) => {
     const pokemonsData = data.results;
 
     const pokemonDetailsPromises = pokemonsData.map(async (pokemonData) => {
-      const pokemonResponse = await axios.get(pokemonData.url);
-      const { data } = pokemonResponse;
+      const response = await axios.get(pokemonData.url);
+      const { data } = response;
       const pokemonTypes = data.types.map(detail => detail.type.name);
       return {
         name: pokemonData.name,
@@ -61,32 +63,42 @@ const getPokemons = async (generation) => {
   } finally {
     loadPlaceholder.value = false;
   }
-}
+};
 
 const pokemonDetail = async (index) => {
   try {
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${index}`);
-
     const { data } = response;
+
     const pokemonIndex = pokemons.value.findIndex(pokemon => pokemon.name === data.name);
     if (pokemonIndex !== -1) {
       pokemons.value[pokemonIndex].image = data.sprites.front_default;
-    }
+    };
 
     emit('pokemon-details-fetched', data);
 
   } catch (error) {
     console.error(error);
   }
-}
+};
 </script>
 
 <template>
   <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
+
     <div class="sticky top-0 z-10 bg-white w-full">
       <div class="inline-block text-left w-full">
-        <select v-model="selectedGeneration" @change="getPokemons(selectedGeneration)" class="block w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500">
-          <option v-for="(n, index) in 9" :key="index" :value="index + 1">{{ `Generation ${n}` }}</option>
+        <select
+          v-model="selectedGeneration"
+          class="block w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
+          @change="getPokemons(selectedGeneration)"
+        >
+          <option
+            v-for="(n, index) in 9" 
+            :key="index" :value="index + 1"
+          >
+            {{ `Generation ${n}` }}
+          </option>
         </select>
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z"/></svg>
