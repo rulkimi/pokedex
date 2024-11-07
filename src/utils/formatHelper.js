@@ -59,47 +59,59 @@ export const getTotalStats = stats => {
   });
   
   return sumStats;
-}
+};
+
+export const arrangeType = (types) => {
+  const normalIndex = types.indexOf('normal');
+
+  if (normalIndex !== -1) {
+    const normalElement = types.splice(normalIndex, 1)[0];
+    types.push(normalElement);
+  };
+
+  return types;
+};
+
 
 export const getTypeColor = (pokemonType) => {
   switch(pokemonType) {
     case 'grass':
-      return 'bg-emerald-500';
+      return 'emerald-500';
     case 'fire':
-      return 'bg-red-700';
+      return 'red-700';
     case 'water':
-      return 'bg-blue-500';
+      return 'blue-500';
     case 'electric':
-      return 'bg-yellow-400';
+      return 'yellow-400';
     case 'bug':
-      return 'bg-green-700';
+      return 'green-700';
     case 'poison':
-      return 'bg-fuchsia-800';
+      return 'fuchsia-800';
     case 'normal':
-      return 'bg-gray-400';
+      return 'gray-400';
     case 'ice':
-      return 'bg-cyan-300';
+      return 'cyan-300';
     case 'ground':
-      return 'bg-yellow-900';
+      return 'yellow-900';
     case 'fighting':
-      return 'bg-red-700';
+      return 'red-700';
     case 'flying':
-      return 'bg-indigo-400';
+      return 'indigo-400';
     case 'psychic':
-      return 'bg-pink-500';
+      return 'pink-500';
     case 'rock':
-      return 'bg-yellow-600';
+      return 'yellow-600';
     case 'ghost':
-      return 'bg-indigo-700';
+      return 'indigo-700';
     case 'dragon':
-      return 'bg-indigo-900';
+      return 'indigo-900';
     case 'dark':
-      return 'bg-gray-800';
+      return 'gray-800';
     case 'steel':
-      return 'bg-gray-600';
+      return 'gray-600';
     case 'fairy':
-      return 'bg-pink-300';
+      return 'pink-300';
     default:
-      return 'bg-gray-500';
+      return 'gray-500';
   }
 }
