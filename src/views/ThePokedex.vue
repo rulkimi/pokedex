@@ -135,7 +135,6 @@ const fetchDataOnHover = (index) => {
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
     <ThePokemons
       @pokemon-details-fetched="handlePokemonDetailsFetched"
-      @hovered="fetchDataOnHover"
     />
     <div
       :class="
