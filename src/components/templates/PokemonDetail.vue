@@ -29,6 +29,7 @@ const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.ty
 
   <div class="relative flex justify-center items-center">
     <img
+      class="object-cover"
       :src="pokemonDetail.sprites.front_default"
       width="200"
       :alt="'Picture of ' + pokemonDetail.name"
