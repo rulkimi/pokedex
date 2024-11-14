@@ -115,7 +115,7 @@ export const getTypeColor = (pokemonType) => {
     case 'steel':
       return 'gray-600';
     case 'fairy':
-      return 'pink-300';
+      return 'pink-400';
     default:
       return 'gray-500';
   }
