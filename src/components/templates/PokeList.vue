@@ -1,7 +1,10 @@
 <script setup>
 import { formatIndex, formatName, getTypeColor } from '../../utils/formatHelper';
+import { arrangeType } from '../../utils/formatHelper';
 
-defineProps({
+import { computed } from 'vue';
+
+const props = defineProps({
   index: {
     type: Number,
     required: true,
@@ -19,6 +22,8 @@ defineProps({
     required: true,
   },
 });
+
+const arrangedTypes = computed(() => arrangeType(props.types));
 </script>
 
 <template>
@@ -34,7 +39,7 @@ defineProps({
       
       <div class="flex flex-wrap mt-2">
         <div
-          v-for="pokemonType in types"
+          v-for="pokemonType in arrangedTypes"
           :class="`bg-${getTypeColor(pokemonType)}`"
           class="rounded-full text-white text-xs px-2 py-1 pb-1.5 mr-1 mb-1"
         >

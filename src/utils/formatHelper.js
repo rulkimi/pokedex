@@ -62,16 +62,16 @@ export const getTotalStats = stats => {
 };
 
 export const arrangeType = (types) => {
-  const normalIndex = types.indexOf('normal');
+  const typesCopy = [...types];
+  const normalIndex = typesCopy.indexOf('normal');
 
   if (normalIndex !== -1) {
-    const normalElement = types.splice(normalIndex, 1)[0];
-    types.push(normalElement);
+    const normalElement = typesCopy.splice(normalIndex, 1)[0];
+    typesCopy.push(normalElement);
   };
 
-  return types;
+  return typesCopy;
 };
-
 
 export const getTypeColor = (pokemonType) => {
   switch(pokemonType) {
