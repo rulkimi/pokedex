@@ -90,7 +90,7 @@ const pokemonDetail = async (index) => {
   <div>
 
     <div class="sticky top-0 z-10 bg-white w-full">
-      <div class="inline-block text-left w-full">
+      <div class="inline-block text-left w-full px-2">
         <select
           v-model="selectedGeneration"
           class="block w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
@@ -103,7 +103,7 @@ const pokemonDetail = async (index) => {
             {{ `Generation ${n}` }}
           </option>
         </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
           <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z"/></svg>
         </div>
       </div>
@@ -129,7 +129,7 @@ const pokemonDetail = async (index) => {
       </li>
     </ul>
 
-    <ul v-else class="mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+    <ul v-else class="flex flex-col gap-1 px-2 mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
       <PokeList
         v-for="(pokemon, index) in pokemons"
         :key="pokemon.name"
