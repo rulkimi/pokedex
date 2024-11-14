@@ -73,6 +73,11 @@ export const arrangeType = (types) => {
   return typesCopy;
 };
 
+export const formatAndArrangeType = (types) => {
+  const newTypes = types.map(item => item.type.name);
+  return arrangeType(newTypes);
+}
+
 export const getTypeColor = (pokemonType) => {
   switch(pokemonType) {
     case 'grass':

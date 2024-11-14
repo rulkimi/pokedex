@@ -1,19 +1,23 @@
 <script setup>
-import { defineEmits } from 'vue';
-import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, getMaxStat } from '../../utils/formatHelper';
+import { defineEmits, computed } from 'vue';
+import { formatIndex, formatName, formatStat, getTotalStats, getStatWidth, formatAndArrangeType, getTypeColor } from '../../utils/formatHelper';
 
 const emit = defineEmits(['go-back']);
 
-defineProps({
+const props = defineProps({
   pokemonDetail: {
     type: Object,
     required: true
   }
 });
 
+console.log('props', props.pokemonDetail)
+
 const goBack = () => {
   emit('go-back');
 }
+
+const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.types))
 </script>
 
 <template>
@@ -23,8 +27,15 @@ const goBack = () => {
     <span class="text-2xl md:text-4xl font-bold flex-grow text-end" v-html="formatName(pokemonDetail.name)"></span>
   </div>
 
-  <div class="flex justify-center">
-    <img :src="pokemonDetail.sprites.front_default" width="200" :alt="'Picture of ' + pokemonDetail.name" />
+  <div class="relative flex justify-center items-center">
+    <img
+      :src="pokemonDetail.sprites.front_default"
+      width="200"
+      :alt="'Picture of ' + pokemonDetail.name"
+    />
+    <div class="absolute inset-0 flex items-center justify-center">
+      <div :class="`shadow-inner w-40 h-40 bg-${getTypeColor(arrangedTypes[0])}/5 rounded-full`"></div>
+    </div>
   </div>
 
   <h2 class="text-lg md:text-xl text-start font-bold mb-2">Base Stats</h2>
