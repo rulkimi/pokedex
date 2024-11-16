@@ -1,5 +1,7 @@
 <script setup>
 import PokeList from './templates/PokeList.vue';
+import FormInput from './templates/FormInput.vue';
+import FormSelect from './templates/FormSelect.vue';
 
 import axios from 'axios';
 import { onMounted, ref, defineEmits } from 'vue';
@@ -7,8 +9,20 @@ import { onMounted, ref, defineEmits } from 'vue';
 const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
 
 const pokemons = ref([]);
+const generations = ref([
+  { label: 'Gen 1', value: 1 },
+  { label: 'Gen 2', value: 2 },
+  { label: 'Gen 3', value: 3 },
+  { label: 'Gen 4', value: 4 },
+  { label: 'Gen 5', value: 5 },
+  { label: 'Gen 6', value: 6 },
+  { label: 'Gen 7', value: 7 },
+  { label: 'Gen 8', value: 8 },
+  { label: 'Gen 9', value: 9 },
+]);
 const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
+const inputSearchPokemon = ref('');
 
 const generationLimits = ref({
   1: { limit: 151, offset: 0 }, // Generation 1
@@ -90,22 +104,26 @@ const pokemonDetail = async (index) => {
   <div>
 
     <div class="sticky top-0 z-10 bg-white w-full">
-      <div class="inline-block text-left w-full px-2">
-        <select
-          v-model="selectedGeneration"
-          class="block w-full appearance-none bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-gray-500"
-          @change="getPokemons(selectedGeneration)"
+      <div class="grid grid-cols-6">
+        <FormInput
+          id="search-pokemon"
+          class="col-span-4"
+          input-class="border-x border-y rounded-r-none flex-grow"
+          placeholder="Search pokemon"
+          v-model="inputSearchPokemon"
         >
-          <option
-            v-for="(n, index) in 9" 
-            :key="index" :value="index + 1"
-          >
-            {{ `Generation ${n}` }}
-          </option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
-          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z"/></svg>
-        </div>
+          <template #prepend-icon>
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+          </template>
+        </FormInput>
+        <FormSelect
+          id="select-generation"
+          v-model="selectedGeneration"
+          class="col-span-2"
+          input-class="border-r border-y rounded-l-none"
+          :options="generations"
+          @change="getPokemons(selectedGeneration)"
+        />
       </div>
     </div>
 

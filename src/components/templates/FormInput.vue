@@ -86,8 +86,8 @@ const conditionalInputStyles = computed(() => {
     'border': (props.error || props.errorMessage) && !props.readonly,
     'border-red-300': props.error || props.errorMessage,
     'opacity-50 cursor-not-allowed': props.disabled,
-    'pl-10': props.hasPrependIcon,
-    'pr-10': props.hasAppendIcon,
+    'pl-10': hasPrependIcon.value,
+    'pr-10': hasAppendIcon.value,
   };
 });
 
