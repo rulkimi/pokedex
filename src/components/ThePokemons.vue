@@ -4,7 +4,7 @@ import FormInput from './templates/FormInput.vue';
 import FormSelect from './templates/FormSelect.vue';
 
 import axios from 'axios';
-import { onMounted, ref, defineEmits } from 'vue';
+import { onMounted, ref, defineEmits, computed } from 'vue';
 
 const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
 
@@ -82,6 +82,13 @@ const getPokemons = async (generation) => {
   }
 };
 
+const filteredPokemons = computed(() => {
+  if (!inputSearchPokemon.value) return pokemons.value;
+  return pokemons.value.filter(pokemon =>
+    pokemon.name.toLowerCase().includes(inputSearchPokemon.value.toLowerCase())
+  );
+});
+
 const pokemonDetail = async (index) => {
   try {
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${index}`);
@@ -149,7 +156,7 @@ const pokemonDetail = async (index) => {
 
     <ul v-else class="flex flex-col gap-1 px-2 mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
       <PokeList
-        v-for="(pokemon, index) in pokemons"
+        v-for="(pokemon, index) in filteredPokemons"
         :key="pokemon.name"
         :index="index + 1 + generationLimits[selectedGeneration].offset"
         :name="pokemon.name"
