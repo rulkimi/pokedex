@@ -151,7 +151,7 @@ const onImageClicked = (pokemonId) => {
       <div v-if="pokemonDetail" class="w-full">
         <PokemonDetail :pokemon-detail="pokemonDetail" @go-back="goBack" @image-clicked="onImageClicked" />
       </div>
-      <p v-else class="w-full h-full text-lg md:text-2xl flex justify-center items-center">Select a Pokemon.</p>
+      <p v-else class="w-full h-full text-lg md:text-xl text-slate-400 flex justify-center items-center">Select a Pokemon</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-6">
