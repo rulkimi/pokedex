@@ -32,7 +32,7 @@ const arrangedTypes = computed(() => arrangeType(props.types));
 
 <template>
   <li
-    :class="isActive ? `bg-${getTypeColor(types[0])}/20 !border-${getTypeColor(types[0])}` : `hover:bg-${getTypeColor(types[0])}/20 hover:!border-${getTypeColor(types[0])}`"
+    :class="isActive ? `bg-${getTypeColor(arrangedTypes[0])}/20 !border-${getTypeColor(arrangedTypes[0])}` : `hover:bg-${getTypeColor(arrangedTypes[0])}/20 hover:!border-${getTypeColor(arrangedTypes[0])}`"
     class="group rounded-xl px-5 py-2 md:py-0 cursor-pointer transition-all duration-500 flex items-center justify-between md:w-[300px]"
   >
     <div class="flex flex-col mr-4">
