@@ -160,7 +160,13 @@ const onClickPokemon = (pokemonName, originalIndex) => {
       </li>
     </ul>
 
-    <ul v-else class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden">
+    <transition-group
+      v-else
+      name="list"
+      tag="ul"
+      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden"
+      mode="out-in"
+    >
       <PokeList
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
@@ -172,7 +178,25 @@ const onClickPokemon = (pokemonName, originalIndex) => {
         @click="onClickPokemon(pokemon.name, pokemons.findIndex(p => p.name === pokemon.name))"
         @mouseover="emit('hovered', pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset)"
       />
-    </ul>
+    </transition-group>
 
   </div>
 </template>
+
+<style scoped>
+.list-enter-active, .list-leave-active {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.list-leave-active {
+  position: absolute;
+}
+
+.list-enter-from, .list-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.list-move {
+  transition: transform 0.3s ease-in-out;
+}
+</style>
