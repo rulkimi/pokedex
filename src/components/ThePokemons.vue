@@ -160,7 +160,7 @@ const onClickPokemon = (pokemonName, originalIndex) => {
       </li>
     </ul>
 
-    <ul v-else class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] overflow-y-auto">
+    <ul v-else class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden">
       <PokeList
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"

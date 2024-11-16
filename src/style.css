@@ -9,7 +9,6 @@ body {
   font-family: monospace;
 }
 #app {
-  margin: 0 1rem;
   padding: 2rem;
   text-align: center;
 }
