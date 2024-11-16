@@ -132,7 +132,7 @@ const onClickPokemon = (pokemonName, originalIndex) => {
         <FormSelect
           id="select-generation"
           v-model="selectedGeneration"
-          class="w-24"
+          width="w-24"
           input-class="border-r border-y rounded-l-none"
           :options="generations"
           @change="getPokemons(selectedGeneration)"
