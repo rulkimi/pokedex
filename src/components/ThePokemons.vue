@@ -154,7 +154,7 @@ const pokemonDetail = async (index) => {
       </li>
     </ul>
 
-    <ul v-else class="flex flex-col gap-1 px-2 mt-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+    <ul v-else class="flex flex-col gap-1 px-2 mt-4 h-[calc(100vh-120px)] overflow-y-auto">
       <PokeList
         v-for="(pokemon, index) in filteredPokemons"
         :key="pokemon.name"
