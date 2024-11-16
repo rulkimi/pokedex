@@ -23,6 +23,7 @@ const generations = ref([
 const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
 const inputSearchPokemon = ref('');
+const activePokemon = ref();
 
 const generationLimits = ref({
   1: { limit: 151, offset: 0 }, // Generation 1
@@ -105,6 +106,11 @@ const pokemonDetail = async (index) => {
     console.error(error);
   }
 };
+
+const onClickPokemon = (pokemon, index) => {
+  activePokemon.value = pokemon;
+  pokemonDetail(index + 1 + generationLimits.value[selectedGeneration.value].offset)
+}
 </script>
 
 <template>
@@ -162,7 +168,8 @@ const pokemonDetail = async (index) => {
         :name="pokemon.name"
         :types="pokemon.types"
         :picture="pokemon.image"
-        @click="pokemonDetail(index + 1 + generationLimits[selectedGeneration].offset)"
+        :is-active="pokemon.name === activePokemon"
+        @click="onClickPokemon(pokemon.name, index)"
         @mouseover="emit('hovered', index + 1 + generationLimits[selectedGeneration].offset)"
       />
     </ul>

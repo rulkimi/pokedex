@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 const arrangedTypes = computed(() => arrangeType(props.types));
@@ -28,7 +32,7 @@ const arrangedTypes = computed(() => arrangeType(props.types));
 
 <template>
   <li
-    :class="`hover:bg-${getTypeColor(types[0])}/20 hover:!border-${getTypeColor(types[0])}`"
+    :class="isActive ? `bg-${getTypeColor(types[0])}/20 !border-${getTypeColor(types[0])}` : `hover:bg-${getTypeColor(types[0])}/20 hover:!border-${getTypeColor(types[0])}`"
     class="group rounded-xl px-5 py-2 md:py-0 cursor-pointer transition-all duration-500 flex items-center justify-between md:w-[300px]"
   >
     <div class="flex flex-col mr-4">
@@ -48,6 +52,11 @@ const arrangedTypes = computed(() => arrangeType(props.types));
       </div>
     </div>
     
-    <img :src="picture" :alt="'Picture of ' + name" class="!w-20 !h-20 object-contain md:w-full group-hover:scale-150 group-hover:rotate-6 transition-transform duration-500">
+    <img
+      :src="picture"
+      :alt="'Picture of ' + name"
+      class="!w-20 !h-20 object-contain md:w-full"
+      :class="isActive ? 'scale-150 rotate-6' : 'group-hover:scale-150 group-hover:rotate-6 transition-transform duration-500'"
+    >
   </li>
 </template>
