@@ -107,10 +107,10 @@ const pokemonDetail = async (index) => {
   }
 };
 
-const onClickPokemon = (pokemon, index) => {
-  activePokemon.value = pokemon;
-  pokemonDetail(index + 1 + generationLimits.value[selectedGeneration.value].offset)
-}
+const onClickPokemon = (pokemonName, originalIndex) => {
+  activePokemon.value = pokemonName;
+  pokemonDetail(originalIndex + 1 + generationLimits.value[selectedGeneration.value].offset);
+};
 </script>
 
 <template>
@@ -162,15 +162,15 @@ const onClickPokemon = (pokemon, index) => {
 
     <ul v-else class="flex flex-col gap-1 px-2 mt-4 h-[calc(100vh-120px)] overflow-y-auto">
       <PokeList
-        v-for="(pokemon, index) in filteredPokemons"
+        v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
-        :index="index + 1 + generationLimits[selectedGeneration].offset"
+        :index="pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset"
         :name="pokemon.name"
         :types="pokemon.types"
         :picture="pokemon.image"
         :is-active="pokemon.name === activePokemon"
-        @click="onClickPokemon(pokemon.name, index)"
-        @mouseover="emit('hovered', index + 1 + generationLimits[selectedGeneration].offset)"
+        @click="onClickPokemon(pokemon.name, pokemons.findIndex(p => p.name === pokemon.name))"
+        @mouseover="emit('hovered', pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset)"
       />
     </ul>
 
