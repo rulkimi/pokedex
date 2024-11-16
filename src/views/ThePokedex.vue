@@ -129,6 +129,10 @@ const fetchDataOnHover = (index) => {
   hoveredPokemonEvolutions.value = []; // Clear previous hovered evolutions
   fetchPokemonSpecies(`https://pokeapi.co/api/v2/pokemon-species/${index}/`, true);
 }
+
+const onImageClicked = (pokemonId) => {
+  playPokemonCry(pokemonId);
+}
 </script>
 
 <template>
@@ -145,7 +149,7 @@ const fetchDataOnHover = (index) => {
       "
     >
       <div v-if="pokemonDetail" class="w-full">
-        <PokemonDetail :pokemon-detail="pokemonDetail" @go-back="goBack" />
+        <PokemonDetail :pokemon-detail="pokemonDetail" @go-back="goBack" @image-clicked="onImageClicked" />
       </div>
       <p v-else class="w-full h-full text-lg md:text-2xl flex justify-center items-center">Select a Pokemon.</p>
       <audio ref="audio" :src="audioSrc" @error="handleAudioError"></audio>

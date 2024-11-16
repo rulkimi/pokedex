@@ -211,6 +211,7 @@ const updateValueByList = (value, label) => {
             :class="{
               'rotate-180': optionsOpen
             }"
+            size="xs"
           />
         </button>
         <transition name="dropdown-fade">
