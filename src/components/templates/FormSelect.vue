@@ -169,7 +169,7 @@ const updateValueByList = (value, label) => {
 
 <template>
   <fieldset :class="width">
-    <div v-if="label" class="block mb-2">
+    <div v-if="label" class="mb-2">
       <label
         :for="id"
         class="text-sm font-medium text-black/60 dark:text-white/60"
@@ -190,7 +190,7 @@ const updateValueByList = (value, label) => {
         <button
           @click="toggleOptions"
           :id="id"
-          class="rounded-lg py-3 h-[40px] flex justify-between items-center bg-white"
+          class="rounded-lg py-3 h-[40px] flex gap-3 justify-between items-center bg-white"
           :class="[
             baseInputStyles,
             conditionalInputStyles,

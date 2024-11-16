@@ -95,7 +95,7 @@ const conditionalInputStyles = computed(() => {
 
 <template>
   <fieldset :class="width">
-    <div v-if="label" class="block mb-2">
+    <div v-if="label" class="mb-2">
       <label
         :for="id"
         class="text-sm font-medium text-black/60 dark:text-white/60"

@@ -111,10 +111,11 @@ const pokemonDetail = async (index) => {
   <div>
 
     <div class="sticky top-0 z-10 bg-white w-full">
-      <div class="grid grid-cols-6">
+      <div class="flex">
         <FormInput
           id="search-pokemon"
-          class="col-span-4"
+          :is-block="false"
+          class="flex-grow"
           input-class="border-x border-y rounded-r-none flex-grow"
           placeholder="Search pokemon"
           v-model="inputSearchPokemon"
@@ -126,7 +127,7 @@ const pokemonDetail = async (index) => {
         <FormSelect
           id="select-generation"
           v-model="selectedGeneration"
-          class="col-span-2"
+          class="w-auto"
           input-class="border-r border-y rounded-l-none"
           :options="generations"
           @change="getPokemons(selectedGeneration)"
