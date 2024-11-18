@@ -1,6 +1,7 @@
 <script setup>
 import { formatName } from '@/utils/formatHelper';
 import { defineProps, defineEmits } from 'vue';
+import { useMainStore } from '../stores';
 
 import axios from 'axios';
 
@@ -13,12 +14,15 @@ defineProps({
 
 const emit  = defineEmits(['pokemonDetail']);
 
+const store = useMainStore();
+
 const sendPokemonDetail = async (pokemonName) => {
   try {
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
     const { data } = response;
 
     emit('pokemonDetail', data);
+    store.setActivePokemon(pokemonName);
   } catch (error) {
     console.error('Error fetching pokemon detail', error);
   }

@@ -5,6 +5,7 @@ import FormSelect from './templates/FormSelect.vue';
 
 import axios from 'axios';
 import { onMounted, ref, defineEmits, computed } from 'vue';
+import { useMainStore } from '../stores';
 
 const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
 
@@ -23,7 +24,6 @@ const generations = ref([
 const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
 const inputSearchPokemon = ref('');
-const activePokemon = ref();
 
 const generationLimits = ref({
   1: { limit: 151, offset: 0 }, // Generation 1
@@ -107,8 +107,10 @@ const pokemonDetail = async (index) => {
   }
 };
 
+const store = useMainStore();
+
 const onClickPokemon = (pokemonName, originalIndex) => {
-  activePokemon.value = pokemonName;
+  store.setActivePokemon(pokemonName);
   pokemonDetail(originalIndex + 1 + generationLimits.value[selectedGeneration.value].offset);
 };
 </script>
@@ -174,7 +176,7 @@ const onClickPokemon = (pokemonName, originalIndex) => {
         :name="pokemon.name"
         :types="pokemon.types"
         :picture="pokemon.image"
-        :is-active="pokemon.name === activePokemon"
+        :is-active="pokemon.name === store.activePokemon"
         @click="onClickPokemon(pokemon.name, pokemons.findIndex(p => p.name === pokemon.name))"
         @mouseover="emit('hovered', pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset)"
       />
