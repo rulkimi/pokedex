@@ -104,7 +104,7 @@ const getSprite = async (pokemonName) => {
 
 const playPokemonCry = (id) => {
   audioSrc.value = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
-  const volumeLevel = 0.03;
+  const volumeLevel = 0.05;
 
   if (audio.value) {
     audio.value.pause();
