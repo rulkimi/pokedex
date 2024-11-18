@@ -27,13 +27,13 @@ const goBack = () => {
   isPokemonClicked.value = false;
 }
 
-const handlePokemonDetail = (selectedPokemon) => {
+const handlePokemonDetail = async (selectedPokemon) => {
   pokemonDetail.value = selectedPokemon;
   playPokemonCry(pokemonDetail.value.id);
 
-  // Update displayed evolutions with hovered evolutions on selection
-  pokemonEvolutions.value = [...hoveredPokemonEvolutions.value];
-}
+  // Fetch evolutions for the selected Pokémon
+  await fetchPokemonSpecies(selectedPokemon.species.url);
+};
 
 const handlePokemonDetailsFetched = async (responseData) => {
   if (isMobileView.value) isPokemonClicked.value = true;
