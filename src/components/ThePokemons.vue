@@ -4,44 +4,27 @@ import FormInput from './templates/FormInput.vue';
 import FormSelect from './templates/FormSelect.vue';
 
 import axios from 'axios';
-import { onMounted, ref, defineEmits, computed } from 'vue';
+import { onMounted, ref, defineEmits, computed, watch } from 'vue';
 import { useMainStore } from '../stores';
 
 const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
+const store = useMainStore();
 
 const pokemons = ref([]);
-const generations = ref([
-  { label: 'Gen 1', value: 1 },
-  { label: 'Gen 2', value: 2 },
-  { label: 'Gen 3', value: 3 },
-  { label: 'Gen 4', value: 4 },
-  { label: 'Gen 5', value: 5 },
-  { label: 'Gen 6', value: 6 },
-  { label: 'Gen 7', value: 7 },
-  { label: 'Gen 8', value: 8 },
-  { label: 'Gen 9', value: 9 },
-]);
-const selectedGeneration = ref(1);
 const loadPlaceholder = ref(false);
 const inputSearchPokemon = ref('');
 
-const generationLimits = ref({
-  1: { limit: 151, offset: 0 }, // Generation 1
-  2: { limit: 100, offset: 151 }, // Generation 2
-  3: { limit: 135, offset: 251 }, // Generation 3
-  4: { limit: 107, offset: 386 }, // Generation 4
-  5: { limit: 156, offset: 493 }, // Generation 5
-  6: { limit: 72, offset: 649 }, // Generation 6
-  7: { limit: 88, offset: 721 }, // Generation 7
-  8: { limit: 96, offset: 809 }, // Generation 8
-  9: { limit: 120, offset: 905 }, // Generation 9
+onMounted(() => {
+  getPokemons(store.selectedGeneration);
 });
 
-onMounted(() => {
-  getPokemons(selectedGeneration.value);
+watch(() => store.selectedGeneration, (newVal) => {
+  getPokemons(newVal);
 });
 
 const getPokemons = async (generation) => {
+  store.setSelectedGeneration(generation);
+  console.log('inside get pokemons')
   loadPlaceholder.value = true;
   try {
     const cachedPokemons = localStorage.getItem(`pokemons-gen-${generation}`);
@@ -50,7 +33,7 @@ const getPokemons = async (generation) => {
       return;
     };
 
-    const { limit, offset } = generationLimits.value[generation];
+    const { limit, offset } = store.generationLimits[generation];
 
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
 
@@ -107,11 +90,9 @@ const pokemonDetail = async (index) => {
   }
 };
 
-const store = useMainStore();
-
 const onClickPokemon = (pokemonName, originalIndex) => {
   store.setActivePokemon(pokemonName);
-  pokemonDetail(originalIndex + 1 + generationLimits.value[selectedGeneration.value].offset);
+  pokemonDetail(originalIndex + 1 + store.generationLimits[store.selectedGeneration].offset);
 };
 </script>
 
@@ -133,11 +114,11 @@ const onClickPokemon = (pokemonName, originalIndex) => {
         </FormInput>
         <FormSelect
           id="select-generation"
-          v-model="selectedGeneration"
+          v-model="store.selectedGeneration"
           width="w-24"
           input-class="border-r border-y rounded-l-none"
-          :options="generations"
-          @change="getPokemons(selectedGeneration)"
+          :options="store.generations"
+          @change="getPokemons(store.selectedGeneration)"
         />
       </div>
     </div>
@@ -172,13 +153,13 @@ const onClickPokemon = (pokemonName, originalIndex) => {
       <PokeList
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
-        :index="pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset"
+        :index="pokemons.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[store.selectedGeneration].offset"
         :name="pokemon.name"
         :types="pokemon.types"
         :picture="pokemon.image"
         :is-active="pokemon.name === store.activePokemon"
         @click="onClickPokemon(pokemon.name, pokemons.findIndex(p => p.name === pokemon.name))"
-        @mouseover="emit('hovered', pokemons.findIndex(p => p.name === pokemon.name) + 1 + generationLimits[selectedGeneration].offset)"
+        @mouseover="emit('hovered', pokemons.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[store.selectedGeneration].offset)"
       />
     </transition-group>
 

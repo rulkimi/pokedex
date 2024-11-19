@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import ThePokemons from '../components/ThePokemons.vue';
 import PokeEvolutions from '../components/PokeEvolutions.vue';
 import PokemonDetail from '../components/templates/PokemonDetail.vue';
+import { useMainStore } from '../stores';
 import axios from 'axios';
 
 const pokemonDetail = ref(null);
@@ -27,8 +28,11 @@ const goBack = () => {
   isPokemonClicked.value = false;
 }
 
+const store = useMainStore();
+
 const handlePokemonDetail = async (selectedPokemon) => {
   pokemonDetail.value = selectedPokemon;
+  store.checkIsIdWithinSelectedGeneration(pokemonDetail.value.id);
   playPokemonCry(pokemonDetail.value.id);
 
   // Fetch evolutions for the selected Pokémon
