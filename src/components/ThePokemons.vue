@@ -4,7 +4,7 @@ import FormInput from './templates/FormInput.vue';
 import FormSelect from './templates/FormSelect.vue';
 
 import axios from 'axios';
-import { onMounted, ref, defineEmits, computed, watch } from 'vue';
+import { onMounted, ref, defineEmits, computed, watch, nextTick } from 'vue';
 import { useMainStore } from '../stores';
 
 const emit = defineEmits(['pokemon-details-fetched', 'hovered']);
@@ -18,8 +18,9 @@ onMounted(() => {
   getPokemons(store.selectedGeneration);
 });
 
-watch(() => store.selectedGeneration, (newVal) => {
-  getPokemons(newVal);
+watch(() => store.selectedGeneration, async (newVal) => {
+  await getPokemons(newVal);
+  scrollToPokemon(store.activePokemon);
 });
 
 const getPokemons = async (generation) => {
@@ -94,6 +95,12 @@ const onClickPokemon = (pokemonName, originalIndex) => {
   store.setActivePokemon(pokemonName);
   pokemonDetail(originalIndex + 1 + store.generationLimits[store.selectedGeneration].offset);
 };
+
+const scrollToPokemon = async (pokemonName) => {
+  await nextTick();
+  const element = document.getElementById('scrollId-' + pokemonName);
+  if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
 </script>
 
 <template>
@@ -151,6 +158,7 @@ const onClickPokemon = (pokemonName, originalIndex) => {
       mode="out-in"
     >
       <PokeList
+        :id="'scrollId-' + pokemon.name"
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
         :index="pokemons.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[store.selectedGeneration].offset"
