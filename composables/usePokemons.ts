@@ -1,5 +1,10 @@
 export const usePokemons = () => {
   const fetchPokemons = async (generation: number): Promise<PokemonResponse[]> => {
+    const cachedPokemons = localStorage.getItem(`pokemons-gen-${generation}`);
+    if (cachedPokemons) {
+      return JSON.parse(cachedPokemons);
+    };
+
     const { getLimitAndOffsets } = useGenerations();
     const { limit, offset } = getLimitAndOffsets(generation);
   
@@ -25,6 +30,7 @@ export const usePokemons = () => {
     });
   
     const resolvedPokemons: PokemonResponse[] = await Promise.all(pokemonDetailsPromises);
+    localStorage.setItem(`pokemons-gen-${generation}`, JSON.stringify(resolvedPokemons));
     return resolvedPokemons;
   };  
 

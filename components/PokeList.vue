@@ -2,7 +2,16 @@
 const { fetchPokemons, fetchPokemonDetails } = usePokemons();
 
 const store = useMainStore();
-const { data: pokemons, refresh } = useAsyncData('pokemons', () => fetchPokemons(store.selectedGeneration));
+// const { data: pokemons, refresh } = useAsyncData('pokemons', () => fetchPokemons(store.selectedGeneration));
+const pokemons = ref<PokemonResponse[]>();
+
+onMounted(async () => {
+  await getPokemons();
+})
+
+const getPokemons = async () => {
+  pokemons.value = await fetchPokemons(store.selectedGeneration);
+}
 
 const onHover = async (pokemonName: string) => {
   // if (!pokemons.value) return;
@@ -23,7 +32,7 @@ const filteredPokemons = computed(() => {
 
 const onGenerationChanged = async (generation: number) => {
   store.setSelectedGeneration(generation);
-  await refresh();
+  await getPokemons();
 }
 </script>
 
