@@ -8,10 +8,11 @@ const props = defineProps<{
   inputStyles?: object
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 
 function handleChange(value: string | number) {
   emit('update:modelValue', value);
+  emit('change', value);
 }
 </script>
 

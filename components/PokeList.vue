@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const { fetchPokemons, fetchPokemonDetails } = usePokemons();
 
-const { data: pokemons } = useAsyncData('pokemons', () => fetchPokemons(1));
 const store = useMainStore();
+const { data: pokemons, refresh } = useAsyncData('pokemons', () => fetchPokemons(store.selectedGeneration));
 
 const onHover = async (pokemonName: string) => {
   // if (!pokemons.value) return;
@@ -20,6 +20,11 @@ const filteredPokemons = computed(() => {
     pokemon.name.toLowerCase().includes(searchPokemon.value.toLowerCase())
   );
 });
+
+const onGenerationChanged = async (generation: number) => {
+  store.setSelectedGeneration(generation);
+  await refresh();
+}
 </script>
 
 <template>
@@ -33,6 +38,7 @@ const filteredPokemons = computed(() => {
         <FormSelect
           v-model="store.selectedGeneration"
           :options="store.generations"
+          @change="onGenerationChanged"
         />
       </div>
     </div>

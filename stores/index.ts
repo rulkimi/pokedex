@@ -25,10 +25,15 @@ export const useMainStore = defineStore('main', () => {
   const selectedGeneration = ref(1);
   const activePokemon = ref('');
 
+  const setSelectedGeneration = (generation: number) => {
+    selectedGeneration.value = generation;
+  }
+
   return {
     generations,
     generationLimits,
     selectedGeneration,
+    setSelectedGeneration,
     activePokemon,
   };
 });
