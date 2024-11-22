@@ -13,6 +13,14 @@ const onHover = async (pokemonName: string) => {
 
 const selectedGeneration = ref('test');
 const searchPokemon = ref('');
+
+const filteredPokemons = computed(() => {
+  if (!searchPokemon.value) return pokemons.value;
+  if (!pokemons.value) return;
+  return pokemons.value.filter(pokemon =>
+    pokemon.name.toLowerCase().includes(searchPokemon.value.toLowerCase())
+  );
+});
 </script>
 
 <template>
@@ -35,7 +43,7 @@ const searchPokemon = ref('');
       class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
     >
       <PokeCard
-        v-for="pokemon in pokemons"
+        v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
         :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[1].offset"
         :name="pokemon.name"
