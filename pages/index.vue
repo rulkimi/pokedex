@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const { fetchPokemons } = usePokemons();
+const { fetchPokemons, fetchPokemonDetails } = usePokemons();
 
-const { data: pokemons } = useAsyncData('pokemons', () => fetchPokemons(1));
+const { data: pokemons } = useAsyncData('pokemons', () => fetchPokemonDetails(1));
 
 </script>
 

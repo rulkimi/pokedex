@@ -25,5 +25,15 @@ export const usePokemons = () => {
     return data;
   };
 
-  return { fetchPokemons };
+  const fetchPokemonDetails = async (index: number) => {
+    
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${index}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Pokemon`);
+    }
+    const data = await response.json();
+    return data;
+  }
+
+  return { fetchPokemons, fetchPokemonDetails };
 };
