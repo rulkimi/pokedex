@@ -1,28 +1,3 @@
-interface Pokemon {
-  name: string
-  url: string
-}
-
-interface PokeAPIResponse {
-  count: number
-  next?: number
-  previous?: number
-  results: Pokemon[]
-}
-
-interface PokemonResponse extends Pokemon {
-  image: string
-  types: string[]
-}
-
-interface TypeInfo {
-  slot: number
-  type: {
-    name: string
-    url: string
-  }
-}
-
 export const usePokemons = () => {
   const fetchPokemons = async (generation: number): Promise<PokemonResponse[]> => {
     const { getLimitAndOffsets } = useGenerations();

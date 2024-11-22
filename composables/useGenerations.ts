@@ -1,8 +1,3 @@
-interface Generation {
-  limit: number
-  offset: number
-}
-
 export const useGenerations = () => {
 
   const getLimitAndOffsets = (generation: number): Generation => {
