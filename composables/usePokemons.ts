@@ -10,20 +10,40 @@ interface PokeAPIResponse {
   results: Pokemon[]
 }
 
-export const usePokemons = () => {
+interface PokemonResponse extends Pokemon {
+  image: string
+  types: string[]
+}
 
-  const fetchPokemons = async (generation: number): Promise<PokeAPIResponse> => {
-    
+export const usePokemons = () => {
+  const fetchPokemons = async (generation: number): Promise<PokemonResponse[]> => {
     const { getLimitAndOffsets } = useGenerations();
     const { limit, offset } = getLimitAndOffsets(generation);
-
+  
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch Pokemons: ${response.statusText}`);
     }
     const data: PokeAPIResponse = await response.json();
-    return data;
-  };
+  
+    const pokemonDetailsPromises = data.results.map(async (pokemonData) => {
+      const detailsResponse = await fetch(pokemonData.url);
+      if (!detailsResponse.ok) {
+        throw new Error(`Failed to fetch details for ${pokemonData.name}`);
+      }
+      const details = await detailsResponse.json();
+      const pokemonTypes = details.types.map((typeInfo) => typeInfo.type.name);
+      return {
+        name: pokemonData.name,
+        url: pokemonData.url,
+        image: details.sprites.front_default,
+        types: pokemonTypes,
+      };
+    });
+  
+    const resolvedPokemons: PokemonResponse[] = await Promise.all(pokemonDetailsPromises);
+    return resolvedPokemons;
+  };  
 
   const fetchPokemonDetails = async (id: number) => {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -32,7 +52,7 @@ export const usePokemons = () => {
     }
     const data = await response.json();
     return data;
-  }
+  };
 
   const fetchPokemonEvolutions = async (id: number) => {
     const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
@@ -47,10 +67,10 @@ export const usePokemons = () => {
     }
     const pokemonEvolutions = await evolutionsResponse.json();
     return pokemonEvolutions;
-  }
+  };
 
-  return { 
-    fetchPokemons, 
+  return {
+    fetchPokemons,
     fetchPokemonDetails,
     fetchPokemonEvolutions,
   };
