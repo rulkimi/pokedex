@@ -19,6 +19,7 @@
     "vue": "latest"
   },
   "devDependencies": {
+    "@element-plus/nuxt": "^1.1.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@vesp/nuxt-fontawesome": "^1.1.0"
   }

@@ -10,24 +10,41 @@ const onHover = async (pokemonName: string) => {
   const data = await fetchPokemonDetails(pokemonName);
   console.log(data);
 }
+
+const selectedGeneration = ref('test');
+const searchPokemon = ref('');
 </script>
 
 <template>
-  <transition-group
-    name="list"
-    tag="ul"
-    class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
-  >
-    <PokeCard
-      v-for="pokemon in pokemons"
-      :key="pokemon.name"
-      :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[1].offset"
-      :name="pokemon.name"
-      :types="pokemon.types"
-      :image="pokemon.image"
-      @mouseover="onHover(pokemon.name)"
-    />
-  </transition-group>
+  <div class="relative">
+    <div class="sticky top-0 z-10 w-full">
+      <div class="flex">
+        <FormInput
+          v-model="searchPokemon"
+          placeholder="Search Pokemon"
+        />
+        <FormSelect
+          v-model="selectedGeneration"
+          :options="[{ label: 'test', value: 'test'}]"
+        />
+      </div>
+    </div>
+    <transition-group
+      name="list"
+      tag="ul"
+      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
+    >
+      <PokeCard
+        v-for="pokemon in pokemons"
+        :key="pokemon.name"
+        :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[1].offset"
+        :name="pokemon.name"
+        :types="pokemon.types"
+        :image="pokemon.image"
+        @mouseover="onHover(pokemon.name)"
+      />
+    </transition-group>
+  </div>
 </template>
 
 <style scoped>
