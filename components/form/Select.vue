@@ -18,7 +18,6 @@ function handleChange(value: string | number) {
 <template>
   <el-select
     :model-value="modelValue"
-    filterable
     placeholder="Select"
     :style="inputStyles"
     @change="handleChange"

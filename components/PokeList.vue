@@ -11,7 +11,6 @@ const onHover = async (pokemonName: string) => {
   console.log(data);
 }
 
-const selectedGeneration = ref('test');
 const searchPokemon = ref('');
 
 const filteredPokemons = computed(() => {
@@ -32,8 +31,8 @@ const filteredPokemons = computed(() => {
           placeholder="Search Pokemon"
         />
         <FormSelect
-          v-model="selectedGeneration"
-          :options="[{ label: 'test', value: 'test'}]"
+          v-model="store.selectedGeneration"
+          :options="store.generations"
         />
       </div>
     </div>
