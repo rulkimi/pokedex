@@ -54,7 +54,7 @@ const onGenerationChanged = async (generation: number) => {
     <transition-group
       name="list"
       tag="ul"
-      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
+      class="flex flex-col gap-1 mt-4 min-h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
     >
       <PokeCard
         v-for="pokemon in filteredPokemons"
