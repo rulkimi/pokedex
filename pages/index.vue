@@ -1,3 +1,10 @@
+<script setup lang="ts">
+const { fetchPokemons } = usePokemons();
+
+const { data: pokemons } = useAsyncData('pokemons', () => fetchPokemons(1));
+
+</script>
+
 <template>
-  <span class="text-red-500">Hello</span>
+  {{ pokemons }}
 </template>
