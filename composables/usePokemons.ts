@@ -25,9 +25,8 @@ export const usePokemons = () => {
     return data;
   };
 
-  const fetchPokemonDetails = async (index: number) => {
-    
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${index}`);
+  const fetchPokemonDetails = async (id: number) => {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch Pokemon`);
     }
@@ -35,5 +34,24 @@ export const usePokemons = () => {
     return data;
   }
 
-  return { fetchPokemons, fetchPokemonDetails };
+  const fetchPokemonEvolutions = async (id: number) => {
+    const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
+    if (!speciesResponse.ok) {
+      throw new Error(`Failed to fetch Pokemon species`);
+    }
+    const pokemonSpecies = await speciesResponse.json();
+
+    const evolutionsResponse = await fetch(pokemonSpecies.evolution_chain.url);
+    if (!evolutionsResponse.ok) {
+      throw new Error(`Failed to fetch Pokemon evolutions`);
+    }
+    const pokemonEvolutions = await evolutionsResponse.json();
+    return pokemonEvolutions;
+  }
+
+  return { 
+    fetchPokemons, 
+    fetchPokemonDetails,
+    fetchPokemonEvolutions,
+  };
 };
