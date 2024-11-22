@@ -15,6 +15,14 @@ interface PokemonResponse extends Pokemon {
   types: string[]
 }
 
+interface TypeInfo {
+  slot: number
+  type: {
+    name: string
+    url: string
+  }
+}
+
 export const usePokemons = () => {
   const fetchPokemons = async (generation: number): Promise<PokemonResponse[]> => {
     const { getLimitAndOffsets } = useGenerations();
@@ -32,7 +40,7 @@ export const usePokemons = () => {
         throw new Error(`Failed to fetch details for ${pokemonData.name}`);
       }
       const details = await detailsResponse.json();
-      const pokemonTypes = details.types.map((typeInfo) => typeInfo.type.name);
+      const pokemonTypes = details.types.map((typeInfo: TypeInfo) => typeInfo.type.name);
       return {
         name: pokemonData.name,
         url: pokemonData.url,
@@ -45,7 +53,7 @@ export const usePokemons = () => {
     return resolvedPokemons;
   };  
 
-  const fetchPokemonDetails = async (id: number) => {
+  const fetchPokemonDetails = async (id: number | string) => {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch Pokemon`);

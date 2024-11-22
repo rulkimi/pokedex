@@ -1,8 +1,15 @@
 <script setup lang="ts">
-const { fetchPokemons } = usePokemons();
+const { fetchPokemons, fetchPokemonDetails } = usePokemons();
 
 const { data: pokemons } = useAsyncData('pokemons', () => fetchPokemons(1));
 const store = useMainStore();
+
+const onHover = async (pokemonName: string) => {
+  // if (!pokemons.value) return;
+  // const pokemonIndex = pokemons.value.findIndex(p => p.name === pokemonName) + 1 + store.generationLimits[1].offset;
+  const data = await fetchPokemonDetails(pokemonName);
+  console.log(data);
+}
 </script>
 
 <template>
@@ -18,6 +25,7 @@ const store = useMainStore();
       :name="pokemon.name"
       :types="pokemon.types"
       :image="pokemon.image"
+      @mouseover="onHover(pokemon.name)"
     />
   </transition-group>
 </template>
