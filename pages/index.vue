@@ -8,6 +8,7 @@ useHead({
 });
 
 const pokemonDetail = ref();
+const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
 
 const onImageClicked = () => {
 
@@ -16,6 +17,9 @@ const onImageClicked = () => {
 const { fetchPokemonDetails, fetchPokemonEvolutions } = usePokemons();
 const onPokemonClicked = async (pokemonName: string) => {
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
+  pokemonEvolutions.value = await fetchPokemonEvolutions(pokemonName);
+
+  console.log(pokemonEvolutions)
 }
 
 const data = await fetchPokemonEvolutions(1);
@@ -31,6 +35,10 @@ console.log(data)
           :pokemon-detail="pokemonDetail"
           @image-clicked="onImageClicked"
         />
+      </div>
+
+      <div v-if="pokemonDetail && pokemonEvolutions.length">
+        <PokeEvolutions :pokemon-evolutions="pokemonEvolutions" />
       </div>
     </div>
   </div>

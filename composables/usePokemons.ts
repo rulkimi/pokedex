@@ -66,7 +66,7 @@ export const usePokemons = () => {
     }
   }
   
-  const fetchPokemonEvolutions = async (id: number) => {
+  const fetchPokemonEvolutions = async (id: number | string) => {
     const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
     if (!speciesResponse.ok) {
       throw new Error(`Failed to fetch Pokemon species`);
