@@ -56,7 +56,7 @@ const onGenerationChanged = async (generation: number) => {
     <transition-group
       name="list"
       tag="ul"
-      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden"
+      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden scrollbar-gutter"
     >
       <PokeCard
         v-for="pokemon in filteredPokemons"
@@ -87,5 +87,13 @@ const onGenerationChanged = async (generation: number) => {
 
 .list-move {
   transition: transform 0.3s ease-in-out;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-gutter {
+  scrollbar-gutter: stable;
 }
 </style>
