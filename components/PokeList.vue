@@ -5,6 +5,8 @@ const store = useMainStore();
 // const { data: pokemons, refresh } = useAsyncData('pokemons', () => fetchPokemons(store.selectedGeneration));
 const pokemons = ref<PokemonResponse[]>();
 
+const emit = defineEmits(['pokemon-clicked'])
+
 onMounted(async () => {
   await getPokemons();
 })
@@ -37,7 +39,7 @@ const onGenerationChanged = async (generation: number) => {
 </script>
 
 <template>
-  <div class="relative">
+  <div>
     <div class="sticky top-0 z-10 w-full">
       <div class="flex">
         <FormInput
@@ -64,6 +66,7 @@ const onGenerationChanged = async (generation: number) => {
         :types="pokemon.types"
         :image="pokemon.image"
         @mouseover="onHover(pokemon.name)"
+        @click="emit('pokemon-clicked', pokemon.name)"
       />
     </transition-group>
   </div>

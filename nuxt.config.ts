@@ -7,5 +7,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@vesp/nuxt-fontawesome',
     '@element-plus/nuxt'
-  ]
+  ],
+  css: ['~/assets/css/main.css']
 })
