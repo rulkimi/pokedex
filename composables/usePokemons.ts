@@ -43,6 +43,29 @@ export const usePokemons = () => {
     return data;
   };
 
+  const collectEvolutions = (evolutionData: EvolutionData, result: EvolutionResult = []) => {
+    if (evolutionData.species) {
+      result.push({ name: evolutionData.species.name });
+    }
+    if (evolutionData.evolves_to && evolutionData.evolves_to.length > 0) {
+      for (const evolution of evolutionData.evolves_to) {
+        collectEvolutions(evolution, result);
+      }
+    }
+    return result;
+  };
+
+  const getSprite = async (pokemonName: string) => {
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+      const data = await response.json();
+      return data.sprites.front_default;
+    } catch (error) {
+      console.error('Error fetching sprite:', error);
+      return null;
+    }
+  }
+  
   const fetchPokemonEvolutions = async (id: number) => {
     const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
     if (!speciesResponse.ok) {
@@ -55,7 +78,18 @@ export const usePokemons = () => {
       throw new Error(`Failed to fetch Pokemon evolutions`);
     }
     const pokemonEvolutions = await evolutionsResponse.json();
-    return pokemonEvolutions;
+    // return pokemonEvolutions;
+
+    const allEvolutions = await Promise.all(
+      collectEvolutions(pokemonEvolutions.chain).map(
+        async (pokemon: { name: string }): Promise<{ name: string; url: string }> => {
+          const url = await getSprite(pokemon.name);
+          return { ...pokemon, url };
+        }
+      )
+    );
+    
+    return allEvolutions;
   };
 
   return {

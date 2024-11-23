@@ -28,6 +28,13 @@ declare global {
       url: string
     }
   }
+
+  type EvolutionData = {
+    species: { name: string };
+    evolves_to?: EvolutionData[];
+  };
+  
+  type EvolutionResult = { name: string }[];
   
 }
 
@@ -37,4 +44,6 @@ export {
   PokeAPIResponse,
   PokemonResponse,
   TypeInfo,
+  EvolutionData,
+  EvolutionResult,
 };

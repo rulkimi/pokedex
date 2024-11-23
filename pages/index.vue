@@ -13,10 +13,13 @@ const onImageClicked = () => {
 
 }
 
-const { fetchPokemonDetails } = usePokemons();
+const { fetchPokemonDetails, fetchPokemonEvolutions } = usePokemons();
 const onPokemonClicked = async (pokemonName: string) => {
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
 }
+
+const data = await fetchPokemonEvolutions(1);
+console.log(data)
 </script>
 
 <template>
