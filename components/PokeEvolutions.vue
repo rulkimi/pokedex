@@ -10,6 +10,7 @@ const emit = defineEmits(['pokemon-clicked']);
 </script>
 
 <template>
+  <h2 class="text-lg md:text-xl text-start font-bold">Evolutions</h2>
   <div class="grid grid-cols-3 gap-4">
     <div
       v-for="evolution in pokemonEvolutions"

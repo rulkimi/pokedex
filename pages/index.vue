@@ -37,7 +37,7 @@ console.log(data)
         />
       </div>
 
-      <div v-if="pokemonDetail && pokemonEvolutions.length">
+      <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-8">
         <PokeEvolutions :pokemon-evolutions="pokemonEvolutions" />
       </div>
     </div>
