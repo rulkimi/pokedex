@@ -35,12 +35,12 @@ const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.ty
         class="relative flex justify-center items-center group cursor-pointer w-fit"
         @click="emit('image-clicked', pokemonDetail.id)"
       >
-        <img
+        <NuxtImg
           :src="pokemonDetail.sprites.front_default"
           :alt="`Image of ${pokemonDetail.name}`"
           class="object-cover group-hover:scale-125 transition-transform duration-300"
           width="200"
-        >
+        />
         <div class="absolute inset-0 flex items-center justify-center">
           <div :class="`shadow-inner w-40 h-40 bg-${getTypeColor(arrangedTypes[0])}/5 group-hover:bg-${getTypeColor(arrangedTypes[0])}/20 transition-colors duration-300 rounded-full z-[-1]`"></div>
         </div>

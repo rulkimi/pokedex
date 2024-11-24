@@ -18,7 +18,7 @@ const emit = defineEmits(['pokemon-clicked']);
       class="flex flex-col items-center cursor-pointer gap-2"
       @click="emit('pokemon-clicked', evolution.name)"
     >
-      <img
+      <NuxtImg
         :src="evolution.url"
         width="100"
         :alt="`Picture of ${evolution.name}`"

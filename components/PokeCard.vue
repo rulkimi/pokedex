@@ -32,11 +32,11 @@ const arrangedTypes = computed(() => arrangeType(props.types));
         </div>
       </div>
     </div>
-    <img 
+    <NuxtImg
       :src="image" 
       :alt="`Image of ${name}`"
       class="!w-20 !h-20 object-contain md:w-full"
       :class="isActive ? 'scale-150 rotate-6' : 'group-hover:scale-150 group-hover:rotate-6 transition-transform duration-500'"
-    >
+    />
   </li>
 </template>
