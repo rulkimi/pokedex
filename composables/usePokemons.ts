@@ -37,8 +37,7 @@ export const usePokemons = () => {
   const fetchPokemonDetails = async (id: number | string) => {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!response.ok) {
-      // throw new Error(`Failed to fetch Pokemon`);
-      return { data: {}, error: new Error(`Failed to fetch Pokemon`)}
+      throw new Error(`Failed to fetch Pokemon`);
     }
     const data = await response.json();
     return data;

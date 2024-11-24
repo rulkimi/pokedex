@@ -49,11 +49,8 @@ const onGenerationChanged = async (generation: number) => {
 }
 
 const debounceTimeout = ref();
-const searchError = ref(false);
 
 const searchOutOfGenPokemon = (value: string) => {
-  searchError.value = false;
-  store.setIsSearchingPokemon(true);
   if (debounceTimeout.value) {
     clearTimeout(debounceTimeout.value);
   }
@@ -61,15 +58,11 @@ const searchOutOfGenPokemon = (value: string) => {
   debounceTimeout.value = setTimeout(async () => {
     if (!value) return;
 
-    const { data: pokemonDetails, error } = await fetchPokemonDetails(value.toLowerCase());
-    if (error || !pokemonDetails || !pokemonDetails.id) {
-      searchError.value = true;
-      store.setIsSearchingPokemon(false);
+    const pokemonDetails = await fetchPokemonDetails(value.toLowerCase());
+    if (!pokemonDetails || !pokemonDetails.id) {
       console.warn('Pokemon not found!');
       return;
     }
-
-    store.setIsSearchingPokemon(false);
 
     store.checkIsIdWithinSelectedGeneration(pokemonDetails.id);
 
@@ -121,14 +114,8 @@ const searchOutOfGenPokemon = (value: string) => {
         @mouseover="onHover(pokemon.name)"
         @click="emit('pokemon-clicked', pokemon.name)"
       />
-      <div v-show="!filteredPokemons?.length && store.isSearchingPokemon" class="px-4 flex flex-col" key="loading-pokemon">
-        <div class="h-[100px]" v-loading="true"></div>
-        <span class="w-full text-center animate-pulse">
-          searching for {{ searchPokemon }}...
-        </span>
-      </div>
-      <div v-if="searchError">
-        Pokemon named {{ searchPokemon }} not found!
+      <div key="loading-pokemon">
+
       </div>
     </transition-group>
   </div>
