@@ -4,7 +4,7 @@ const props = defineProps<{
   name: string
   types: string[]
   image: string
-  isActive?: boolean
+  isActive: boolean
 }>();
 
 const arrangedTypes = computed(() => arrangeType(props.types));

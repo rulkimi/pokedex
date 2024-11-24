@@ -65,6 +65,7 @@ const onGenerationChanged = async (generation: number) => {
         :name="pokemon.name"
         :types="pokemon.types"
         :image="pokemon.image"
+        :is-active="store.activePokemon === pokemon.name"
         @mouseover="onHover(pokemon.name)"
         @click="emit('pokemon-clicked', pokemon.name)"
       />

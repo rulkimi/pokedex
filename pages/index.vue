@@ -18,7 +18,10 @@ const onImageClicked = (id: number) => {
 }
 
 const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
+const store = useMainStore();
+
 const onPokemonClicked = async (pokemonName: string) => {
+  store.setActivePokemon(pokemonName);
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
   playPokemonCry(pokemonDetail.value.id);
   pokemonEvolutions.value = await fetchPokemonEvolutions(pokemonName);

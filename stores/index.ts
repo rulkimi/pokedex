@@ -29,11 +29,16 @@ export const useMainStore = defineStore('main', () => {
     selectedGeneration.value = generation;
   }
 
+  const setActivePokemon = (pokemonName: string) => {
+    activePokemon.value = pokemonName;
+  }
+
   return {
     generations,
     generationLimits,
     selectedGeneration,
     setSelectedGeneration,
     activePokemon,
+    setActivePokemon,
   };
 });
