@@ -32,6 +32,10 @@ const onImageClicked = (id: number) => {
   playPokemonCry(id);
 }
 
+const onPokemonHovered = async (pokemonName: string) => {
+  await fetchPokemonEvolutions(pokemonName);
+}
+
 const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
 const store = useMainStore();
 
@@ -64,7 +68,10 @@ const playPokemonCry = (id: number) => {
 
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
-    <PokeList @pokemon-clicked="onPokemonClicked" />
+    <PokeList
+      @pokemon-clicked="onPokemonClicked"
+      @hovered="onPokemonHovered"
+    />
     <div
       :class="
         isMobileView && isPokemonClicked ?

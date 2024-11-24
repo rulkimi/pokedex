@@ -5,7 +5,7 @@ const store = useMainStore();
 // const { data: pokemons, refresh } = useAsyncData('pokemons', () => fetchPokemons(store.selectedGeneration));
 const pokemons = ref<PokemonResponse[]>();
 
-const emit = defineEmits(['pokemon-clicked'])
+const emit = defineEmits(['pokemon-clicked', 'hovered'])
 
 onMounted(async () => {
   await getPokemons();
@@ -30,12 +30,12 @@ const getPokemons = async () => {
   isLoading.value = false;
 }
 
-const onHover = async (pokemonName: string) => {
-  // if (!pokemons.value) return;
-  // const pokemonIndex = pokemons.value.findIndex(p => p.name === pokemonName) + 1 + store.generationLimits[1].offset;
-  const data = await fetchPokemonDetails(pokemonName);
-  console.log(data);
-}
+// const onHover = async (pokemonName: string) => {
+//   // if (!pokemons.value) return;
+//   // const pokemonIndex = pokemons.value.findIndex(p => p.name === pokemonName) + 1 + store.generationLimits[1].offset;
+//   const data = await fetchPokemonDetails(pokemonName);
+//   console.log(data);
+// }
 
 const searchPokemon = ref('');
 
@@ -132,7 +132,7 @@ const searchOutOfGenPokemon = (value: string) => {
         :types="pokemon.types"
         :image="pokemon.image"
         :is-active="store.activePokemon === pokemon.name"
-        @mouseover="onHover(pokemon.name)"
+        @mouseover="emit('hovered', pokemon.name)"
         @click="emit('pokemon-clicked', pokemon.name)"
       />
       <div v-show="!filteredPokemons?.length && store.isSearchingPokemon" class="px-4 flex flex-col" key="loading-pokemon">
