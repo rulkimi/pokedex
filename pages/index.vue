@@ -9,21 +9,36 @@ useHead({
 
 const pokemonDetail = ref();
 const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
+const audio = ref();
+const pokemonCryAudioSrc = ref();
+const volumeLevel = 0.05;
 
-const onImageClicked = () => {
-
+const onImageClicked = (id: number) => {
+  playPokemonCry(id);
 }
 
-const { fetchPokemonDetails, fetchPokemonEvolutions } = usePokemons();
+const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
 const onPokemonClicked = async (pokemonName: string) => {
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
+  playPokemonCry(pokemonDetail.value.id);
   pokemonEvolutions.value = await fetchPokemonEvolutions(pokemonName);
-
-  console.log(pokemonEvolutions)
 }
 
-const data = await fetchPokemonEvolutions(1);
-console.log(data)
+const playPokemonCry = (id: number) => {
+  if (!audio.value) return;
+
+  pokemonCryAudioSrc.value = fetchPokemonCrySrc(id);
+
+  audio.value.pause();
+  audio.value.currentTime = 0;
+    audio.value.preload = 'auto';
+    audio.value.src = pokemonCryAudioSrc.value;
+    audio.value.load();
+    audio.value.addEventListener('canplaythrough', () => {
+      audio.value.volume = volumeLevel;
+      audio.value.play();
+    });
+}
 </script>
 
 <template>
@@ -41,5 +56,7 @@ console.log(data)
         <PokeEvolutions :pokemon-evolutions="pokemonEvolutions" />
       </div>
     </div>
+
+    <audio ref="audio" :src="pokemonCryAudioSrc"></audio>
   </div>
 </template>

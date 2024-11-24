@@ -92,9 +92,14 @@ export const usePokemons = () => {
     return allEvolutions;
   };
 
+  const fetchPokemonCrySrc = (id: number | string) => {
+    return `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+  }
+
   return {
     fetchPokemons,
     fetchPokemonDetails,
     fetchPokemonEvolutions,
+    fetchPokemonCrySrc,
   };
 };

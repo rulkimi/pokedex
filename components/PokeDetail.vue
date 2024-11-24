@@ -48,7 +48,7 @@ const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.ty
     <div class="flex justify-center">
       <div
         class="relative flex justify-center items-center group cursor-pointer w-fit"
-        @click="emit('image-clicked')"
+        @click="emit('image-clicked', pokemonDetail.id)"
       >
         <img
           :src="pokemonDetail.sprites.front_default"
