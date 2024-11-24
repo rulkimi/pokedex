@@ -18,6 +18,7 @@ const handleChange = (value: string | number) => {
     :prefix-icon="ElIconSearch"
     :placeholder="placeholder"
     clearable
+    :input-style="{ width: '150px' }"
     @input="handleChange"
   >
   </el-input>
