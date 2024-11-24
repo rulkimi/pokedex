@@ -2,10 +2,14 @@
 useHead({
   title: 'Pokédex',
   meta: [
-    { name: 'description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' }
+    { name: 'description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' }
   ],
-  link: [{ rel: 'icon', type: 'image/svg+xml', href: '/pokedex-logo.svg'}]
+  link: [
+    { rel: 'icon', type: 'image/svg+xml', href: '/pokedex-logo.svg' }
+  ]
 });
+
 
 const pokemonDetail = ref();
 const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
@@ -48,6 +52,7 @@ const playPokemonCry = (id: number) => {
   audio.value.pause();
   audio.value.currentTime = 0;
     audio.value.preload = 'auto';
+    audio.value.muted = false;
     audio.value.src = pokemonCryAudioSrc.value;
     audio.value.load();
     audio.value.addEventListener('canplaythrough', () => {
@@ -87,6 +92,6 @@ const playPokemonCry = (id: number) => {
       </div>
     </div>
 
-    <audio ref="audio" :src="pokemonCryAudioSrc"></audio>
+    <audio ref="audio" :src="pokemonCryAudioSrc" preload="auto"></audio>
   </div>
 </template>
