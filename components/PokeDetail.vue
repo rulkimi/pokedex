@@ -28,7 +28,11 @@ const getRandomScale = () => {
   return Math.random() > 0.5 ? 'scale-animation' : '';
 };
 
-watch(() => store.activePokemon, () => {
+onMounted(() => {
+  getAnimationClasses();
+});
+
+const getAnimationClasses = () => {
   imageShakeClass.value = `${getRandomShakeType()} ${getRandomScale()}`;
 
   if (shakeTimeout.value) clearTimeout(shakeTimeout.value);
@@ -44,6 +48,10 @@ watch(() => store.activePokemon, () => {
       imageShakeClass.value = imageShakeClass.value.replace('scale-animation', '');
     }, 1000);
   }
+}
+
+watch(() => store.activePokemon, () => {
+  getAnimationClasses();
 });
 </script>
 
