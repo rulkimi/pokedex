@@ -5,12 +5,14 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "deploy": "gh-pages -d dist",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.7.0",
+    "gh-pages": "^6.2.0",
     "nuxt": "^3.14.1592",
     "vue": "latest",
     "vue-router": "latest"
