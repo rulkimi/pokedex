@@ -56,7 +56,10 @@ const playPokemonCry = (id: number) => {
       </div>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-8">
-        <PokeEvolutions :pokemon-evolutions="pokemonEvolutions" />
+        <PokeEvolutions
+          :pokemon-evolutions="pokemonEvolutions"
+          @pokemon-clicked="onPokemonClicked"
+        />
       </div>
     </div>
 
