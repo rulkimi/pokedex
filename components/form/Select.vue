@@ -20,7 +20,6 @@ function handleChange(value: string | number) {
   <el-select
     :model-value="modelValue"
     placeholder="Select"
-    :style="inputStyles"
     @change="handleChange"
   >
     <el-option
