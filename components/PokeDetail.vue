@@ -35,7 +35,13 @@ const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.ty
   <div>
 
     <div class="flex items-center justify-between">
-      <div :icon="ElIconArrowLeft"></div>
+      <el-button
+        :icon="ElIconArrowLeft"
+        class="mr-2"
+        @click="emit('go-back')"
+      >
+        Back
+      </el-button>
       <span class="text-2xl md:text-4xl text-gray-500">
         {{ '#' + formatIndex(pokemonDetail.id) }}
       </span>

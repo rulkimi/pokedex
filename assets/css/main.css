@@ -4,10 +4,6 @@ body {
   min-height: 100vh;
   font-family: monospace;
 }
-#app {
-  padding: 2rem;
-  text-align: center;
-}
 /* Width */
 ::-webkit-scrollbar {
   width: 0;

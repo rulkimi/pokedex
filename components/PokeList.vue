@@ -121,7 +121,7 @@ const searchOutOfGenPokemon = (value: string) => {
     <transition-group
       name="list"
       tag="ul"
-      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-[300px] overflow-y-auto overflow-x-hidden scrollbar-gutter"
+      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] md:w-[300px] overflow-y-auto overflow-x-hidden scrollbar-gutter"
     >
       <PokeCard
         v-for="pokemon in filteredPokemons"
