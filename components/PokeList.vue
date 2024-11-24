@@ -91,7 +91,7 @@ const onGenerationChanged = async (generation: number) => {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 3px;
 }
 
 .scrollbar-gutter {
