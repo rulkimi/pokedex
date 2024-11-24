@@ -49,6 +49,12 @@ export const useMainStore = defineStore('main', () => {
     }
   };
 
+  const isSearchingPokemon = ref(false);
+
+  const setIsSearchingPokemon = (status: boolean) => {
+    isSearchingPokemon.value = status;
+  }
+
   return {
     generations,
     generationLimits,
@@ -57,5 +63,7 @@ export const useMainStore = defineStore('main', () => {
     activePokemon,
     setActivePokemon,
     checkIsIdWithinSelectedGeneration,
+    isSearchingPokemon,
+    setIsSearchingPokemon,
   };
 });
