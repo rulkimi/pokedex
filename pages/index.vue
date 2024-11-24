@@ -75,7 +75,7 @@ const playPokemonCry = (id: number) => {
         />
       </div>
       <p v-else class="w-full h-full text-lg md:text-xl text-slate-400 flex justify-center items-center">
-        Select a Pokemon
+        Select a Pokémon
       </p>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-8">

@@ -108,7 +108,7 @@ const searchOutOfGenPokemon = (value: string) => {
       <div class="flex">
         <FormInput
           v-model="searchPokemon"
-          placeholder="Search Pokemon"
+          placeholder="Search Pokémon"
           @input="searchOutOfGenPokemon"
         />
         <FormSelect
