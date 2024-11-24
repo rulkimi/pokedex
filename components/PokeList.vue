@@ -49,34 +49,51 @@ const onGenerationChanged = async (generation: number) => {
 }
 
 const debounceTimeout = ref();
+// const searchError = ref(false);
 
 const searchOutOfGenPokemon = (value: string) => {
+  if (filteredPokemons.value?.length) return;
+
+  store.setIsSearchingPokemon(true);
+
   if (debounceTimeout.value) {
     clearTimeout(debounceTimeout.value);
   }
 
   debounceTimeout.value = setTimeout(async () => {
-    if (!value) return;
+    try {
+      if (!value) return;
+      // searchError.value = false;
 
-    const pokemonDetails = await fetchPokemonDetails(value.toLowerCase());
-    if (!pokemonDetails || !pokemonDetails.id) {
-      console.warn('Pokemon not found!');
-      return;
+      const pokemonDetails = await fetchPokemonDetails(value.toLowerCase());
+      if (!pokemonDetails || !pokemonDetails.id) {
+        console.warn('Pokemon not found!');
+        // searchError.value = true;
+        return;
+      }
+
+      store.checkIsIdWithinSelectedGeneration(pokemonDetails.id);
+
+      await getPokemons();
+
+      await nextTick();
+      // store.setActivePokemon(pokemonDetails.name);
+      // const element = document.getElementById(`scrollId-${pokemonDetails.name}`);
+      // if (element) {
+      //   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      //   store.setActivePokemon(pokemonDetails.name); // Optionally set as active Pokémon
+      // }
+
+    } catch (error) {
+      console.error('Error during Pokémon search:', error);
+      // searchError.value = true;
+    } finally {
+      store.setIsSearchingPokemon(false);
+      // searchError.value = false;
     }
-
-    store.checkIsIdWithinSelectedGeneration(pokemonDetails.id);
-
-    await getPokemons();
-
-    await nextTick();
-    // store.setActivePokemon(pokemonDetails.name);
-    // const element = document.getElementById(`scrollId-${pokemonDetails.name}`);
-    // if (element) {
-    //   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    //   store.setActivePokemon(pokemonDetails.name); // Optionally set as active Pokémon
-    // }
-  }, 1000); // Adjust the debounce delay (300ms in this example)
+  }, 1000); // Adjust the debounce delay (1000ms in this example)
 };
+
 
 
 </script>
@@ -114,8 +131,14 @@ const searchOutOfGenPokemon = (value: string) => {
         @mouseover="onHover(pokemon.name)"
         @click="emit('pokemon-clicked', pokemon.name)"
       />
-      <div key="loading-pokemon">
-
+      <div v-show="!filteredPokemons?.length && store.isSearchingPokemon" class="px-4 flex flex-col" key="loading-pokemon">
+        <div class="h-[100px]" v-loading="true"></div>
+        <span class="w-full text-center animate-pulse">
+          searching for {{ searchPokemon }}...
+        </span>
+      </div>
+      <div v-if="!filteredPokemons?.length && !store.isSearchingPokemon" key="pokemon-not-found">
+        Pokemon named {{ searchPokemon }} not found!
       </div>
     </transition-group>
   </div>
