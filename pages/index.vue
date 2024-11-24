@@ -55,6 +55,9 @@ const playPokemonCry = (id: number) => {
           @image-clicked="onImageClicked"
         />
       </div>
+      <p v-else class="w-full h-full text-lg md:text-xl text-slate-400 flex justify-center items-center">
+        Select a Pokemon
+      </p>
 
       <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-8">
         <PokeEvolutions
