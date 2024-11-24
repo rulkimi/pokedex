@@ -32,21 +32,36 @@ const onImageClicked = (id: number) => {
   playPokemonCry(id);
 }
 
+const hoveredEvolutions = ref();
 const onPokemonHovered = async (pokemonName: string) => {
-  await fetchPokemonEvolutions(pokemonName);
+  hoveredEvolutions.value = await fetchPokemonEvolutions(pokemonName);
 }
 
 const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
 const store = useMainStore();
 
+const isEvolutionsLoading = ref(false);
+
 const onPokemonClicked = async (pokemonName: string) => {
   isPokemonClicked.value = true;
+  pokemonEvolutions.value = [];
   store.setActivePokemon(pokemonName);
+
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
   store.checkIsIdWithinSelectedGeneration(pokemonDetail.value.id);
+
   playPokemonCry(pokemonDetail.value.id);
+  console.log(hoveredEvolutions.value)
+  if (hoveredEvolutions.value.some((evolution: { name: string, url: string }) => evolution.name === pokemonName)) {
+    pokemonEvolutions.value = hoveredEvolutions.value;
+    isEvolutionsLoading.value = false;
+    return;
+  }
+  isEvolutionsLoading.value = true; 
   pokemonEvolutions.value = await fetchPokemonEvolutions(pokemonName);
-}
+
+  isEvolutionsLoading.value = false;
+};
 
 const playPokemonCry = (id: number) => {
   if (!audio.value) return;
@@ -91,7 +106,10 @@ const playPokemonCry = (id: number) => {
         Select a Pokémon
       </p>
 
-      <div v-if="pokemonDetail && pokemonEvolutions.length" class="mt-8">
+      <div v-if="isEvolutionsLoading" class="text-center text-slate-400 mt-8">
+        Loading evolutions...
+      </div>
+      <div v-else-if="pokemonEvolutions.length" class="mt-8">
         <PokeEvolutions
           :pokemon-evolutions="pokemonEvolutions"
           @pokemon-clicked="onPokemonClicked"
