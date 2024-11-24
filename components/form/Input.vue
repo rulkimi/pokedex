@@ -4,10 +4,11 @@ const props = defineProps<{
   placeholder?: string
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'input']);
 
-function handleChange(value: string | number) {
+const handleChange = (value: string | number) => {
   emit('update:modelValue', value);
+  emit('input', value);
 }
 </script>
 

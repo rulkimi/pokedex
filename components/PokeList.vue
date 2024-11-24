@@ -47,6 +47,38 @@ const onGenerationChanged = async (generation: number) => {
   store.setSelectedGeneration(generation);
   await getPokemons();
 }
+
+const debounceTimeout = ref();
+
+const searchOutOfGenPokemon = (value: string) => {
+  if (debounceTimeout.value) {
+    clearTimeout(debounceTimeout.value);
+  }
+
+  debounceTimeout.value = setTimeout(async () => {
+    if (!value) return;
+
+    const pokemonDetails = await fetchPokemonDetails(value.toLowerCase());
+    if (!pokemonDetails || !pokemonDetails.id) {
+      console.warn('Pokemon not found!');
+      return;
+    }
+
+    store.checkIsIdWithinSelectedGeneration(pokemonDetails.id);
+
+    await getPokemons();
+
+    await nextTick();
+    // store.setActivePokemon(pokemonDetails.name);
+    // const element = document.getElementById(`scrollId-${pokemonDetails.name}`);
+    // if (element) {
+    //   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    //   store.setActivePokemon(pokemonDetails.name); // Optionally set as active Pokémon
+    // }
+  }, 1000); // Adjust the debounce delay (300ms in this example)
+};
+
+
 </script>
 
 <template>
@@ -56,6 +88,7 @@ const onGenerationChanged = async (generation: number) => {
         <FormInput
           v-model="searchPokemon"
           placeholder="Search Pokemon"
+          @input="searchOutOfGenPokemon"
         />
         <FormSelect
           v-model="store.selectedGeneration"
@@ -67,7 +100,7 @@ const onGenerationChanged = async (generation: number) => {
     <transition-group
       name="list"
       tag="ul"
-      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-fit overflow-y-auto overflow-x-hidden scrollbar-gutter"
+      class="flex flex-col gap-1 mt-4 h-[calc(100vh-120px)] w-[300px] overflow-y-auto overflow-x-hidden scrollbar-gutter"
     >
       <PokeCard
         v-for="pokemon in filteredPokemons"
@@ -81,6 +114,9 @@ const onGenerationChanged = async (generation: number) => {
         @mouseover="onHover(pokemon.name)"
         @click="emit('pokemon-clicked', pokemon.name)"
       />
+      <div key="loading-pokemon">
+
+      </div>
     </transition-group>
   </div>
 </template>
