@@ -70,6 +70,7 @@ const playPokemonCry = (id: number) => {
       <div v-if="pokemonDetail" class="w-full">
         <PokeDetail
           :pokemon-detail="pokemonDetail"
+          :is-mobile-view="isMobileView"
           @image-clicked="onImageClicked"
           @go-back="isPokemonClicked = false"
         />

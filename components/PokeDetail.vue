@@ -1,29 +1,7 @@
 <script setup lang="ts">
-interface PokemonDetail {
-  id: number
-  name: string
-  types: Array<{
-    slot: number
-    type: {
-      name: string
-      url: string
-    }
-  }>
-  stats: Array<{
-    base_stat: number
-    effort: number
-    stat: {
-      name: string
-      url: string
-    }
-  }>
-  sprites: {
-    front_default: string
-  }
-}
-
 const props = defineProps<{
-  pokemonDetail: PokemonDetail
+  pokemonDetail: PokemonDetail,
+  isMobileView: boolean,
 }>();
 
 const emit = defineEmits(['go-back', 'image-clicked'])
@@ -36,6 +14,7 @@ const arrangedTypes = computed(() => formatAndArrangeType(props.pokemonDetail.ty
 
     <div class="flex items-center justify-between">
       <el-button
+        v-if="isMobileView"
         :icon="ElIconArrowLeft"
         class="mr-2"
         @click="emit('go-back')"

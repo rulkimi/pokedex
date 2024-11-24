@@ -20,6 +20,29 @@ declare global {
     image: string
     types: string[]
   }
+
+  interface PokemonDetail {
+    id: number
+    name: string
+    types: Array<{
+      slot: number
+      type: {
+        name: string
+        url: string
+      }
+    }>
+    stats: Array<{
+      base_stat: number
+      effort: number
+      stat: {
+        name: string
+        url: string
+      }
+    }>
+    sprites: {
+      front_default: string
+    }
+  }
   
   interface TypeInfo {
     slot: number
@@ -43,6 +66,7 @@ export {
   Pokemon,
   PokeAPIResponse,
   PokemonResponse,
+  PokemonDetail,
   TypeInfo,
   EvolutionData,
   EvolutionResult,
