@@ -22,8 +22,12 @@ watch(() => store.selectedGeneration, async (newVal) => {
 //   if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 // };
 
+const isLoading = ref(true);
+
 const getPokemons = async () => {
+  // isLoading.value = true;
   pokemons.value = await fetchPokemons(store.selectedGeneration);
+  isLoading.value = false;
 }
 
 const onHover = async (pokemonName: string) => {
@@ -137,7 +141,7 @@ const searchOutOfGenPokemon = (value: string) => {
           searching for {{ searchPokemon }}...
         </span>
       </div>
-      <div v-if="!filteredPokemons?.length && !store.isSearchingPokemon" key="pokemon-not-found">
+      <div v-show="!filteredPokemons?.length && !store.isSearchingPokemon && !isLoading" key="pokemon-not-found">
         Pokemon named {{ searchPokemon }} not found!
       </div>
     </transition-group>
