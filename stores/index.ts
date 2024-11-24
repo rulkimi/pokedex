@@ -10,7 +10,7 @@ export const useMainStore = defineStore('main', () => {
     { label: 'Gen 8', value: 8 },
     { label: 'Gen 9', value: 9 },
   ]);
-  const generationLimits = ref({
+  const generationLimits = ref<Record<number, { limit: number; offset: number }>>({
     1: { limit: 151, offset: 0 }, // Generation 1
     2: { limit: 100, offset: 151 }, // Generation 2
     3: { limit: 135, offset: 251 }, // Generation 3
@@ -20,10 +20,10 @@ export const useMainStore = defineStore('main', () => {
     7: { limit: 88, offset: 721 }, // Generation 7
     8: { limit: 96, offset: 809 }, // Generation 8
     9: { limit: 120, offset: 905 }, // Generation 9
-  });
+  });  
 
-  const selectedGeneration = ref(1);
-  const activePokemon = ref('');
+  const selectedGeneration = ref<number>(1);
+  const activePokemon = ref<string>('');
 
   const setSelectedGeneration = (generation: number) => {
     selectedGeneration.value = generation;

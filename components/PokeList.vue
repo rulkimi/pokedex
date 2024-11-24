@@ -127,7 +127,7 @@ const searchOutOfGenPokemon = (value: string) => {
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
         :id="'scrollId-' + pokemon.name"
-        :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[1].offset"
+        :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[store.selectedGeneration].offset"
         :name="pokemon.name"
         :types="pokemon.types"
         :image="pokemon.image"
