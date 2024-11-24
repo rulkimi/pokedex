@@ -23,7 +23,7 @@ const emit = defineEmits(['pokemon-clicked']);
         width="100"
         :alt="`Picture of ${evolution.name}`"
       />
-      <span>{{ formatName(evolution.name) }}</span>
+      <span v-html="formatName(evolution.name)"></span>
     </div>
   </div>
 </template>
