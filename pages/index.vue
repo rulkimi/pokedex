@@ -51,8 +51,7 @@ const onPokemonClicked = async (pokemonName: string) => {
   store.checkIsIdWithinSelectedGeneration(pokemonDetail.value.id);
 
   playPokemonCry(pokemonDetail.value.id);
-  console.log(hoveredEvolutions.value)
-  if (hoveredEvolutions.value.some((evolution: { name: string, url: string }) => evolution.name === pokemonName)) {
+  if (hoveredEvolutions.value && hoveredEvolutions.value.some((evolution: { name: string, url: string }) => evolution.name === pokemonName)) {
     pokemonEvolutions.value = hoveredEvolutions.value;
     isEvolutionsLoading.value = false;
     return;
