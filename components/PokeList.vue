@@ -9,7 +9,18 @@ const emit = defineEmits(['pokemon-clicked'])
 
 onMounted(async () => {
   await getPokemons();
-})
+});
+
+watch(() => store.selectedGeneration, async (newVal) => {
+  await getPokemons();
+  // scrollToPokemon(store.activePokemon);
+});
+
+// const scrollToPokemon = async (pokemonName: string) => {
+//   await nextTick();
+//   const element = document.getElementById('scrollId-' + pokemonName);
+//   if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+// };
 
 const getPokemons = async () => {
   pokemons.value = await fetchPokemons(store.selectedGeneration);
@@ -61,6 +72,7 @@ const onGenerationChanged = async (generation: number) => {
       <PokeCard
         v-for="pokemon in filteredPokemons"
         :key="pokemon.name"
+        :id="'scrollId-' + pokemon.name"
         :index="pokemons?.findIndex(p => p.name === pokemon.name) + 1 + store.generationLimits[1].offset"
         :name="pokemon.name"
         :types="pokemon.types"

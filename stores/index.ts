@@ -33,6 +33,22 @@ export const useMainStore = defineStore('main', () => {
     activePokemon.value = pokemonName;
   }
 
+  const checkIsIdWithinSelectedGeneration = (id: number) => {
+    if (!id) return; // Exit if no ID is provided
+    
+    // Loop through each generation's limits to find where the ID fits
+    for (const [generation, { limit, offset }] of Object.entries(generationLimits.value)) {
+      const startRange = offset + 1; // Generation's starting ID
+      const endRange = offset + limit; // Generation's ending ID
+      
+      if (id >= startRange && id <= endRange) {
+        // If ID is within the range, update the selected generation
+        setSelectedGeneration(Number(generation));
+        break;
+      }
+    }
+  };
+
   return {
     generations,
     generationLimits,
@@ -40,5 +56,6 @@ export const useMainStore = defineStore('main', () => {
     setSelectedGeneration,
     activePokemon,
     setActivePokemon,
+    checkIsIdWithinSelectedGeneration,
   };
 });

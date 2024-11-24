@@ -23,6 +23,7 @@ const store = useMainStore();
 const onPokemonClicked = async (pokemonName: string) => {
   store.setActivePokemon(pokemonName);
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
+  store.checkIsIdWithinSelectedGeneration(pokemonDetail.value.id);
   playPokemonCry(pokemonDetail.value.id);
   pokemonEvolutions.value = await fetchPokemonEvolutions(pokemonName);
 }
