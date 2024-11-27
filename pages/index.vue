@@ -41,13 +41,17 @@ const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = useP
 const store = useMainStore();
 
 const isEvolutionsLoading = ref(false);
+const isPokemonDetailLoading = ref(false);
 
 const onPokemonClicked = async (pokemonName: string) => {
+  pokemonDetail.value = null;
   isPokemonClicked.value = true;
   pokemonEvolutions.value = [];
   store.setActivePokemon(pokemonName);
 
+  isPokemonDetailLoading.value = true;
   pokemonDetail.value = await fetchPokemonDetails(pokemonName);
+  isPokemonDetailLoading.value = false;
   store.checkIsIdWithinSelectedGeneration(pokemonDetail.value.id);
 
   playPokemonCry(pokemonDetail.value.id);
@@ -101,11 +105,14 @@ const playPokemonCry = (id: number) => {
           @go-back="isPokemonClicked = false"
         />
       </div>
+      <p v-else-if="isPokemonDetailLoading" class="w-full h-full text-lg md:text-xl text-slate-400 flex justify-center items-center">
+        Loading...
+      </p>
       <p v-else class="w-full h-full text-lg md:text-xl text-slate-400 flex justify-center items-center">
         Select a Pokémon
       </p>
 
-      <div v-if="isEvolutionsLoading" class="text-center text-slate-400 mt-8">
+      <div v-if="isEvolutionsLoading && !isPokemonDetailLoading" class="text-center text-slate-400 mt-8">
         Loading evolutions...
       </div>
       <div v-else-if="pokemonEvolutions.length" class="mt-8">

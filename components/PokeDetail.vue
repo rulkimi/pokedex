@@ -56,7 +56,7 @@ watch(() => store.activePokemon, () => {
 </script>
 
 <template>
-  <div>
+  <div v-if="pokemonDetail">
     <div class="flex items-center justify-between">
       <el-button
         v-if="isMobileView"
