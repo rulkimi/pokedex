@@ -123,6 +123,6 @@ const playPokemonCry = (id: number) => {
       </div>
     </div>
 
-    <audio ref="audio" :src="pokemonCryAudioSrc" preload="auto"></audio>
+    <audio ref="audio" :src="pokemonCryAudioSrc" preload="auto" playsinline muted></audio>
   </div>
 </template>
