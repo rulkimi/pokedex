@@ -14,41 +14,38 @@ const scaleTimeout = ref();
 
 const store = useMainStore();
 
-const getRandomShakeType = () => {
-  const shakeTypes = [
-    'shake-1', 'shake-2', 'shake-3', 'shake-4', 
-    'shake-5', 'shake-6', 'shake-7', 'shake-8',
-    'shake-9', 'shake-10'
-  ];
-  const randomIndex = Math.floor(Math.random() * shakeTypes.length);
-  return shakeTypes[randomIndex];
-};
+const shakeX = useCssVar('--shake-x', document.documentElement);
+const shakeY = useCssVar('--shake-y', document.documentElement);
+const shakeRotate = useCssVar('--shake-rotate', document.documentElement);
 
-const getRandomScale = () => {
-  return Math.random() > 0.5 ? 'scale-animation' : '';
-};
-
-onMounted(() => {
-  getAnimationClasses();
-});
+const getRandomValue = (min: number, max: number) => Math.random() * (max - min) + min;
 
 const getAnimationClasses = () => {
-  imageShakeClass.value = `${getRandomShakeType()} ${getRandomScale()}`;
+  // Random shake properties
+  shakeX.value = `${getRandomValue(-15, 15)}px`;
+  shakeY.value = `${getRandomValue(-15, 15)}px`;
+  shakeRotate.value = `${getRandomValue(-10, 10)}deg`;
+
+  imageShakeClass.value = 'dynamic-shake';
 
   if (shakeTimeout.value) clearTimeout(shakeTimeout.value);
   if (scaleTimeout.value) clearTimeout(scaleTimeout.value);
 
   shakeTimeout.value = setTimeout(() => {
     imageShakeClass.value = '';
-  }, 1000); 
+  }, 1000);
 
-  // optionally reset the scale after 1 second if applied
-  if (imageShakeClass.value.includes('scale-animation')) {
+  if (Math.random() > 0.5) {
+    imageShakeClass.value += ' scale-animation';
     scaleTimeout.value = setTimeout(() => {
       imageShakeClass.value = imageShakeClass.value.replace('scale-animation', '');
     }, 1000);
   }
-}
+};
+
+onMounted(() => {
+  getAnimationClasses();
+});
 
 watch(() => store.activePokemon, () => {
   getAnimationClasses();
@@ -120,131 +117,38 @@ watch(() => store.activePokemon, () => {
 </template>
 
 <style scoped>
-@keyframes shake-1 {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-5px, 5px); }
-  50% { transform: translate(5px, -5px); }
-  75% { transform: translate(-5px, -5px); }
-  100% { transform: translate(0, 0); }
+.dynamic-shake {
+  animation: dynamic-shake 1s ease-in-out;
 }
 
-@keyframes shake-2 {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-10px, 10px); }
-  50% { transform: translate(10px, -10px); }
-  75% { transform: translate(-10px, -10px); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes shake-3 {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
-  75% { transform: rotate(-5deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes shake-4 {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.1); }
-  50% { transform: scale(0.9); }
-  75% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-@keyframes shake-5 {
-  0% { transform: translate(0, 0); }
-  30% { transform: translate(-15px, 15px); }
-  60% { transform: translate(15px, -15px); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes shake-6 {
-  0% { transform: rotate(0deg); }
-  20% { transform: rotate(-10deg); }
-  40% { transform: rotate(10deg); }
-  60% { transform: rotate(-10deg); }
-  80% { transform: rotate(10deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes shake-7 {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(20px, -10px); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes shake-8 {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-10px, 0); }
-  40% { transform: translate(10px, 0); }
-  60% { transform: translate(-10px, 0); }
-  80% { transform: translate(10px, 0); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes shake-9 {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.2); }
-  50% { transform: scale(0.8); }
-  75% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-@keyframes shake-10 {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(5deg); }
-  20% { transform: rotate(-5deg); }
-  30% { transform: rotate(5deg); }
-  40% { transform: rotate(-5deg); }
-  50% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+@keyframes dynamic-shake {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(var(--shake-x), var(--shake-y)) rotate(var(--shake-rotate));
+  }
+  50% {
+    transform: translate(calc(-1 * var(--shake-x)), calc(-1 * var(--shake-y))) rotate(calc(-1 * var(--shake-rotate)));
+  }
+  75% {
+    transform: translate(var(--shake-x), var(--shake-y)) rotate(var(--shake-rotate));
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
 }
 
 @keyframes scale-animation {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-.shake-1 {
-  animation: shake-1 1s ease-in-out;
-}
-
-.shake-2 {
-  animation: shake-2 1s ease-in-out;
-}
-
-.shake-3 {
-  animation: shake-3 1s ease-in-out;
-}
-
-.shake-4 {
-  animation: shake-4 1s ease-in-out;
-}
-
-.shake-5 {
-  animation: shake-5 1s ease-in-out;
-}
-
-.shake-6 {
-  animation: shake-6 1s ease-in-out;
-}
-
-.shake-7 {
-  animation: shake-7 1s ease-in-out;
-}
-
-.shake-8 {
-  animation: shake-8 1s ease-in-out;
-}
-
-.shake-9 {
-  animation: shake-9 1s ease-in-out;
-}
-
-.shake-10 {
-  animation: shake-10 1s ease-in-out;
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .scale-animation {
