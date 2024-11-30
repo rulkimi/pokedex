@@ -28,3 +28,7 @@ body {
 img {
   image-rendering: pixelated;
 }
+
+.guess-pokemon {
+  filter: contrast(0%) brightness(50%);
+}
