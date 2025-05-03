@@ -12,11 +12,23 @@ const getRandomPokemonIndex = () => {
   return dayOfYear;
 };
 
+const getAnotherPokemonIndex = () => {
+  return Math.floor(Math.random() * 898) + 1;
+};
+
 const fetchRandomPokemon = async () => {
   correct.value = false;
   hasGuessed.value = false;
   guess.value = '';
   const index = getRandomPokemonIndex();
+  pokemon.value = await fetchPokemonDetails(index);
+};
+
+const fetchAnotherPokemon = async () => {
+  correct.value = false;
+  hasGuessed.value = false;
+  guess.value = '';
+  const index = getAnotherPokemonIndex();
   pokemon.value = await fetchPokemonDetails(index);
 };
 
@@ -34,7 +46,12 @@ onMounted(() => {
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen px-4 text-center">
     <div class="max-w-xl w-full space-y-6 bg-white p-6 rounded-2xl shadow-md border">
-      <h1 class="text-4xl font-extrabold text-gray-800">Guess that Pokémon!</h1>
+      <div class="py-2 flex w-full justify-start">
+        <el-button type="info" plain @click="$router.push('/')"><< Back to Pokédex</el-button>
+      </div>
+      <div class="flex justify-center items-center">
+        <h1 class="text-4xl font-extrabold text-gray-800">Guess that Pokémon!</h1>
+      </div>
 
       <NuxtImg
         v-if="pokemon"
@@ -42,7 +59,7 @@ onMounted(() => {
         alt="Guess Pokémon"
         :class="[
           'mx-auto transition-all duration-500',
-          correct ? 'opacity-100 scale-110' : 'brightness-0',
+          correct ? 'opacity-100 scale-125' : 'brightness-0 scale-110',
           'w-48 h-48 object-contain'
         ]"
       />
@@ -63,7 +80,10 @@ onMounted(() => {
         <p v-else class="text-red-600">❌ Nope! Try again.</p>
       </div>
 
-      <el-button type="success" plain @click="fetchRandomPokemon">Play Again</el-button>
+      <div class="flex justify-center">
+        <el-button type="success" plain @click="fetchRandomPokemon">Today's Pokémon</el-button>
+        <el-button type="primary" plain @click="fetchAnotherPokemon">Guess Another Pokémon</el-button>
+      </div>
     </div>
   </div>
 </template>

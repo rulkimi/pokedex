@@ -20,6 +20,7 @@ const pokemonDetail = ref();
 const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
 const isMobileView = ref(false);
 const isPokemonClicked = ref(false);
+const showGuessAlert = ref(true);
 
 const screenSize = () => window.innerWidth < 768;
 
@@ -71,10 +72,38 @@ const onPokemonClicked = async (pokemonName: string) => {
 
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
+    <div class="fixed top-4 right-4 z-[20]">
+      <el-alert
+        v-if="showGuessAlert"
+        title="Have you guessed today's Pokémon?"
+        :closable="true"
+        @close="showGuessAlert = false"
+        class="shadow-lg rounded-xl border border-blue-100"
+      >
+        <template #default>
+          <div class="flex justify-end mt-2 items-center">
+            <el-button 
+              @click="showGuessAlert = false"
+              class="hover:bg-gray-100 transition-colors"
+            >
+              I have!
+            </el-button>
+            <el-button 
+              type="primary" 
+              @click="$router.push('/guess')"
+              class="hover:bg-blue-600 transition-colors"
+            >
+              Guess Now!
+            </el-button>
+          </div>
+        </template>
+      </el-alert>
+    </div>
+
     <PokeList
       @pokemon-clicked="onPokemonClicked"
       @hovered="onPokemonHovered"
-    />
+    ></PokeList>
     <div
       :class="
         isMobileView && isPokemonClicked ?
