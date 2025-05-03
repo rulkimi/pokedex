@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
-    baseURL: '/pokedex',
+    baseURL: '/pokedex/',
     buildAssetsDir: 'assets'
   },
   compatibilityDate: '2024-11-01',
