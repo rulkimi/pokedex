@@ -2,20 +2,22 @@
 useHead({
   title: 'Pokédex',
   meta: [
-    { name: 'description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' }
+    { 
+      name: 'description',
+      content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' 
+    },
+    { 
+      name: 'viewport', 
+      content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' 
+    }
   ],
   link: [
     { rel: 'icon', type: 'image/svg+xml', href: '/pokedex-logo.svg' }
   ]
 });
 
-
 const pokemonDetail = ref();
 const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
-const audio = ref();
-const pokemonCryAudioSrc = ref();
-const volumeLevel = ref(0.05);
 const isMobileView = ref(false);
 const isPokemonClicked = ref(false);
 
@@ -37,7 +39,7 @@ const onPokemonHovered = async (pokemonName: string) => {
   hoveredEvolutions.value = await fetchPokemonEvolutions(pokemonName);
 }
 
-const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
+const { fetchPokemonDetails, fetchPokemonEvolutions } = usePokemons();
 const store = useMainStore();
 
 const isEvolutionsLoading = ref(false);
@@ -65,23 +67,6 @@ const onPokemonClicked = async (pokemonName: string) => {
 
   isEvolutionsLoading.value = false;
 };
-
-const playPokemonCry = (id: number) => {
-  if (!audio.value) return;
-
-  pokemonCryAudioSrc.value = fetchPokemonCrySrc(id);
-
-  audio.value.pause();
-  audio.value.currentTime = 0;
-    audio.value.preload = 'auto';
-    audio.value.muted = false;
-    audio.value.src = pokemonCryAudioSrc.value;
-    audio.value.load();
-    audio.value.addEventListener('canplaythrough', () => {
-      audio.value.volume = volumeLevel.value;
-      audio.value.play();
-    });
-}
 </script>
 
 <template>
@@ -122,7 +107,5 @@ const playPokemonCry = (id: number) => {
         />
       </div>
     </div>
-
-    <audio ref="audio" :src="pokemonCryAudioSrc" preload="auto" playsinline muted></audio>
   </div>
 </template>
