@@ -2,22 +2,25 @@
 useHead({
   title: 'Pokédex',
   meta: [
-    { name: 'description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' }
+    { 
+      name: 'description',
+      content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' 
+    },
+    { 
+      name: 'viewport', 
+      content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' 
+    }
   ],
   link: [
     { rel: 'icon', type: 'image/svg+xml', href: '/pokedex-logo.svg' }
   ]
 });
 
-
 const pokemonDetail = ref();
 const pokemonEvolutions = ref<{ name: string, url: string }[]>([]);
-const audio = ref();
-const pokemonCryAudioSrc = ref();
-const volumeLevel = ref(0.05);
 const isMobileView = ref(false);
 const isPokemonClicked = ref(false);
+const showGuessAlert = ref(true);
 
 const screenSize = () => window.innerWidth < 768;
 
@@ -37,7 +40,7 @@ const onPokemonHovered = async (pokemonName: string) => {
   hoveredEvolutions.value = await fetchPokemonEvolutions(pokemonName);
 }
 
-const { fetchPokemonDetails, fetchPokemonEvolutions, fetchPokemonCrySrc } = usePokemons();
+const { fetchPokemonDetails, fetchPokemonEvolutions } = usePokemons();
 const store = useMainStore();
 
 const isEvolutionsLoading = ref(false);
@@ -65,31 +68,42 @@ const onPokemonClicked = async (pokemonName: string) => {
 
   isEvolutionsLoading.value = false;
 };
-
-const playPokemonCry = (id: number) => {
-  if (!audio.value) return;
-
-  pokemonCryAudioSrc.value = fetchPokemonCrySrc(id);
-
-  audio.value.pause();
-  audio.value.currentTime = 0;
-    audio.value.preload = 'auto';
-    audio.value.muted = false;
-    audio.value.src = pokemonCryAudioSrc.value;
-    audio.value.load();
-    audio.value.addEventListener('canplaythrough', () => {
-      audio.value.volume = volumeLevel.value;
-      audio.value.play();
-    });
-}
 </script>
 
 <template>
   <div class="md:grid grid-cols-[auto,1fr] gap-4 h-full">
+    <div class="fixed top-4 right-4 z-[20]">
+      <el-alert
+        v-if="showGuessAlert"
+        title="Have you guessed today's Pokémon?"
+        :closable="true"
+        @close="showGuessAlert = false"
+        class="shadow-lg rounded-xl border border-blue-100"
+      >
+        <template #default>
+          <div class="flex justify-end mt-2 items-center">
+            <el-button 
+              @click="showGuessAlert = false"
+              class="hover:bg-gray-100 transition-colors"
+            >
+              I have!
+            </el-button>
+            <el-button 
+              type="primary" 
+              @click="$router.push('/guess')"
+              class="hover:bg-blue-600 transition-colors"
+            >
+              Guess Now!
+            </el-button>
+          </div>
+        </template>
+      </el-alert>
+    </div>
+
     <PokeList
       @pokemon-clicked="onPokemonClicked"
       @hovered="onPokemonHovered"
-    />
+    ></PokeList>
     <div
       :class="
         isMobileView && isPokemonClicked ?
@@ -122,7 +136,5 @@ const playPokemonCry = (id: number) => {
         />
       </div>
     </div>
-
-    <audio ref="audio" :src="pokemonCryAudioSrc" preload="auto" playsinline muted></audio>
   </div>
 </template>

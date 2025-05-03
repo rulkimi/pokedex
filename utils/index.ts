@@ -75,3 +75,15 @@ export const arrangeType = (types: string[]) => {
 
   return typesCopy;
 };
+
+export const playPokemonCry = (id: number, volume: number = 0.05) => {
+	const audio = new Audio(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`);
+	
+	audio.preload = 'auto';
+	audio.muted = false;
+	audio.volume = volume;
+	
+	audio.addEventListener('canplaythrough', () => {
+		audio.play();
+	});
+}
