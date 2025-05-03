@@ -9,7 +9,18 @@ useHead({
     { 
       name: 'viewport', 
       content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0' 
-    }
+    },
+    { property: 'og:url', content: 'https://rulkimi.github.io/pokedex/' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: 'Pokédex' },
+    { property: 'og:description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' },
+    { property: 'og:image', content: 'https://opengraph.b-cdn.net/production/images/b4580fc0-5e0b-4a2d-904a-4ef9fb239bba.png?token=WkdtwATl5DIIqlHorpW1uzKHWjrqhcKfpv1LScsyT44&height=772&width=1200&expires=33282278656' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { property: 'twitter:domain', content: 'rulkimi.github.io' },
+    { property: 'twitter:url', content: 'https://rulkimi.github.io/pokedex/' },
+    { name: 'twitter:title', content: 'Pokédex' },
+    { name: 'twitter:description', content: 'Explore a detailed collection of Pokémon species, their abilities, evolutions, and more! Dive into the world of Pokémon with comprehensive stats and exciting facts.' },
+    { name: 'twitter:image', content: 'https://opengraph.b-cdn.net/production/images/b4580fc0-5e0b-4a2d-904a-4ef9fb239bba.png?token=WkdtwATl5DIIqlHorpW1uzKHWjrqhcKfpv1LScsyT44&height=772&width=1200&expires=33282278656' }
   ],
   link: [
     { rel: 'icon', type: 'image/svg+xml', href: '/pokedex-logo.svg' }
