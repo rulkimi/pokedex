@@ -66,4 +66,49 @@ export const getArrangedTypes = (types: string[]) => {
   return typesCopy;
 };
 
+export const formatStat = (stat: string): string => {
+  switch (stat) {
+    case 'hp':
+      return 'HP';
+    case 'attack':
+      return 'ATK';
+    case 'defense':
+      return 'DEF';
+    case 'special-attack':
+      return 'SATK';
+    case 'special-defense':
+      return 'SDEF';
+    case 'speed':
+      return 'SPD';
+    default:
+      return 'N/A';
+  }
+};
+
+export interface Stat {
+	name: string;
+	value: number;
+}
+
+export const getMaxStat = (stat: Stat): string => {
+  if (stat.name === 'hp') {
+    return ((stat.value * 2 + 204)).toFixed(0);
+  }
+  const maxStat = (stat.value * 2 + 99) * 1.1;
+  return maxStat.toFixed(0);
+};
+
+export const getStatWidth = (stat: Stat): number => {
+  const maxStat = Number(getMaxStat(stat));
+  return (stat.value / maxStat) * 200;
+};
+
+// export const formatAndArrangeType = (types: Array<{ type: { name: string } }>): string[] => {
+//   const newTypes = types.map(item => item.type.name);
+//   return getArrangedTypes(newTypes);
+// };
+
+export const getTotalStats = (stats: Stat[]): number => {
+  return stats.reduce((sum, stat) => sum + stat.value, 0);
+};
 

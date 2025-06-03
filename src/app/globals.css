@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-@source inline('{hover:,}bg-{emerald,red,blue,yellow,green,fuchsia,gray,cyan,pink,indigo}-{300,400,500,600,700,800,900}/{0..100}');
+@source inline('{hover:,group-hover:,}bg-{emerald,red,blue,yellow,green,fuchsia,gray,cyan,pink,indigo}-{300,400,500,600,700,800,900}/{0..100}');
 
 @theme inline {
   --color-background: var(--background);

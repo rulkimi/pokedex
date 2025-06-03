@@ -1,6 +1,6 @@
 "use server";
 
-import { getGeneration } from "@/utils";
+import { getGeneration, type Stat } from "@/utils";
 
 const gqlQuery = `query pokemons($limit: Int, $offset: Int) {
   pokemons(limit: $limit, offset: $offset) {
@@ -25,7 +25,14 @@ export interface Pokemon {
   types: string[];
 }
 
-const pokemonDetailQuery = `
+export interface PokemonDetail {
+  id: number;
+  name: string;
+  types: string[];
+  stats: Stat[];
+}
+
+const pokemonTypesQuery = `
   query getPokemon($name: String!) {
     pokemon(name: $name) {
       id
@@ -38,13 +45,33 @@ const pokemonDetailQuery = `
   }
 `;
 
+const pokemonDetailQuery = `
+  query getPokemon($name: String!) {
+    pokemon(name: $name) {
+      id
+      name
+      types {
+        type {
+          name
+        }
+      }
+      stats {
+        stat {
+          name
+        }
+        base_stat
+      }
+    }
+  }
+`;
+
 const fetchPokemonTypes = async (name: string): Promise<{id: number, types: string[]}> => {
   try {
     const response = await fetch("https://graphql-pokeapi.graphcdn.app/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        query: pokemonDetailQuery,
+        query: pokemonTypesQuery,
         variables: { name },
       }),
     });
@@ -58,6 +85,45 @@ const fetchPokemonTypes = async (name: string): Promise<{id: number, types: stri
   } catch (error) {
     console.error(`Error fetching types for ${name}:`, error);
     return { id: 0, types: [] };
+  }
+};
+
+export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null> => {
+  try {
+    const response = await fetch("https://graphql-pokeapi.graphcdn.app/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: pokemonDetailQuery,
+        variables: { name: id.toString() },
+      }),
+    });
+
+    const json = await response.json();
+    
+    if (json.errors) {
+      console.error('GraphQL errors:', json.errors);
+      return null;
+    }
+
+    const pokemon = json.data.pokemon;
+    if (!pokemon) {
+      console.error('No pokemon data found');
+      return null;
+    }
+
+    return {
+      id: pokemon.id,
+      name: pokemon.name,
+      types: pokemon.types.map((t: any) => t.type.name),
+      stats: pokemon.stats.map((s: any) => ({
+        name: s.stat.name,
+        value: s.base_stat
+      }))
+    };
+  } catch (error) {
+    console.error(`Error fetching pokemon ${id}:`, error);
+    return null;
   }
 };
 

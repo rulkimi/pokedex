@@ -3,13 +3,15 @@ import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes } from 
 import Image from "next/image";
 
 interface PokemomCardProps {
-  pokemon: Pokemon
+  pokemon: Pokemon;
+  onClick: (pokemonId: number) => void;
 }
 
 const IMAGE_SIZE = 80;
 
 export default function PokemonCard({
-  pokemon
+  pokemon,
+  onClick
 }: PokemomCardProps ) {
   const pokemonTypes = getArrangedTypes(pokemon.types);
 
@@ -19,6 +21,7 @@ export default function PokemonCard({
         hover:${getTypeColor(pokemonTypes[0])}/20
         flex items-center justify-between gap-2 px-4 border border-transparent dark:border-slate-800 rounded-2xl group cursor-pointer`
       }
+      onClick={() => onClick(pokemon.id)}
     >
       <div className="space-y-2">
         <Header
@@ -50,7 +53,7 @@ const Header = ({
 } ) => {
   return (
     <div className="flex gap-2">
-      <span className="text-gray-400">{formatId(id)}</span>
+      <span className="text-muted-foreground">{formatId(id)}</span>
       <span className="font-semibold">{capitalizeFirstLetter(name)}</span>
     </div>
   );

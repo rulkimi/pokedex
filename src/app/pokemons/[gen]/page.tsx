@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import PokemonsListing from "./_components/pokemons-listing";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PokemonsProps {
   params: Promise<{ gen: number }>;

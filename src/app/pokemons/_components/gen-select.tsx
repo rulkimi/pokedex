@@ -16,7 +16,7 @@ export default function GenSelect() {
 	const pathname = usePathname();
 
 	useEffect(() => {
-		const gen = Number(pathname.split('/').pop());
+		const gen = Number(pathname.split('/').at(-2));
 		if (!isNaN(gen)) {
 			setSelectedGen(gen);
 		}
