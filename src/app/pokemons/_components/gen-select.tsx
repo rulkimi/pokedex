@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select"
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { getFirstPokemonId } from "@/utils";
 
 export default function GenSelect() {
 	const [selectedGen, setSelectedGen] = useState<number>(1);
@@ -24,7 +25,8 @@ export default function GenSelect() {
 
 	const handleChange = (value: string) => {
 		const gen = Number(value);
-		router.push(`/pokemons/${gen}`);
+		const firstPokemonId = getFirstPokemonId(gen);
+		router.push(`/pokemons/${gen}/${firstPokemonId}`);
 		setSelectedGen(gen);
 	};
 

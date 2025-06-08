@@ -1,7 +1,5 @@
-"use client"
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div>Welcome!</div>
-  );
+  redirect('/pokemons/1/1')
 }

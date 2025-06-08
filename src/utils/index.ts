@@ -15,6 +15,11 @@ const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
 	9: { limit: 120, offset: 905 }, // Generation 9
 };
 
+export const getFirstPokemonId = (gen: number): number => {
+	return GENERATION_LIMITS[gen].offset + 1;
+}
+
+
 export const getGeneration = (gen: number): GenerationConfig => {
 	return GENERATION_LIMITS[gen];
 }
