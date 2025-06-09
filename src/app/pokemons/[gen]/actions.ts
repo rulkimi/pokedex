@@ -1,6 +1,6 @@
 "use server";
 
-import { getGeneration, type Stat } from "@/utils";
+import { getGeneration, type Stat } from "@/lib/utils";
 
 const gqlQuery = `query pokemons($limit: Int, $offset: Int) {
   pokemons(limit: $limit, offset: $offset) {
@@ -98,6 +98,8 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
         variables: { name: id.toString() },
       }),
     });
+
+    if (!response.ok) return null;
 
     const json = await response.json();
     

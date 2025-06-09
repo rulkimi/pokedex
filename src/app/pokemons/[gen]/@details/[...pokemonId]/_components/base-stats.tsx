@@ -1,4 +1,4 @@
-import { formatStat, getStatWidth, getTotalStats, Stat } from "@/utils";
+import { formatStat, getStatWidth, getTotalStats, Stat } from "@/lib/utils";
 
 export default function BaseStats({
   stats

@@ -1,5 +1,5 @@
 import { Pokemon } from "@/app/pokemons/[gen]/actions";
-import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes } from "@/utils";
+import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes } from "@/lib/utils";
 import Image from "next/image";
 
 interface PokemomCardProps {

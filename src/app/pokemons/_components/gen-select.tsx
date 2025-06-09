@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select"
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { getFirstPokemonId } from "@/utils";
+import { getFirstPokemonId } from "@/lib/utils";
 
 export default function GenSelect() {
 	const [selectedGen, setSelectedGen] = useState<number>(1);
