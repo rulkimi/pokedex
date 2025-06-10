@@ -122,7 +122,7 @@ export default function DetailImage({
           src={url}
           width={200}
           height={200}
-          className="object-cover group-hover:scale-150"
+          className="object-cover group-hover:scale-150 transition-transform duration-300"
           alt={alt}
         />
       </motion.div>
