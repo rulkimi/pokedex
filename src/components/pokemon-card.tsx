@@ -1,5 +1,5 @@
 import { Pokemon } from "@/app/pokemons/[gen]/actions";
-import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes } from "@/lib/utils";
+import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes, formatName } from "@/lib/utils";
 import Image from "next/image";
 
 interface PokemomCardProps {
@@ -54,7 +54,10 @@ const Header = ({
   return (
     <div className="flex gap-2">
       <span className="text-muted-foreground">{formatId(id)}</span>
-      <span className="font-semibold">{capitalizeFirstLetter(name)}</span>
+      <span
+        className="font-semibold"
+        dangerouslySetInnerHTML={{ __html: formatName(name)}}
+      ></span>
     </div>
   );
 }

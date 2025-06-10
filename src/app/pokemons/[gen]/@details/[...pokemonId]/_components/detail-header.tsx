@@ -1,4 +1,4 @@
-import { formatId, capitalizeFirstLetter } from "@/lib/utils";
+import { formatId, capitalizeFirstLetter, formatName } from "@/lib/utils";
 
 export default function DetailHeader({
   id,
@@ -10,7 +10,10 @@ export default function DetailHeader({
   return (
     <header className="text-2xl flex justify-between gap-2">
       <h1 className="text-muted-foreground">{formatId(id)}</h1>
-      <h1 className="font-bold">{capitalizeFirstLetter(name)}</h1>
+      <h1
+        className="font-bold"
+        dangerouslySetInnerHTML={{ __html: formatName(name)}}
+      ></h1>
     </header>
   );
 }

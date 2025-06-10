@@ -22,6 +22,25 @@ const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
 	9: { limit: 120, offset: 905 }, // Generation 9
 };
 
+export const formatName = (name: string) => {
+  name = name.toLowerCase();
+  let icon = '';
+  
+  const iconMappings: { '-f': string, '-m': string } = {
+    '-f': '&#9792;', // Female icon
+    '-m': '&#9794;'  // Male icon
+  };
+
+  const suffix = Object.keys(iconMappings).find(suffix => name.endsWith(suffix)) as '-f' | '-m' | undefined;
+  if (suffix) {
+    name = name.slice(0, -2);
+    icon = iconMappings[suffix];
+  }
+
+  const capitalizedString = name.charAt(0).toUpperCase() + name.slice(1);
+  return icon ? `${capitalizedString} ${icon}` : capitalizedString;
+}
+
 export const getFirstPokemonId = (gen: number): number => {
 	return GENERATION_LIMITS[gen].offset + 1;
 }
