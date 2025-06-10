@@ -25,8 +25,8 @@ export default function GenSelect() {
 
 	const handleChange = (value: string) => {
 		const gen = Number(value);
-		const firstPokemonId = getFirstPokemonId(gen);
-		router.push(`/pokemons/${gen}/${firstPokemonId}`);
+		// const firstPokemonId = getFirstPokemonId(gen);
+		router.push(`/pokemons/${gen}/0`);
 		setSelectedGen(gen);
 	};
 

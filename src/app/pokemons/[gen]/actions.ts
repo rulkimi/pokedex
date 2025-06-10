@@ -102,6 +102,8 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
     if (!response.ok) return null;
 
     const json = await response.json();
+
+    console.log('jsonnn', json)
     
     if (json.errors) {
       console.error('GraphQL errors:', json.errors);
@@ -109,8 +111,7 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
     }
 
     const pokemon = json.data.pokemon;
-    if (!pokemon) {
-      console.error('No pokemon data found');
+    if (!pokemon.id) {
       return null;
     }
 

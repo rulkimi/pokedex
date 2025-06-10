@@ -10,7 +10,6 @@ export default function PokemonsLayout({
   children: ReactNode;
   details: ReactNode;
 }) {
-  console.log('detaillsss', details)
   return (
     <main className="font-mono container space-y-4 mx-auto p-8 px-4 lg:px-27 xl:px-56">
       <div className="flex gap-4">

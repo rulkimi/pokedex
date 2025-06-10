@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect('/pokemons/1/1')
+  redirect('/pokemons/1/0')
 }

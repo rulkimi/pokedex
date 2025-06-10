@@ -39,18 +39,20 @@ export default function DetailImage({
           });
         }
       },
-      // Spin and scale
+      // Pulse animation
       async () => {
         const scale = getRandomValue(1.1, 1.3);
         const sequence = [
-          { rotate: 0, scale: 1 },
-          { rotate: 360, scale },
-          { rotate: 720, scale: 1 }
+          { scale: 1 },
+          { scale },
+          { scale: 1 },
+          { scale },
+          { scale: 1 }
         ];
         for (const pos of sequence) {
           await controls.start({
             ...pos,
-            transition: { duration: 0.4, ease: "easeInOut" }
+            transition: { duration: 0.2, ease: "easeInOut" }
           });
         }
       },
@@ -71,7 +73,7 @@ export default function DetailImage({
           });
         }
       },
-      // Original floating animation
+      // Floating animation
       async () => {
         const x = getRandomValue(-30, 30);
         const y = getRandomValue(-30, 30);
