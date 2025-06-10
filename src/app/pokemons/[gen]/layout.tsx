@@ -15,8 +15,12 @@ export default function PokemonsLayout({
       <div className="flex gap-4">
         <div className="space-y-2 w-1/2">
           <div className="flex gap-1">
-            <SearchPokemon />
-            <GenSelect />
+            <div className="w-2/3">
+              <SearchPokemon />
+            </div>
+            <div className="w-1/3">
+              <GenSelect />
+            </div>
           </div>
           <ScrollArea className="h-[calc(100vh-140px)]">
             {children}

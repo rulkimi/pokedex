@@ -1,17 +1,5 @@
 "use server";
-
-import { getGeneration, type Stat } from "@/lib/utils";
-
-const gqlQuery = `query pokemons($limit: Int, $offset: Int) {
-  pokemons(limit: $limit, offset: $offset) {
-    results {
-      id
-      name
-      image
-      url
-    }
-  }
-}`;
+import { getGeneration, getPokemonImageUrl, type Stat } from "@/lib/utils";
 
 interface FetchPokemonProps {
   gen: number;
@@ -32,89 +20,38 @@ export interface PokemonDetail {
   stats: Stat[];
 }
 
-const pokemonTypesQuery = `
-  query getPokemon($name: String!) {
-    pokemon(name: $name) {
-      id
-      types {
-        type {
-          name
-        }
-      }
-    }
-  }
-`;
-
-const pokemonDetailQuery = `
-  query getPokemon($name: String!) {
-    pokemon(name: $name) {
-      id
-      name
-      types {
-        type {
-          name
-        }
-      }
-      stats {
-        stat {
-          name
-        }
-        base_stat
-      }
-    }
-  }
-`;
-
-const fetchPokemonTypes = async (name: string): Promise<{id: number, types: string[]}> => {
+const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
   try {
-    const response = await fetch("https://graphql-pokeapi.graphcdn.app/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: pokemonTypesQuery,
-        variables: { name },
-      }),
-    });
-
-    const json = await response.json();
-    const types = json.data.pokemon.types;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const pokemon = await response.json();
+    
     return {
-      id: json.data.pokemon.id,
-      types: types.map((t: any) => t.type.name)
+      id: pokemon.id,
+      types: pokemon.types.map((t: any) => t.type.name)
     };
   } catch (error) {
-    console.error(`Error fetching types for ${name}:`, error);
+    console.error(`Error fetching types from ${url}:`, error);
     return { id: 0, types: [] };
   }
 };
 
 export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null> => {
   try {
-    const response = await fetch("https://graphql-pokeapi.graphcdn.app/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: pokemonDetailQuery,
-        variables: { name: id.toString() },
-      }),
-    });
-
-    if (!response.ok) return null;
-
-    const json = await response.json();
-
-    console.log('jsonnn', json)
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     
-    if (json.errors) {
-      console.error('GraphQL errors:', json.errors);
-      return null;
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(`Pokemon with id ${id} not found`);
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    const pokemon = json.data.pokemon;
-    if (!pokemon.id) {
-      return null;
-    }
-
+    
+    const pokemon = await response.json();
+    
     return {
       id: pokemon.id,
       name: pokemon.name,
@@ -134,34 +71,38 @@ export const fetchPokemons = async ({
   gen,
 }: FetchPokemonProps): Promise<Pokemon[]> => {
   const generation = getGeneration(gen);
-
+  
   try {
-    const response = await fetch("https://graphql-pokeapi.graphcdn.app/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: gqlQuery,
-        variables: generation,
-      }),
-    });
-
-    const json = await response.json();
-    const basePokemons = json.data.pokemons.results;
-
+    // First, get the list of Pokemon for this generation
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon?limit=${generation.limit}&offset=${generation.offset}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const basePokemons = data.results;
+    
+    // Fetch detailed info for each Pokemon
     const pokemonsWithTypes = await Promise.all(
-      basePokemons.map(async (pokemon: any) => {
-        const { id, types } = await fetchPokemonTypes(pokemon.name);
+      basePokemons.map(async (pokemon: any, index: number) => {
+        const { id, types } = await fetchPokemonTypes(pokemon.url);
+        
         return {
-          ...pokemon,
           id,
+          name: pokemon.name,
+          image: getPokemonImageUrl(id),
+          url: pokemon.url,
           types,
         };
       })
     );
-
+    
     return pokemonsWithTypes as Pokemon[];
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching pokemons:", error);
     return [];
   }
 };

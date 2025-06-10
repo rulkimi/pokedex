@@ -1,3 +1,4 @@
+import { getPokemonImageUrl } from "@/lib/utils";
 import { fetchPokemonById } from "../../actions";
 import PokemonDetail from "./_components/pokemon-detail";
 
@@ -11,7 +12,7 @@ export default async function PokemonDetailPage({ params }: PokemonDetailProps) 
   if (pokemonId == 0) return <PlaceholderText text="Select a pokemon" />
 
   const pokemon = await fetchPokemonById(pokemonId);
-  const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+  const imageUrl = getPokemonImageUrl(pokemonId);
   
   if (!pokemon) return <PlaceholderText text="Pokemon not found!" />
 
