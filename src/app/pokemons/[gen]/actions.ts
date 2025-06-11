@@ -1,5 +1,8 @@
 "use server";
+
 import { getGeneration, getPokemonImageUrl, type Stat } from "@/lib/utils";
+import fs from "fs/promises";
+import path from "path";
 
 interface FetchPokemonProps {
   gen: number;
@@ -13,12 +16,21 @@ export interface Pokemon {
   types: string[];
 }
 
+export interface Evolution {
+  id: number;
+  name: string;
+  level?: number;
+  trigger?: string;
+}
+
 export interface PokemonDetail {
   id: number;
   name: string;
   types: string[];
   stats: Stat[];
+  evolutions?: Evolution[];
 }
+
 
 const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
   try {
@@ -49,9 +61,29 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const pokemon = await response.json();
-    
+
+    // Read evolutions.json from the filesystem
+    const filePath = path.join(process.cwd(), "public", "evolutions.json");
+    let evolutions: Evolution[] = [];
+
+    try {
+      const file = await fs.readFile(filePath, "utf-8");
+      const evolutionsData = JSON.parse(file);
+
+      // Find evolution chain that includes this Pokémon
+      for (const chain of Object.values(evolutionsData) as Evolution[][]) {
+        if (chain.some((e) => e.id == id)) {
+          evolutions = chain;
+          break;
+        }
+      }
+
+    } catch (e) {
+      console.warn("Failed to read evolutions.json from disk:", e);
+    }
+
     return {
       id: pokemon.id,
       name: pokemon.name,
@@ -59,7 +91,8 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       stats: pokemon.stats.map((s: any) => ({
         name: s.stat.name,
         value: s.base_stat
-      }))
+      })),
+      evolutions,
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);

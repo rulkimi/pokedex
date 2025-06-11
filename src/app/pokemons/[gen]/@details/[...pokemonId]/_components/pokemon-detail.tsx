@@ -6,6 +6,7 @@ import DetailHeader from "./detail-header";
 import DetailImage from "./detail-image";
 import BaseStats from "./base-stats";
 import { useEffect } from "react";
+import Evolutions from "./evolutions";
 
 export default function Detail({
   image,
@@ -32,6 +33,7 @@ export default function Detail({
         bgColor={getTypeColor(arrangedTypes[0])}
       />
       <BaseStats stats={pokemon.stats} />
+      {pokemon.evolutions && <Evolutions evolutions={pokemon.evolutions} />}
     </div>
   );
 }
