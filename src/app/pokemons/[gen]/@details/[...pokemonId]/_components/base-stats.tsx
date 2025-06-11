@@ -1,4 +1,7 @@
+"use client"
+
 import { formatStat, getStatWidth, getTotalStats, Stat } from "@/lib/utils";
+import { motion } from "motion/react";
 
 export default function BaseStats({
   stats
@@ -18,9 +21,12 @@ export default function BaseStats({
 
       <div className="flex items-center justify-end mt-2 -mr-1 gap-4">
         <span className="font-semibold">TOTAL STATS: </span>
-        <span className="px-2 py-1 rounded-full bg-blue-600 text-white ">
+        <motion.span 
+          layoutId="total-stats"
+          className="px-2 py-1 rounded-full bg-blue-600 text-white"
+        >
           {getTotalStats(stats)}
-        </span>
+        </motion.span>
       </div>
     </section>
   );
@@ -33,14 +39,20 @@ const StatBar = ({ stat }: { stat: Stat }) => {
         {formatStat(stat.name)}
       </span>
       <span className="flex-grow bg-gray-200 rounded-full h-3">
-        <span
+        <motion.span
+          layoutId={`stat-${stat.name}`}
           className="flex justify-center bg-blue-600 h-3 rounded-full"
-          style={{ width: getStatWidth(stat) + '%' }}
-        ></span>
+          initial={{ width: getStatWidth(stat) + '%' }}
+          animate={{ width: getStatWidth(stat) + '%' }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        />
       </span>
-      <span className="w-12 flex justify-center font-semibold text-xs">
+      <motion.span 
+        layoutId={`stat-value-${stat.name}`}
+        className="w-12 flex justify-center font-semibold text-xs"
+      >
         {stat.value}
-      </span>
+      </motion.span>
     </>
   );
 }
