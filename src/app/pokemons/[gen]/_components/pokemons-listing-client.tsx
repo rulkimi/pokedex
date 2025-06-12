@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryState } from "nuqs";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useRef } from "react";
 import PokemonCard from "@/components/pokemon-card";
 import { Pokemon } from "../actions";
@@ -15,6 +15,8 @@ export default function PokemonListingClient({
 }) {
   const [search] = useQueryState("search", { defaultValue: "" });
   const router = useRouter();
+  const pathname = usePathname();
+  const currentActivePokemonId = pathname.split('/').pop();
   const lastClickedId = useRef<number | null>(null);
 
   const filteredPokemons = useMemo(
@@ -38,6 +40,7 @@ export default function PokemonListingClient({
           <PokemonCard
             pokemon={pokemon}
             onClick={handlePokemonClick}
+            activePokemon={currentActivePokemonId!}
           />
         </li>
       ))}
