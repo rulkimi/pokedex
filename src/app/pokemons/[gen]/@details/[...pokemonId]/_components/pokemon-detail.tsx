@@ -1,21 +1,23 @@
 "use client"
 
-import { getArrangedTypes, getTypeColor, playPokemonCry } from "@/lib/utils";
+import { getArrangedTypes, getDefaultPokemonImageUrl, getPokemonImageUrl, getTypeColor, playPokemonCry } from "@/lib/utils";
 import { PokemonDetail } from "../../../actions";
 import DetailHeader from "./detail-header";
 import DetailImage from "./detail-image";
 import BaseStats from "./base-stats";
 import { useEffect } from "react";
 import Evolutions from "./evolutions";
+import { useSprite } from "../../../sprite-provider";
 
 export default function Detail({
-  image,
   pokemon
 }: {
-  image: string;
   pokemon: PokemonDetail;
 }) {
   const arrangedTypes = getArrangedTypes(pokemon.types);
+  const { spriteType } = useSprite();
+
+  const imageUrl = spriteType === 'artwork' ? getPokemonImageUrl(pokemon.id) : getDefaultPokemonImageUrl(pokemon.id);
 
   useEffect(() => {
     playPokemonCry(pokemon.id);
@@ -28,7 +30,7 @@ export default function Detail({
         name={pokemon.name}
       />
       <DetailImage
-        url={image}
+        url={imageUrl}
         alt={`An image of ${pokemon.name}`}
         bgColor={getTypeColor(arrangedTypes[0])}
       />

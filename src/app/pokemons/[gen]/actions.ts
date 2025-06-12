@@ -11,7 +11,7 @@ interface FetchPokemonProps {
 export interface Pokemon {
   id: number;
   name: string;
-  image: string;
+  // image: string;
   url: string;
   types: string[];
 }
@@ -122,7 +122,7 @@ export const fetchPokemons = async ({
         return {
           id,
           name: pokemon.name,
-          image: getPokemonImageUrl(id),
+          // image: getPokemonImageUrl(id),
           url: pokemon.url,
           types,
         };

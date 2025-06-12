@@ -1,6 +1,7 @@
 import { Pokemon } from "@/app/pokemons/[gen]/actions";
-import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes, formatName } from "@/lib/utils";
+import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes, formatName, getPokemonImageUrl, getDefaultPokemonImageUrl } from "@/lib/utils";
 import Image from "next/image";
+import { useSprite } from "../sprite-provider";
 
 interface PokemomCardProps {
   pokemon: Pokemon;
@@ -17,6 +18,9 @@ export default function PokemonCard({
 }: PokemomCardProps ) {
   const pokemonTypes = getArrangedTypes(pokemon.types);
   const isActive = activePokemon === pokemon.id.toString();
+  const { spriteType } = useSprite();
+  const imageUrl = spriteType === 'artwork' ? getPokemonImageUrl(pokemon.id) : getDefaultPokemonImageUrl(pokemon.id);
+
   return (
     <div
       className={`
@@ -33,7 +37,7 @@ export default function PokemonCard({
         <Types types={pokemonTypes} />
       </div>
       <Image
-        src={pokemon.image}
+        src={imageUrl}
         width={IMAGE_SIZE}
         height={IMAGE_SIZE}
         alt={`Front image of ${pokemon.name}`}

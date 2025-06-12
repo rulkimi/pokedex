@@ -3,7 +3,7 @@
 import { useQueryState } from "nuqs";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useRef, useEffect } from "react";
-import PokemonCard from "@/components/pokemon-card";
+import PokemonCard from "@/app/pokemons/[gen]/_components/pokemon-card";
 import { Pokemon } from "../actions";
 
 export default function PokemonListingClient({

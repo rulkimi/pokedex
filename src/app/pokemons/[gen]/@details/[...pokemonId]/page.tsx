@@ -20,10 +20,9 @@ export default async function PokemonDetailPage({ params }: PokemonDetailProps) 
   if (pokemonId == 0) return <PlaceholderText text="Select a pokemon" />
 
   const pokemon = await fetchPokemonById(pokemonId);
-  const imageUrl = getPokemonImageUrl(pokemonId);
 
   if (!pokemon) return <PlaceholderText text="Pokemon not found!" />
 
-  return <PokemonDetail pokemon={pokemon} image={imageUrl} />
+  return <PokemonDetail pokemon={pokemon} />
 }
 
