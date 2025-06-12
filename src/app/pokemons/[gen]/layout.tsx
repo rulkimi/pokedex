@@ -13,7 +13,8 @@ export default function PokemonsLayout({
   return (
     <main className="font-mono container space-y-4 mx-auto p-8 px-4 lg:px-27 xl:px-56">
       <div className="flex gap-4">
-        <div className="space-y-2 w-1/2">
+
+        <div className="w-1/2 space-y-2">
           <div className="flex gap-1">
             <div className="w-2/3">
               <SearchPokemon />
@@ -26,6 +27,7 @@ export default function PokemonsLayout({
             {children}
           </ScrollArea>
         </div>
+
         <div className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg h-[calc(100vh-100px)]">
           {details}
         </div>

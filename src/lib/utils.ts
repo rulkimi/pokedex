@@ -22,6 +22,17 @@ const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
 	9: { limit: 120, offset: 905 }, // Generation 9
 };
 
+export const getPokemonGen = (id: number): number => {
+	for (const [gen, config] of Object.entries(GENERATION_LIMITS)) {
+		const { offset, limit } = config;
+		if (id > offset && id <= offset + limit) {
+			return parseInt(gen);
+		}
+	}
+	return 1; // Default to gen 1 if not found
+}
+
+
 export const formatName = (name: string) => {
   name = name.toLowerCase();
   let icon = '';

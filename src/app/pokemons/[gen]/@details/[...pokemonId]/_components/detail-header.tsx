@@ -1,4 +1,4 @@
-import { formatId, capitalizeFirstLetter, formatName } from "@/lib/utils";
+import { formatId, formatName } from "@/lib/utils";
 
 export default function DetailHeader({
   id,

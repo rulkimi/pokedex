@@ -31,7 +31,6 @@ export interface PokemonDetail {
   evolutions?: Evolution[];
 }
 
-
 const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
   try {
     const response = await fetch(url);
@@ -64,7 +63,6 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
 
     const pokemon = await response.json();
 
-    // Read evolutions.json from the filesystem
     const filePath = path.join(process.cwd(), "public", "evolutions.json");
     let evolutions: Evolution[] = [];
 
@@ -72,7 +70,6 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       const file = await fs.readFile(filePath, "utf-8");
       const evolutionsData = JSON.parse(file);
 
-      // Find evolution chain that includes this Pokémon
       for (const chain of Object.values(evolutionsData) as Evolution[][]) {
         if (chain.some((e) => e.id == id)) {
           evolutions = chain;
@@ -106,7 +103,6 @@ export const fetchPokemons = async ({
   const generation = getGeneration(gen);
   
   try {
-    // First, get the list of Pokemon for this generation
     const response = await fetch(
       `https://pokeapi.co/api/v2/pokemon?limit=${generation.limit}&offset=${generation.offset}`
     );

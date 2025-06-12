@@ -33,7 +33,9 @@ export default function Detail({
         bgColor={getTypeColor(arrangedTypes[0])}
       />
       <BaseStats stats={pokemon.stats} />
-      {pokemon.evolutions && <Evolutions evolutions={pokemon.evolutions} />}
+      {pokemon.evolutions && (
+        <Evolutions evolutions={pokemon.evolutions} />
+      )}
     </div>
   );
 }

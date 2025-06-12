@@ -9,8 +9,8 @@ export default function BaseStats({
   stats: Stat[];
 }) {
   return (
-    <section>
-      <h2 className="text-lg font-bold">Base Stats</h2>
+    <section className="space-y-2">
+      <h2 className="text-lg font-bold uppercase">Base Stats</h2>
       <ul>
         {stats.map(stat => (
           <li key={stat.name} className="flex items-center">
