@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import { useRouter, usePathname } from "next/navigation";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import PokemonCard from "@/components/pokemon-card";
 import { Pokemon } from "../actions";
 
@@ -33,10 +33,17 @@ export default function PokemonListingClient({
     router.push(`/pokemons/${gen}/${pokemonId}`);
   };
 
+  useEffect(() => {
+    if (currentActivePokemonId) {
+      const element = document.getElementById(`pokemon-${currentActivePokemonId}`);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentActivePokemonId]);
+
   return (
     <ul className="space-y-1">
       {filteredPokemons.map((pokemon) => (
-        <li key={pokemon.name}>
+        <li key={pokemon.name} id={`pokemon-${pokemon.id}`}>
           <PokemonCard
             pokemon={pokemon}
             onClick={handlePokemonClick}
