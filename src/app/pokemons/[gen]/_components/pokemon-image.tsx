@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useSprite } from "../sprite-provider";
 import { getDefaultPokemonImageUrl, getPokemonImageUrl } from "@/lib/utils";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function PokemonImage({
   pokemonId,
@@ -21,13 +22,23 @@ export default function PokemonImage({
   const size = imageSize * imageSizeFactor;
   
   return (
-    <Image
-      src={imageUrl}
-      width={size}
-      height={size}
-      className={className}
-      alt={alt}
-      loading={loading}
-    />
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={imageUrl}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Image
+          src={imageUrl}
+          width={size}
+          height={size}
+          className={className}
+          alt={alt}
+          loading={loading}
+        />
+      </motion.div>
+    </AnimatePresence>
   );
 }

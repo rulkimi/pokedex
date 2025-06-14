@@ -17,11 +17,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// export const metadata = {
-// 	title: "Who's That Pokémon",
-// 	description: "Test your Pokémon knowledge by guessing the Pokémon from its image. Choose your generations and challenge yourself!",
-// };
-
 export default function Guess() {
 	const [selectedGens, setSelectedGens] = useState<number[]>([1]);
 	const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
@@ -29,6 +24,7 @@ export default function Guess() {
 	const [score, setScore] = useState(0);
 	const [attempts, setAttempts] = useState(0);
 	const [showPokemon, setShowPokemon] = useState(false);
+	const [isChanging, setIsChanging] = useState(false);
 
 	const generateRandomPokemon = async () => {
 		if (selectedGens.length === 0) {
@@ -36,6 +32,7 @@ export default function Guess() {
 			return;
 		}
 
+		setIsChanging(true);
 		// get random generation from selected gens
 		const randomGenIndex = Math.floor(Math.random() * selectedGens.length);
 		const gen = selectedGens[randomGenIndex];
@@ -47,6 +44,7 @@ export default function Guess() {
 		setGuess("");
 		setAttempts(0);
 		setShowPokemon(false);
+		setIsChanging(false);
 	};
 
 	const checkGuess = () => {
@@ -126,26 +124,42 @@ export default function Guess() {
 						<div className="space-y-4">
 							<div className="flex justify-center">
 								<AnimatePresence mode="wait">
-									{showPokemon ? (
-										<motion.div
-											initial={{ scale: 0.8, opacity: 0 }}
-											animate={{ scale: 1.2, opacity: 1 }}
-											exit={{ scale: 0.8, opacity: 0 }}
-											transition={{ duration: 0.3 }}
-										>
+									<motion.div
+										key={pokemon.id}
+										initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+										animate={{ 
+											scale: showPokemon ? 1.2 : 1, 
+											opacity: 1, 
+											rotate: 0,
+											transition: {
+												type: "spring",
+												stiffness: 260,
+												damping: 20
+											}
+										}}
+										exit={{ 
+											scale: 0.8, 
+											opacity: 0, 
+											rotate: 10,
+											transition: {
+												duration: 0.2
+											}
+										}}
+									>
+										{showPokemon ? (
 											<PokemonImage
 												pokemonId={pokemon.id}
 												alt={pokemon.name}
 												className="w-64 h-64 object-contain"
 											/>
-										</motion.div>
-									) : (
-										<PokemonImage
-											pokemonId={pokemon.id}
-											alt="Pokemon silhoutte"
-											className="w-64 h-64 object-contain filter brightness-0"
-										/>
-									)}
+										) : (
+											<PokemonImage
+												pokemonId={pokemon.id}
+												alt="Pokemon silhoutte"
+												className="w-64 h-64 object-contain filter brightness-0"
+											/>
+										)}
+									</motion.div>
 								</AnimatePresence>
 							</div>
 							<div className="flex gap-2">
