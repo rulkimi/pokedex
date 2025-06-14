@@ -2,8 +2,6 @@ import { ReactNode } from "react";
 import GenSelect from "../_components/gen-select";
 import SearchPokemon from "../_components/search-pokemon";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SpriteProvider } from "./sprite-provider";
-import TopNav from "../_components/top-nav";
 
 export default function PokemonsLayout({
   children,

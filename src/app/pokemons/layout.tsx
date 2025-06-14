@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { SpriteProvider } from "./[gen]/sprite-provider";
 import TopNav from "./_components/top-nav";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Layout({
   children
@@ -13,6 +14,7 @@ export default function Layout({
         <TopNav />
         {children}
       </SpriteProvider>
+      <Toaster />
     </main>
   );
 }

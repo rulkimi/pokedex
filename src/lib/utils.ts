@@ -10,7 +10,7 @@ interface GenerationConfig {
 	offset: number;
 }
 
-const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
+export const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
 	1: { limit: 151, offset: 0 }, // Generation 1
 	2: { limit: 100, offset: 151 }, // Generation 2
 	3: { limit: 135, offset: 251 }, // Generation 3
