@@ -4,6 +4,11 @@ import { useSprite } from "../[gen]/sprite-provider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Label } from "@/components/ui/label";
+import {
+	RadioGroup,
+	RadioGroupItem,
+} from "@/components/ui/radio-group";
 
 const SPRITE_TYPE_KEY = "pokemon-sprite-type";
 
@@ -53,12 +58,21 @@ export default function TopNav() {
 					<TabsTrigger value="guess">Guess</TabsTrigger>
 				</TabsList>
 			</Tabs>
-			<Tabs defaultValue={defaultSprite} onValueChange={handleSpriteChange}>
-				<TabsList>
-					<TabsTrigger value="default">Default</TabsTrigger>
-					<TabsTrigger value="artwork">Artwork</TabsTrigger>
-				</TabsList>
-			</Tabs>
+			<RadioGroup
+        className="flex gap-2"
+        defaultValue={defaultSprite}
+        onValueChange={handleSpriteChange}
+      >
+        <Label className="mr-2">Sprite: </Label>
+				<div className="flex items-center gap-3">
+					<RadioGroupItem value="default" id="sprite-default" />
+					<Label htmlFor="sprite-default">Default</Label>
+				</div>
+				<div className="flex items-center gap-3">
+					<RadioGroupItem value="artwork" id="sprite-artwork" />
+					<Label htmlFor="sprite-artwork">Artwork</Label>
+				</div>
+			</RadioGroup>
 		</nav>
 	);
 }
