@@ -2,17 +2,15 @@
 
 import { useEffect } from "react";
 import { motion, useAnimation } from "motion/react";
-import Image from "next/image";
+import PokemonImage from "../../../_components/pokemon-image";
+import { PokemonDetail } from "../../../actions";
+import { getArrangedTypes, getTypeColor } from "@/lib/utils";
 
 export default function DetailImage({
-  url,
-  alt,
-  bgColor,
+  pokemon,
   onClick,
 }: {
-  url: string;
-  alt: string;
-  bgColor: string;
+  pokemon: PokemonDetail;
   onClick?: () => void;
 }) {
   const controls = useAnimation();
@@ -105,6 +103,9 @@ export default function DetailImage({
     await animation();
   };
 
+  const arrangedTypes = getArrangedTypes(pokemon.types);
+  const bgColor = getTypeColor(arrangedTypes[0]);
+
   useEffect(() => {
     triggerAnimation();
   }, []);
@@ -118,13 +119,11 @@ export default function DetailImage({
       }}
     >
       <motion.div animate={controls}>
-        <Image
-          src={url}
-          width={200}
-          height={200}
+        <PokemonImage
+          pokemonId={pokemon.id}
+          alt={`An image of ${pokemon.name}.`}
+          imageSize={200}
           className="object-cover group-hover:scale-150 transition-transform duration-300"
-          alt={alt}
-          loading="lazy"
         />
       </motion.div>
 

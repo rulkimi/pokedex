@@ -1,15 +1,12 @@
 import { Pokemon } from "@/app/pokemons/[gen]/actions";
-import { formatId, getTypeColor, capitalizeFirstLetter, getArrangedTypes, formatName, getPokemonImageUrl, getDefaultPokemonImageUrl } from "@/lib/utils";
-import Image from "next/image";
-import { useSprite } from "../sprite-provider";
+import { formatId, getTypeColor, getArrangedTypes, formatName } from "@/lib/utils";
+import PokemonImage from "./pokemon-image";
 
 interface PokemomCardProps {
   pokemon: Pokemon;
   onClick: (pokemonId: number) => void;
   activePokemon: string;
 }
-
-const IMAGE_SIZE = 80;
 
 export default function PokemonCard({
   pokemon,
@@ -18,8 +15,6 @@ export default function PokemonCard({
 }: PokemomCardProps ) {
   const pokemonTypes = getArrangedTypes(pokemon.types);
   const isActive = activePokemon === pokemon.id.toString();
-  const { spriteType } = useSprite();
-  const imageUrl = spriteType === 'artwork' ? getPokemonImageUrl(pokemon.id) : getDefaultPokemonImageUrl(pokemon.id);
 
   return (
     <div
@@ -36,18 +31,13 @@ export default function PokemonCard({
         />
         <Types types={pokemonTypes} />
       </div>
-      <Image
-        src={imageUrl}
-        width={IMAGE_SIZE}
-        height={IMAGE_SIZE}
-        alt={`Front image of ${pokemon.name}`}
+      <PokemonImage
+        pokemonId={pokemon.id}
         className={`
           ${isActive ? 'scale-125' : 'group-hover:scale-150'}
           group-hover:rotate-6 transition-transform duration-500
         `}
-        loading="lazy"
-        // placeholder="blur"
-        // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+        alt={`Front image of ${pokemon.name}`}
       />
     </div>
   );
