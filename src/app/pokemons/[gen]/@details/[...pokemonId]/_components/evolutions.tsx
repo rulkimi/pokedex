@@ -30,6 +30,7 @@ export default function Evolutions({ evolutions }: { evolutions: Evolution[] }) 
                 height={100}
                 className="object-cover group-hover:scale-150 transition-transform duration-300 cursor-pointer hover:scale-105"
                 alt={`An image of ${evolution.name}`}
+                loading="lazy"
               />
               <p
                 className="text-sm text-center"

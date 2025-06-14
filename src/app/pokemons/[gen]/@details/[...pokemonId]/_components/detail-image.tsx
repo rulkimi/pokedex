@@ -124,6 +124,7 @@ export default function DetailImage({
           height={200}
           className="object-cover group-hover:scale-150 transition-transform duration-300"
           alt={alt}
+          loading="lazy"
         />
       </motion.div>
 
