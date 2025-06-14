@@ -49,7 +49,7 @@ export default function TopNav() {
 		<nav className="flex justify-between mb-4">
 			<Tabs defaultValue={defaultRoute} onValueChange={handleRouteChange}>
 				<TabsList>
-					<TabsTrigger value="pokedex">Pokedex</TabsTrigger>
+					<TabsTrigger value="pokedex">Pokédex</TabsTrigger>
 					<TabsTrigger value="guess">Guess</TabsTrigger>
 				</TabsList>
 			</Tabs>

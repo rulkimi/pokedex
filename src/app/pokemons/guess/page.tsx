@@ -17,6 +17,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// export const metadata = {
+// 	title: "Who's That Pokémon",
+// 	description: "Test your Pokémon knowledge by guessing the Pokémon from its image. Choose your generations and challenge yourself!",
+// };
+
 export default function Guess() {
 	const [selectedGens, setSelectedGens] = useState<number[]>([1]);
 	const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
