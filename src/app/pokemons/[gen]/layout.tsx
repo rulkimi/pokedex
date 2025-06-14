@@ -13,29 +13,24 @@ export default function PokemonsLayout({
   details: ReactNode;
 }) {
   return (
-    <main className="font-mono container space-y-4 mx-auto p-8 px-4 lg:px-27 xl:px-56">
-      <SpriteProvider>
-        <TopNav />
-        <div className="flex gap-4">
-          <div className="w-1/2 space-y-2">
-            <div className="flex gap-1">
-              <div className="w-2/3">
-                <SearchPokemon />
-              </div>
-              <div className="w-1/3">
-                <GenSelect />
-              </div>
-            </div>
-            <ScrollArea className="h-[calc(100vh-160px)]">
-              {children}
-            </ScrollArea>
+    <div className="flex gap-4">
+      <aside className="w-1/2 space-y-2">
+        <div className="flex gap-1">
+          <div className="w-2/3">
+            <SearchPokemon />
           </div>
-
-          <div className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg h-[calc(100vh-120px)]">
-            {details}
+          <div className="w-1/3">
+            <GenSelect />
           </div>
         </div>
-      </SpriteProvider>
-    </main>
+        <ScrollArea className="h-[calc(100vh-160px)]">
+          {children}
+        </ScrollArea>
+      </aside>
+
+      <article className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg h-[calc(100vh-120px)]">
+        {details}
+      </article>
+    </div>
   );
 }
