@@ -1,6 +1,6 @@
 "use client"
 
-import { formatName, getPokemonGen } from "@/lib/utils";
+import { formatName, getPokemonGen, playPokemonCry } from "@/lib/utils";
 import { Evolution } from "../../../actions";
 import { useRouter } from "next/navigation";
 import PokemonImage from "../../../_components/pokemon-image";
@@ -8,18 +8,23 @@ import PokemonImage from "../../../_components/pokemon-image";
 export default function Evolutions({ evolutions }: { evolutions: Evolution[] }) {
   const router = useRouter();
   
+  const handleEvolutionClick = (pokemonId: number,) => {
+    playPokemonCry(pokemonId);
+    const pokemonGen = getPokemonGen(pokemonId);
+    const pokemonUrl = `/pokemons/${pokemonGen}/${pokemonId}`;
+    router.push(pokemonUrl)
+  }
+  
   return (
     <section className="space-y-2">
       <h2 className="text-lg font-bold uppercase">Evolutions</h2>
       <ul className="grid grid-cols-3 gap-2 place-items-center">
         {evolutions.map((evolution) => {
-          const pokemonGen = getPokemonGen(evolution.id);
-          const pokemonUrl = `/pokemons/${pokemonGen}/${evolution.id}`;
-          
+
           return (
             <li
               key={evolution.id}
-              onClick={() => router.push(pokemonUrl)}
+              onClick={() => handleEvolutionClick(evolution.id)}
             >
               <PokemonImage
                 pokemonId={evolution.id}
