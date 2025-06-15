@@ -7,14 +7,22 @@ import DetailImage from "./detail-image";
 import BaseStats from "./base-stats";
 import { useEffect } from "react";
 import Evolutions from "./evolutions";
+import { useDetailsMobileView } from "@/app/pokemons/details-mobile-view-provider";
 
 export default function Detail({
   pokemon
 }: {
   pokemon: PokemonDetail;
 }) {
+  const { isOpen, setIsOpen } = useDetailsMobileView();
+
   useEffect(() => {
-    playPokemonCry(pokemon.id);
+    setIsOpen(true);
+    // playPokemonCry(pokemon.id);
+
+    return () => {
+      setIsOpen(false);
+    };
   }, []);
 
   return (

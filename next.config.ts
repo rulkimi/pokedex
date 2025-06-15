@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
         hostname: 'pokeapi.co',
         pathname: '/**',
       }
-    ]
+    ],
+    unoptimized: true
   }
 };
 

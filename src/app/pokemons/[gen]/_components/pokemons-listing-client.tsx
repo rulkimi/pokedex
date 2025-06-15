@@ -5,6 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useRef, useEffect } from "react";
 import PokemonCard from "@/app/pokemons/[gen]/_components/pokemon-card";
 import { Pokemon } from "../actions";
+import { useDetailsMobileView } from "../../details-mobile-view-provider";
+import { playPokemonCry } from "@/lib/utils";
 
 export default function PokemonListingClient({
   gen,
@@ -15,6 +17,7 @@ export default function PokemonListingClient({
 }) {
   const [search] = useQueryState("search", { defaultValue: "" });
   const router = useRouter();
+  const { setIsOpen } = useDetailsMobileView();
   const pathname = usePathname();
   const currentActivePokemonId = pathname.split('/').pop();
   const lastClickedId = useRef<number | null>(null);
@@ -30,7 +33,9 @@ export default function PokemonListingClient({
   const handlePokemonClick = (pokemonId: number) => {
     if (lastClickedId.current === pokemonId) return;
     lastClickedId.current = pokemonId;
+    playPokemonCry(pokemonId);
     router.push(`/pokemons/${gen}/${pokemonId}`);
+    setTimeout(() => setIsOpen(true), 300);
   };
 
   useEffect(() => {
