@@ -12,20 +12,20 @@ export default function PokemonListingSkeleton() {
           <div className="flex items-center gap-2 justify-between">
             <div className="space-y-2">
               <div
-                className="h-4 bg-gray-100 rounded-md animate-pulse"
+                className="h-4 bg-muted rounded-md animate-pulse"
                 style={{ width: getRandomWidth(60, 120) }}
               ></div>
               <div className="flex gap-1">
                 {Array.from({ length: 3 }, (_, j) => (
                   <div
                     key={j}
-                    className="px-2 py-0.5 rounded-xl h-6 bg-gray-100 animate-pulse"
+                    className="px-2 py-0.5 rounded-xl h-6 bg-muted animate-pulse"
                     style={{ width: getRandomWidth(40, 70) }}
                   ></div>
                 ))}
               </div>
             </div>
-            <div className="size-[80px] bg-gray-100 rounded-full animate-pulse"></div>
+            <div className="size-[80px] bg-muted rounded-full animate-pulse"></div>
           </div>
         </li>
       ))}

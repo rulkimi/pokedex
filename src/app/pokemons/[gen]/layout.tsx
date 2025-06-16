@@ -29,7 +29,7 @@ export default function PokemonsLayout({
             <GenSelect />
           </div>
         </div>
-        <ScrollArea className="h-[calc(100vh-160px)]">
+        <ScrollArea className="h-[calc(100vh-175px)]">
           {children}
         </ScrollArea>
       </aside>
@@ -38,7 +38,7 @@ export default function PokemonsLayout({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="fixed inset-0 z-50 bg-white top-18 border shadow-md rounded-t-4xl"
+              className="fixed inset-0 z-50 bg-background top-20 border shadow-md rounded-t-4xl"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -56,8 +56,8 @@ export default function PokemonsLayout({
             </motion.div>
           )}
         </AnimatePresence>
-      ): (
-        <article className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg h-[calc(100vh-120px)]">
+      ) : (
+        <article className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg max-h-full">
           {details}
         </article>
       )}

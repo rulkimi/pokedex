@@ -27,7 +27,7 @@ export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          Generations ({selectedGens.join(" | ")})
+          Generations ( {selectedGens.join(" | ")} )
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

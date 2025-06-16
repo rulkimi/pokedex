@@ -38,7 +38,7 @@ const StatBar = ({ stat }: { stat: Stat }) => {
       <span className="flex-none text-start text-xs w-[50px] uppercase font-semibold">
         {formatStat(stat.name)}
       </span>
-      <span className="flex-grow bg-gray-200 rounded-full h-3">
+      <span className="flex-grow bg-muted rounded-full h-3">
         <motion.span
           layoutId={`stat-${stat.name}`}
           className="flex justify-center bg-blue-600 h-3 rounded-full"
