@@ -23,7 +23,7 @@ export default function BaseStats({
         <span className="font-semibold">TOTAL STATS: </span>
         <motion.span 
           layoutId="total-stats"
-          className="px-2 py-1 rounded-full bg-blue-600 text-white"
+          className="px-2 py-1 rounded-full bg-primary text-white"
         >
           {getTotalStats(stats)}
         </motion.span>
@@ -41,7 +41,7 @@ const StatBar = ({ stat }: { stat: Stat }) => {
       <span className="flex-grow bg-muted rounded-full h-3">
         <motion.span
           layoutId={`stat-${stat.name}`}
-          className="flex justify-center bg-blue-600 h-3 rounded-full"
+          className="flex justify-center bg-primary h-3 rounded-full"
           initial={{ width: getStatWidth(stat) + '%' }}
           animate={{ width: getStatWidth(stat) + '%' }}
           transition={{ duration: 0.5, ease: "easeOut" }}
