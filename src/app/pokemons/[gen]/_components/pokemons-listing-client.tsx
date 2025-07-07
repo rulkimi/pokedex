@@ -7,6 +7,7 @@ import PokemonCard from "@/app/pokemons/[gen]/_components/pokemon-card";
 import { Pokemon } from "../actions";
 import { useDetailsMobileView } from "../../details-mobile-view-provider";
 import { playPokemonCry } from "@/lib/utils";
+import { refreshPage } from "@/app/actions";
 
 export default function PokemonListingClient({
   gen,
@@ -30,12 +31,13 @@ export default function PokemonListingClient({
     [pokemons, search]
   );
 
-  const handlePokemonClick = (pokemonId: number) => {
+  const handlePokemonClick = async (pokemonId: number) => {
     if (lastClickedId.current === pokemonId) return;
+    await refreshPage(`/pokemons/${gen}/${pokemonId}`);
     lastClickedId.current = pokemonId;
-    playPokemonCry(pokemonId);
     router.push(`/pokemons/${gen}/${pokemonId}`);
     setTimeout(() => setIsOpen(true), 300);
+    playPokemonCry(pokemonId);
   };
 
   useEffect(() => {

@@ -18,9 +18,9 @@ const PlaceholderText = ({ text }: { text: string}) => {
 export async function generateMetadata({ params }: PokemonDetailProps): Promise<Metadata> {
   const { pokemonId } = await params;
   
-  if (pokemonId === 0) {
+  if (pokemonId == 0) {
     return {
-      title: 'Select a Pokemon'
+      title: 'Pokémon'
     }
   }
 
