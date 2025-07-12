@@ -23,8 +23,8 @@ A responsive and modern Pokédex built with Next.js. It pulls data from PokéAPI
 ```bash
 git clone https://github.com/rulkimi/pokedex.git
 cd pokedex
-pnpm install
-pnpm dev
+npm install
+npm dev
 ```
 
 ## Project Structure
