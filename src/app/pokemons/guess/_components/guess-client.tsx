@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Lightbulb, RefreshCw, Eye, SkipForward } from "lucide-react";
 
 export default function GuessClient() {
-	const [selectedGens, setSelectedGens] = useState<number[]>([1]);
+	const [selectedGens, setSelectedGens] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 	const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
 	const [guess, setGuess] = useState("");
 	const [score, setScore] = useState(0);

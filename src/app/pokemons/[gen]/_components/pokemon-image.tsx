@@ -32,6 +32,7 @@ export default function PokemonImage({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
         transition={{ duration: 0.2 }}
+        className="pointer-events-none"
       >
         <Image
           src={imageUrl}

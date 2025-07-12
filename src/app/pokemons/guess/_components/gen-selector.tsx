@@ -23,12 +23,17 @@ export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
     );
   };
 
+  const allGenerations = Object.keys(GENERATION_LIMITS).map(Number);
+  const isAllSelected = allGenerations.every((gen) =>
+    selectedGens.includes(gen)
+  );
+
+  const displayText = isAllSelected ? "All" : selectedGens.join(" | ");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          Generations ( {selectedGens.join(" | ")} )
-        </Button>
+        <Button variant="outline">Generations ( {displayText} )</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {Object.keys(GENERATION_LIMITS).map((gen) => {
