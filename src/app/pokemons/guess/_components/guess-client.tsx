@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,10 @@ type Message = {
 	description?: string;
 };
 
+function getRandomInt(min: number, max: number) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export default function GuessClient() {
 	const [selectedGens, setSelectedGens] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 	const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
@@ -28,43 +32,66 @@ export default function GuessClient() {
 	const [hint, setHint] = useState("");
 	const [message, setMessage] = useState<Message | null>(null);
 	const [showAnswerState, setShowAnswerState] = useState(false);
+	const [showWrongAnswer, setShowWrongAnswer] = useState(false);
+	const attemptsRef = useRef(0);
 
-	const generateRandomPokemon = async () => {
+	// Helper to get a random pokemon from selected gens only
+	const getRandomPokemonFromSelectedGens = async () => {
 		if (selectedGens.length === 0) {
 			setMessage({
 				type: "error",
 				title: "No Generations Selected",
 				description: "Please select at least one generation.",
 			});
-			return;
+			return null;
 		}
-		const gen = selectedGens[Math.floor(Math.random() * selectedGens.length)];
+		// Pick a random gen from selected
+		const gen = selectedGens[getRandomInt(0, selectedGens.length - 1)];
 		const { offset, limit } = getGeneration(gen);
-		const randomId = Math.floor(Math.random() * limit) + offset + 1;
-		const newPokemon = await fetchPokemonById(randomId);
+		const randomId = getRandomInt(offset + 1, offset + limit);
+		const poke = await fetchPokemonById(randomId);
+		// Defensive: If the fetched pokemon is not in selected gens, try again (shouldn't happen, but just in case)
+		if (poke && selectedGens.includes(getPokemonGen(poke.id))) {
+			return poke;
+		} else {
+			// Try again recursively, but avoid infinite loop
+			return getRandomPokemonFromSelectedGens();
+		}
+	};
+
+	const generateRandomPokemon = async () => {
+		const newPokemon = await getRandomPokemonFromSelectedGens();
 		setPokemon(newPokemon);
 		setGuess("");
 		setAttempts(0);
+		attemptsRef.current = 0;
 		setShowPokemon(false);
 		setHint("");
 		setMessage(null);
 		setShowAnswerState(false);
+		setShowWrongAnswer(false);
 	};
 
 	const checkGuess = () => {
 		if (!pokemon) return;
-		setAttempts(prev => prev + 1);
+		const normalizedGuess = guess.trim().toLowerCase();
+		const normalizedName = pokemon.name.toLowerCase();
 
-		if (guess.trim().toLowerCase() === pokemon.name.toLowerCase()) {
+		const newAttempts = attempts + 1;
+		setAttempts(newAttempts);
+		attemptsRef.current = newAttempts;
+
+		if (normalizedGuess === normalizedName) {
 			setScore(prev => prev + 1);
 			playPokemonCry(pokemon.id);
 			setShowPokemon(true);
 			setMessage({
 				type: "success",
 				title: "Correct!",
-				description: `You guessed it in ${attempts + 1} attempt${attempts + 1 === 1 ? "" : "s"}!`,
+				description: `You guessed it in ${newAttempts} attempt${newAttempts === 1 ? "" : "s"}!`,
 			});
 			setShowAnswerState(true);
+			setShowWrongAnswer(false);
 			setTimeout(() => {
 				setMessage(null);
 				generateRandomPokemon();
@@ -75,6 +102,12 @@ export default function GuessClient() {
 				title: "Wrong guess!",
 				description: "Try again!",
 			});
+			setShowWrongAnswer(true);
+			// Hide the wrong answer message after 1.5s
+			setTimeout(() => {
+				setShowWrongAnswer(false);
+				setMessage(null);
+			}, 1500);
 		}
 	};
 
@@ -103,13 +136,8 @@ export default function GuessClient() {
 			`Last letter is "${pokemon.name[pokemon.name.length - 1]}"`,
 			`It has ${pokemon.name.length} letters`
 		];
-		const randomHint = hints[Math.floor(Math.random() * hints.length)];
+		const randomHint = hints[getRandomInt(0, hints.length - 1)];
 		setHint(randomHint);
-		// setMessage({
-		// 	type: "info",
-		// 	title: "Hint",
-		// 	description: randomHint,
-		// });
 	};
 
 	useEffect(() => {
@@ -167,7 +195,6 @@ export default function GuessClient() {
 						</Button>
 					</div>
 
-
 					{pokemon && (
 						<div className="space-y-4 sm:space-y-6">
 							<div className="relative">
@@ -179,56 +206,56 @@ export default function GuessClient() {
 								)}
 							</div>
 
-            {showAnswerState ? (
-              renderMessage()
-            ) : (
-              <div className="flex flex-col gap-2 sm:gap-3">
-                <div className="flex gap-2 max-w-md mx-auto w-full">
-                  <Input
-                    placeholder="Enter Pokémon name..."
-                    value={guess}
-                    onChange={(e) => setGuess(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && checkGuess()}
-                    className="flex-1"
-                    disabled={showAnswerState}
-                  />
-                  <Button onClick={checkGuess} disabled={showAnswerState}>Guess</Button>
-                </div>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={showHint}
-                    className="flex-1 sm:flex-none"
-                    disabled={showAnswerState}
-                  >
-                    <Lightbulb className="mr-2 h-4 w-4" /> Hint
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={showAnswer}
-                    className="flex-1 sm:flex-none"
-                    disabled={showAnswerState}
-                  >
-                    <Eye className="mr-2 h-4 w-4" /> Show Answer
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={generateRandomPokemon}
-                    className="flex-1 sm:flex-none"
-                  >
-                    <SkipForward className="mr-2 h-4 w-4" /> Skip
-                  </Button>
-                </div>
-                {/* {showAnswerState && pokemon && (
-                  <div className="flex flex-col items-center mt-4">
-                    <div className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-white" />
-                      The answer is <span className="ml-1 font-bold">{pokemon.name}</span>!
-                    </div>
-                  </div>
-                )} */}
-              </div>
-            )}
+							{showAnswerState ? (
+								renderMessage()
+							) : (
+								<div className="flex flex-col gap-2 sm:gap-3">
+									<div className="flex gap-2 max-w-md mx-auto w-full">
+										<Input
+											placeholder="Enter Pokémon name..."
+											value={guess}
+											onChange={(e) => setGuess(e.target.value)}
+											onKeyDown={(e) => e.key === "Enter" && checkGuess()}
+											className="flex-1"
+											disabled={showAnswerState}
+										/>
+										<Button onClick={checkGuess} disabled={showAnswerState}>Guess</Button>
+									</div>
+									{showWrongAnswer && (
+										<div className="flex justify-center">
+											<div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-2 mt-2 shadow-sm transition-all">
+												<XCircle className="text-red-500" />
+												<span>Wrong guess! Try again!</span>
+											</div>
+										</div>
+									)}
+									<div className="flex flex-wrap gap-2 justify-center">
+										<Button
+											variant="outline"
+											onClick={showHint}
+											className="flex-1 sm:flex-none"
+											disabled={showAnswerState}
+										>
+											<Lightbulb className="mr-2 h-4 w-4" /> Hint
+										</Button>
+										<Button
+											variant="outline"
+											onClick={showAnswer}
+											className="flex-1 sm:flex-none"
+											disabled={showAnswerState}
+										>
+											<Eye className="mr-2 h-4 w-4" /> Show Answer
+										</Button>
+										<Button
+											variant="outline"
+											onClick={generateRandomPokemon}
+											className="flex-1 sm:flex-none"
+										>
+											<SkipForward className="mr-2 h-4 w-4" /> Skip
+										</Button>
+									</div>
+								</div>
+							)}
 						</div>
 					)}
 				</CardContent>
