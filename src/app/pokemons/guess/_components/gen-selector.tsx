@@ -1,14 +1,14 @@
 "use client";
 
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { GENERATION_LIMITS } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import { GENERATION_LIMITS } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+} from "@/components/ui/popover";
 
 type Props = {
 	selectedGens: number[];
@@ -60,37 +60,60 @@ export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
 		selectedGens.includes(gen)
 	);
 
-	const displayText = isAllSelected ? "All" : selectedGens.join(" | ");
+	const displayText = isAllSelected
+		? "All"
+		: selectedGens.length
+		? selectedGens.join(" | ")
+		: "None";
 
 	return (
-		<DropdownMenu open={open} onOpenChange={setOpen}>
-			<DropdownMenuTrigger asChild>
-				<Button variant="outline">Generations ( {displayText} )</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				onCloseAutoFocus={e => {
-					// Prevent closing on checkbox click
-					e.preventDefault();
-				}}
-			>
-				{Object.keys(GENERATION_LIMITS).map((gen) => {
-					const genNum = Number(gen);
-					return (
-						<DropdownMenuCheckboxItem
-							key={gen}
-							checked={selectedGens.includes(genNum)}
-							onCheckedChange={() => {
-								toggleGen(genNum);
-								// Don't close dropdown on check
-							}}
-							// Prevent dropdown from closing on click
-							onSelect={e => e.preventDefault()}
-						>
-							Gen {gen}
-						</DropdownMenuCheckboxItem>
-					);
-				})}
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<Button
+					variant="outline"
+					role="combobox"
+					aria-expanded={open}
+					className="min-w-[160px] justify-between"
+				>
+					Generations (
+					<span className="mx-1 font-mono">
+						{displayText}
+					</span>
+					)
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="p-0 w-40">
+				<ul className="py-1">
+					{allGenerations.map((genNum) => {
+						const selected = selectedGens.includes(genNum);
+						return (
+							<li
+								key={genNum}
+								role="option"
+								aria-selected={selected}
+								className={`flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-muted transition-colors select-none ${selected ? "font-bold bg-muted" : ""}`}
+								tabIndex={0}
+								onClick={() => toggleGen(genNum)}
+								onKeyDown={e => {
+									if (e.key === " " || e.key === "Enter") {
+										e.preventDefault();
+										toggleGen(genNum);
+									}
+								}}
+							>
+								<Checkbox
+									checked={selected}
+									onCheckedChange={() => toggleGen(genNum)}
+									className="mr-2"
+									aria-label={`Toggle Gen ${genNum}`}
+									tabIndex={-1}
+								/>
+								<span>Gen {genNum}</span>
+							</li>
+						);
+					})}
+				</ul>
+			</PopoverContent>
+		</Popover>
 	);
 }
