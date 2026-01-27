@@ -16,6 +16,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Pokédex",
   description: "A modern Pokédex application to explore and learn about Pokémon. Browse through generations, view detailed information, and test your knowledge with the guessing game.",
+  openGraph: {
+    title: "Pokédex",
+    description: "A modern Pokédex application to explore and learn about Pokémon. Browse through generations, view detailed information, and test your knowledge with the guessing game.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Pokédex",
+      },
+    ],
+  },
+  metadataBase: new URL("https://pokedex.rulkimi.com"),
 };
 
 export default function RootLayout({
