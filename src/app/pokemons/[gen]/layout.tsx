@@ -56,12 +56,12 @@ export default function PokemonsLayout({
               }}
             >
               <div 
-                className="w-full h-8 flex items-center justify-center cursor-grab touch-none flex-shrink-0 pt-2 absolute top-0 z-50"
+                className="w-full h-10 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0 z-50"
                 onPointerDown={(e) => dragControls.start(e)}
               >
-                <div className="w-12 h-1.5 bg-white/50 backdrop-blur-md rounded-full" />
+                <div className="w-12 h-1.5 bg-foreground/20 rounded-full" />
               </div>
-              <div className="h-full w-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-1 min-h-0 overflow-y-auto touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {details}
               </div>
             </motion.div>
