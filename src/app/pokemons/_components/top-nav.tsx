@@ -27,7 +27,7 @@ export default function TopNav() {
   const [defaultSprite, setDefaultSprite] = useState<
     "default" | "artwork" | "home" | "showdown" | null
   >(null);
-  const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess">(
+  const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess" | "catch">(
     "pokedex"
   );
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
@@ -56,9 +56,10 @@ export default function TopNav() {
     setDefaultSprite(initial);
     setSpriteType(initial);
 
-    // Set initial route based on current pathname
     if (pathname.includes("/guess")) {
       setDefaultRoute("guess");
+    } else if (pathname.includes("/catch")) {
+      setDefaultRoute("catch");
     } else {
       setDefaultRoute("pokedex");
     }
@@ -69,6 +70,7 @@ export default function TopNav() {
     // Prefetch routes in background for instant navigation
     router.prefetch("/pokemons/1/0");
     router.prefetch("/pokemons/guess");
+    router.prefetch("/pokemons/catch");
   }, [setSpriteType, pathname, router]);
 
   const handleSpriteChange = (value: string) => {
@@ -85,6 +87,8 @@ export default function TopNav() {
         router.push("/pokemons/1/0");
       } else if (value === "guess") {
         router.push("/pokemons/guess");
+      } else if (value === "catch") {
+        router.push("/pokemons/catch");
       }
     });
   };
@@ -102,6 +106,10 @@ export default function TopNav() {
           <TabsTrigger value="guess" disabled={isPending}>
             {showLoader && pendingRoute === "guess" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
             Guess
+          </TabsTrigger>
+          <TabsTrigger value="catch" disabled={isPending}>
+            {showLoader && pendingRoute === "catch" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            Catch
           </TabsTrigger>
         </TabsList>
       </Tabs>

@@ -11,6 +11,7 @@ import { PokemonDetail } from "../../[gen]/actions";
 import { Lightbulb, RefreshCw, Eye, SkipForward, CheckCircle, XCircle, Info } from "lucide-react";
 import { motion } from "motion/react";
 import PokemonImage from "../../[gen]/_components/pokemon-image";
+import Link from "next/link";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -504,7 +505,10 @@ export default function GuessClient() {
 						
 						return (
 							<div key={group.pokemonId} className="bg-background rounded-2xl border border-border/50 overflow-hidden">
-								<div className={`px-4 py-3 border-b flex justify-between items-center ${headerBg}`}>
+								<Link 
+									href={`/pokemons/${getPokemonGen(group.pokemonId)}/${group.pokemonId}`}
+									className={`px-4 py-3 border-b flex justify-between items-center hover:brightness-95 dark:hover:brightness-110 transition-all cursor-pointer ${headerBg}`}
+								>
 									<div className="flex items-center gap-3">
 										<div className="relative w-10 h-10">
 											<PokemonImage
@@ -514,11 +518,11 @@ export default function GuessClient() {
 												className={`object-contain transition-all duration-300 ${!group.isSolved ? "brightness-0 opacity-50" : ""}`}
 											/>
 										</div>
-										<span className="font-bold text-sm capitalize">{displayName}</span>
+										<span className="font-bold text-sm capitalize group-hover:underline">{displayName}</span>
 									</div>
 									{groupState === 'solved' && <CheckCircle className="w-4 h-4 text-green-500" />}
 									{groupState === 'revealed' && <Eye className="w-4 h-4 text-blue-500" />}
-								</div>
+								</Link>
 								<div className="p-3">
 									<div className="text-xs flex flex-col gap-1.5">
 										{(() => {
