@@ -130,23 +130,19 @@ export default function About({ pokemon }: { pokemon: PokemonDetail }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="bg-muted/30 rounded-2xl border border-border/50 p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Your height</label>
-                <div className="flex items-center gap-1 flex-1">
-                  <input 
-                    type="number"
-                    value={userHeight}
-                    onChange={(e) => setUserHeight(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleCompare()}
-                    className="w-20 bg-background border border-border rounded-lg px-2.5 py-1.5 text-sm font-semibold text-right focus:outline-none focus:ring-1 focus:ring-ring"
-                    placeholder="170"
-                  />
-                  <span className="text-xs text-muted-foreground font-medium">cm</span>
-                </div>
+            <div className="bg-muted/30 rounded-xl border border-border/50 px-3 py-2.5 space-y-2">
+              <div className="relative flex items-center w-full">
+                <input 
+                  type="number"
+                  value={userHeight}
+                  onChange={(e) => setUserHeight(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleCompare()}
+                  className="w-full h-12 pl-4 pr-24 text-sm font-semibold rounded-xl bg-background border border-border focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="Enter your height (cm)"
+                />
                 <button
                   onClick={handleCompare}
-                  className="px-3 py-1.5 text-xs font-bold bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 h-auto rounded-xl px-5 font-bold text-xs bg-foreground text-background hover:opacity-80 transition-opacity"
                 >
                   Go
                 </button>
@@ -156,20 +152,20 @@ export default function About({ pokemon }: { pokemon: PokemonDetail }) {
                 {message && (
                   <motion.div
                     key={message}
-                    initial={{ opacity: 0, y: 5 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="flex items-start justify-between gap-3"
+                    exit={{ opacity: 0, y: -4 }}
+                    className="flex items-start gap-2"
                   >
-                    <p className="text-sm leading-relaxed italic text-muted-foreground flex-1">
+                    <p className="text-xs leading-relaxed italic text-muted-foreground flex-1">
                       "{message}"
                     </p>
                     <button
                       onClick={handleShare}
-                      className="flex-shrink-0 p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                      title={copied ? "Copied!" : "Share comparison"}
+                      className="flex-shrink-0 mt-0.5 p-1 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                      title={copied ? "Copied!" : "Share"}
                     >
-                      {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
+                      {copied ? <Check className="w-3 h-3 text-green-500" /> : <Share2 className="w-3 h-3" />}
                     </button>
                   </motion.div>
                 )}
