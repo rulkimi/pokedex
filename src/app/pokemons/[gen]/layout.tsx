@@ -61,17 +61,17 @@ export default function PokemonsLayout({
               >
                 <div className="w-12 h-1.5 bg-white/50 backdrop-blur-md rounded-full" />
               </div>
-              <ScrollArea className="h-full w-full">
+              <div className="h-full w-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {details}
-              </ScrollArea>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       ) : (
         <article className="w-1/2 flex-grow h-[calc(100vh-120px)] rounded-3xl border overflow-hidden bg-background">
-          <ScrollArea className="h-full w-full">
+          <div className="h-full w-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {details}
-          </ScrollArea>
+          </div>
         </article>
       )}
     </div>
