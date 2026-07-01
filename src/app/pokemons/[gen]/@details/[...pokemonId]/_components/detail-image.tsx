@@ -106,6 +106,7 @@ export default function DetailImage({
       <motion.div animate={controls}>
         <PokemonImage
           pokemonId={pokemon.id}
+          fallbackPokemonId={pokemon.speciesId}
           alt={`An image of ${pokemon.name}.`}
           imageSize={220}
           className="object-cover group-hover:scale-110 transition-transform duration-300"

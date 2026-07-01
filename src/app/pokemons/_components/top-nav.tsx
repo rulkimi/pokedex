@@ -108,7 +108,7 @@ export default function TopNav() {
               <SelectItem value="default">Default</SelectItem>
               <SelectItem value="artwork">Artwork</SelectItem>
               <SelectItem value="home">3D (HOME)</SelectItem>
-              <SelectItem value="showdown">Animated</SelectItem>
+              {/* <SelectItem value="showdown">Animated</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
@@ -131,10 +131,10 @@ export default function TopNav() {
             <RadioGroupItem value="home" id="sprite-home" />
             <Label htmlFor="sprite-home">3D</Label>
           </div>
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <RadioGroupItem value="showdown" id="sprite-showdown" />
             <Label htmlFor="sprite-showdown">Animated</Label>
-          </div>
+          </div> */}
         </RadioGroup>
       )}
     </nav>

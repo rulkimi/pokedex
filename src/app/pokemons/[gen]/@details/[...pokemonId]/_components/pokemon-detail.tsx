@@ -3,12 +3,14 @@
 import { playPokemonCry, getArrangedTypes, getTypeColor, formatId, formatName } from "@/lib/utils";
 import { PokemonDetail } from "../../../actions";
 import BaseStats from "./base-stats";
+import About from "./about";
 import { useEffect } from "react";
 import Evolutions from "./evolutions";
 import Variants from "./variants";
 import { useDetailsMobileView } from "@/app/pokemons/details-mobile-view-provider";
 import { motion } from "motion/react";
 import DetailImage from "./detail-image";
+import Moves from "./moves";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -119,6 +121,10 @@ export default function Detail({
           animate="visible"
         >
           <motion.div variants={itemVariants}>
+            <About pokemon={pokemon} />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="pt-4 border-t border-border/50">
             <BaseStats stats={pokemon.stats} />
           </motion.div>
 
@@ -130,7 +136,13 @@ export default function Detail({
 
           {pokemon.variants && pokemon.variants.length > 1 && (
             <motion.div variants={itemVariants} className="pt-4 border-t border-border/50">
-              <Variants variants={pokemon.variants} />
+              <Variants variants={pokemon.variants} speciesId={pokemon.speciesId} />
+            </motion.div>
+          )}
+
+          {pokemon.moves && pokemon.moves.length > 0 && (
+            <motion.div variants={itemVariants} className="pt-4 border-t border-border/50">
+              <Moves moves={pokemon.moves} />
             </motion.div>
           )}
         </motion.div>

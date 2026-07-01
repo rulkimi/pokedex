@@ -4,7 +4,7 @@ import { formatName, getPokemonGen, playPokemonCry } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import PokemonImage from "../../../_components/pokemon-image";
 
-export default function Variants({ variants }: { variants: { id: number; name: string }[] }) {
+export default function Variants({ variants, speciesId }: { variants: { id: number; name: string }[], speciesId: number }) {
   const router = useRouter();
   
   const handleVariantClick = (pokemonId: number) => {
@@ -26,6 +26,7 @@ export default function Variants({ variants }: { variants: { id: number; name: s
             >
               <PokemonImage
                 pokemonId={variant.id}
+                fallbackPokemonId={speciesId}
                 imageSize={100}
                 className="object-cover group-hover:scale-150 transition-transform duration-300 cursor-pointer hover:scale-105"
                 alt={`An image of ${variant.name}`}

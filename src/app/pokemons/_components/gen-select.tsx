@@ -7,11 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export default function GenSelect() {
 	const [selectedGen, setSelectedGen] = useState<number>(1);
+  const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 	const pathname = usePathname();
 
@@ -24,9 +26,10 @@ export default function GenSelect() {
 
 	const handleChange = (value: string) => {
 		const gen = Number(value);
-		// const firstPokemonId = getFirstPokemonId(gen);
-		router.push(`/pokemons/${gen}/0`);
 		setSelectedGen(gen);
+    startTransition(() => {
+		  router.push(`/pokemons/${gen}/0`);
+    });
 	};
 
 	return (
@@ -34,8 +37,13 @@ export default function GenSelect() {
       value={selectedGen.toString()}
       onValueChange={handleChange}
     >
-			<SelectTrigger className="w-full">
+			<SelectTrigger className="w-full relative">
 				<SelectValue placeholder="Select gen" />
+        {isPending && (
+          <div className="absolute right-8 top-1/2 -translate-y-1/2">
+            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+          </div>
+        )}
 			</SelectTrigger>
 			<SelectContent>
 				{Array.from({ length: 10 }, (_, i) => i + 1).map((gen) => (

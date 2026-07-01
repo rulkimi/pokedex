@@ -22,15 +22,32 @@ export interface Evolution {
   name: string;
   level?: number;
   trigger?: string;
+  item?: string;
+  happiness?: number;
+  time_of_day?: string;
+  held_item?: string;
+  location?: string;
+  known_move?: string;
 }
 
 export interface PokemonDetail {
   id: number;
+  speciesId: number;
   name: string;
   types: string[];
   stats: Stat[];
   evolutions: Evolution[];
   variants?: { id: number; name: string }[];
+  height: number;
+  weight: number;
+  base_experience: number;
+  abilities: { name: string; is_hidden: boolean }[];
+  cries?: { latest: string; legacy: string };
+  description?: string;
+  egg_groups?: string[];
+  habitat?: string;
+  gender_rate?: number;
+  moves: string[];
 }
 
 const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
@@ -71,29 +88,35 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       speciesId = parseInt(parts[parts.length - 1]);
     }
 
-    const filePath = path.join(process.cwd(), "public", "evolutions.json");
     let evolutions: Evolution[] = [];
-
-    try {
-      const file = await fs.readFile(filePath, "utf-8");
-      const evolutionsData = JSON.parse(file);
-
-      for (const chain of Object.values(evolutionsData) as Evolution[][]) {
-        if (chain.some((e) => e.id == speciesId)) {
-          evolutions = chain;
-          break;
-        }
-      }
-
-    } catch (e) {
-      console.warn("Failed to read evolutions.json from disk:", e);
-    }
     
+    let description: string | undefined = undefined;
+    let egg_groups: string[] | undefined = undefined;
+    let habitat: string | undefined = undefined;
+    let gender_rate: number | undefined = undefined;
     let variants: { id: number; name: string }[] = [];
     try {
       const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${speciesId}`, { cache: "force-cache" });
       if (speciesResponse.ok) {
         const speciesData = await speciesResponse.json();
+        
+        // description
+        const enFlavor = speciesData.flavor_text_entries?.find((f: any) => f.language.name === "en");
+        if (enFlavor) description = enFlavor.flavor_text.replace(/\f/g, ' ').replace(/\n/g, ' ');
+
+        // egg groups
+        if (speciesData.egg_groups) {
+          egg_groups = speciesData.egg_groups.map((eg: any) => eg.name);
+        }
+
+        // habitat
+        if (speciesData.habitat) {
+          habitat = speciesData.habitat.name;
+        }
+
+        // gender
+        gender_rate = speciesData.gender_rate;
+
         if (speciesData.varieties && speciesData.varieties.length > 1) {
           variants = speciesData.varieties.map((v: any) => {
             const parts = v.pokemon.url.split('/').filter(Boolean);
@@ -103,6 +126,46 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
             };
           });
         }
+
+        if (speciesData.evolution_chain?.url) {
+          try {
+            const evChainRes = await fetch(speciesData.evolution_chain.url, { cache: "force-cache" });
+            if (evChainRes.ok) {
+              const evData = await evChainRes.json();
+              
+              const parseChain = (node: any): Evolution[] => {
+                const parts = node.species.url.split('/').filter(Boolean);
+                const pId = parseInt(parts[parts.length - 1]);
+                
+                let evolution: Evolution = { id: pId, name: node.species.name };
+                
+                if (node.evolution_details && node.evolution_details.length > 0) {
+                  const details = node.evolution_details[0];
+                  evolution.trigger = details.trigger?.name;
+                  evolution.item = details.item?.name;
+                  evolution.level = details.min_level;
+                  evolution.happiness = details.min_happiness;
+                  evolution.time_of_day = details.time_of_day;
+                  evolution.held_item = details.held_item?.name;
+                  evolution.location = details.location?.name;
+                  evolution.known_move = details.known_move?.name;
+                }
+                
+                let res = [evolution];
+                if (node.evolves_to && node.evolves_to.length > 0) {
+                  for (const child of node.evolves_to) {
+                    res = res.concat(parseChain(child));
+                  }
+                }
+                return res;
+              };
+              
+              evolutions = parseChain(evData.chain);
+            }
+          } catch (e) {
+            console.error("Failed to parse evolution chain:", e);
+          }
+        }
       }
     } catch (e) {
       console.warn("Failed to fetch species data for varieties", e);
@@ -110,6 +173,7 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
 
     return {
       id: pokemon.id,
+      speciesId,
       name: pokemon.name,
       types: pokemon.types.map((t: any) => t.type.name),
       stats: pokemon.stats.map((s: any) => ({
@@ -118,6 +182,19 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       })),
       evolutions,
       variants,
+      height: pokemon.height,
+      weight: pokemon.weight,
+      base_experience: pokemon.base_experience,
+      abilities: pokemon.abilities?.map((a: any) => ({
+        name: a.ability.name,
+        is_hidden: a.is_hidden
+      })) || [],
+      cries: pokemon.cries,
+      description,
+      egg_groups,
+      habitat,
+      gender_rate,
+      moves: pokemon.moves?.map((m: any) => m.move.name) || [],
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);

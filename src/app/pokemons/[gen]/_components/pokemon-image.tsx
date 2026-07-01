@@ -10,32 +10,69 @@ export default function PokemonImage({
   className,
   alt,
   loading = "lazy",
+  fallbackPokemonId,
 }: {
   pokemonId: number;
   imageSize?: number;
   className?: string;
   alt: string;
   loading?: "lazy" | "eager";
+  fallbackPokemonId?: number;
 }) {
   const { spriteType } = useSprite();
+
+  let inferredFallbackId = fallbackPokemonId;
+  if (!inferredFallbackId && pokemonId > 10000) {
+    const altLower = alt.toLowerCase();
+    if (altLower.includes("koraidon")) inferredFallbackId = 1007;
+    else if (altLower.includes("miraidon")) inferredFallbackId = 1008;
+    else if (altLower.includes("pikachu")) inferredFallbackId = 25;
+    else if (altLower.includes("charizard")) inferredFallbackId = 6;
+    else if (altLower.includes("venusaur")) inferredFallbackId = 3;
+    else if (altLower.includes("blastoise")) inferredFallbackId = 9;
+    else if (altLower.includes("urshifu")) inferredFallbackId = 892;
+    else if (altLower.includes("calyrex")) inferredFallbackId = 898;
+    else if (altLower.includes("ogerpon")) inferredFallbackId = 1017;
+    else if (altLower.includes("terapagos")) inferredFallbackId = 1024;
+  }
 
   const getFallbacks = () => {
     const artwork = getPokemonImageUrl(pokemonId);
     const home = getHomePokemonImageUrl(pokemonId);
     const def = getDefaultPokemonImageUrl(pokemonId);
     const showdown = getShowdownPokemonImageUrl(pokemonId);
+    const sv = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ix/scarlet-violet/${pokemonId}.png`;
+
+    let arr: string[] = [];
 
     switch (spriteType) {
       case "artwork":
-        return [artwork, home, def, showdown];
+        arr = [artwork, home, def, showdown, sv];
+        break;
       case "home":
-        return [home, artwork, showdown, def];
+        arr = [home, artwork, showdown, def, sv];
+        break;
       case "showdown":
-        return [showdown, def, home, artwork];
+        arr = [showdown, def, home, artwork, sv];
+        break;
       case "default":
       default:
-        return [def, showdown, home, artwork];
+        arr = [def, showdown, home, artwork, sv];
+        break;
     }
+
+    if (inferredFallbackId) {
+      arr.push(
+        getPokemonImageUrl(inferredFallbackId),
+        getDefaultPokemonImageUrl(inferredFallbackId),
+        getHomePokemonImageUrl(inferredFallbackId)
+      );
+    }
+    
+    // Absolute final fallback if PokeAPI has literally nothing
+    arr.push("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png");
+
+    return arr;
   };
 
   const fallbacks = getFallbacks();
