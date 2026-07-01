@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
     ? `${pokemon.description} ` 
     : '';
 
-  const description = `${desc}${name} (${id}) is a ${types}-type Pokémon. Height: ${heightM}m, Weight: ${weightKg}kg. Abilities: ${abilities}.`;
+  const description = `${desc}${name} (${id}) is a ${types}-type Pokémon. Height: ${heightM}m, Weight: ${weightKg}kg. Find out how tall you are compared to ${name}! Abilities: ${abilities}.`;
 
   const imageUrl = getPokemonImageUrl(pokemon.id);
 
@@ -56,6 +56,9 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
     `pokemon ${id}`,
     `${name} stats`,
     `${name} evolution`,
+    `${name} height`,
+    `${name} size comparison`,
+    `how tall is ${name}`,
     `${name} abilities`,
     `${name} pokédex`,
     'pokédex',

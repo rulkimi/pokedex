@@ -32,8 +32,13 @@ export default function About({ pokemon }: { pokemon: PokemonDetail }) {
 
   const handleShare = async () => {
     if (!message) return;
-    const name = formatName(pokemon.name).replace(/<[^>]*>/g, '');
-    const text = `🔎 How tall is ${name} compared to me?\n\n${message}\n\n#Pokedex`;
+    let name = formatName(pokemon.name).replace(/<[^>]*>/g, '');
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    
+    // Get the current page URL to include in the share message
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    
+    const text = `How tall are you compared to ${name}?\n\n${message}\n\n${url}\n#PokédexByrulkimi`;
     
     if (navigator.share) {
       try {
