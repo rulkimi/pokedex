@@ -108,7 +108,7 @@ export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
 									aria-label={`Toggle Gen ${genNum}`}
 									tabIndex={-1}
 								/>
-								<span>Gen {genNum}</span>
+								<span>{genNum === 10 ? "Variants" : `Gen ${genNum}`}</span>
 							</li>
 						);
 					})}

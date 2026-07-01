@@ -38,13 +38,13 @@ export default function PokemonsLayout({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="fixed inset-0 z-50 bg-background top-20 border shadow-md rounded-t-4xl"
+              className="fixed inset-0 z-50 bg-background top-20 border shadow-md rounded-t-4xl overflow-hidden"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.5 }}
             >
-              <div className="p-4">
+              <ScrollArea className="h-full w-full p-4">
                 <button 
                   className="mb-4 text-lg font-medium"
                   onClick={() => setIsOpen(false)}
@@ -52,13 +52,15 @@ export default function PokemonsLayout({
                   ← Back
                 </button>
                 {details}
-              </div>
+              </ScrollArea>
             </motion.div>
           )}
         </AnimatePresence>
       ) : (
-        <article className="w-1/2 flex-grow p-4 border shadow-inner rounded-lg max-h-full">
-          {details}
+        <article className="w-1/2 flex-grow border shadow-inner rounded-lg h-[calc(100vh-175px)] overflow-hidden">
+          <ScrollArea className="h-full w-full p-4">
+            {details}
+          </ScrollArea>
         </article>
       )}
     </div>

@@ -38,9 +38,9 @@ export default function GenSelect() {
 				<SelectValue placeholder="Select gen" />
 			</SelectTrigger>
 			<SelectContent>
-				{Array.from({ length: 9 }, (_, i) => i + 1).map((gen) => (
+				{Array.from({ length: 10 }, (_, i) => i + 1).map((gen) => (
 					<SelectItem key={gen} value={gen.toString()}>
-						Gen {gen}
+						{gen === 10 ? "Variants" : `Gen ${gen}`}
 					</SelectItem>
 				))}
 			</SelectContent>

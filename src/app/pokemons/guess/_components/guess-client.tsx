@@ -23,7 +23,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 export default function GuessClient() {
-	const [selectedGens, setSelectedGens] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+	const [selectedGens, setSelectedGens] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 	const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
 	const [guess, setGuess] = useState("");
 	const [score, setScore] = useState(0);

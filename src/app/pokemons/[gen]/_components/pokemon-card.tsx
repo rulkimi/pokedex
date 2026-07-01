@@ -6,15 +6,18 @@ interface PokemomCardProps {
   pokemon: Pokemon;
   onClick: (pokemonId: number) => void;
   activePokemon: string;
+  currentGen?: number;
 }
 
 export default function PokemonCard({
   pokemon,
   onClick,
-  activePokemon
+  activePokemon,
+  currentGen
 }: PokemomCardProps ) {
   const pokemonTypes = getArrangedTypes(pokemon.types);
   const isActive = activePokemon === pokemon.id.toString();
+  const isOtherGen = pokemon.gen !== undefined && currentGen !== undefined && pokemon.gen !== Number(currentGen);
 
   return (
     <div
@@ -28,6 +31,8 @@ export default function PokemonCard({
         <Header
           id={pokemon.id}
           name={pokemon.name}
+          isOtherGen={isOtherGen}
+          pokemonGen={pokemon.gen}
         />
         <Types types={pokemonTypes} />
       </div>
@@ -45,18 +50,27 @@ export default function PokemonCard({
 
 const Header = ({
   id, 
-  name 
+  name,
+  isOtherGen,
+  pokemonGen
 }: {
   id: number;
   name: string;
+  isOtherGen?: boolean;
+  pokemonGen?: number;
 } ) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
       <span className="text-muted-foreground">{formatId(id)}</span>
       <span
         className="font-semibold"
         dangerouslySetInnerHTML={{ __html: formatName(name)}}
       ></span>
+      {isOtherGen && (
+        <span className="text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded-sm whitespace-nowrap">
+          {pokemonGen === 10 ? "Variants" : `Gen ${pokemonGen}`}
+        </span>
+      )}
     </div>
   );
 }

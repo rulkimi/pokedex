@@ -11,9 +11,11 @@ import { playPokemonCry } from "@/lib/utils";
 export default function PokemonListingClient({
   gen,
   pokemons,
+  allPokemons,
 }: {
   gen: number;
   pokemons: Pokemon[];
+  allPokemons?: { id: number; name: string; types: string[]; gen: number }[];
 }) {
   const [search] = useQueryState("search", { defaultValue: "" });
   const router = useRouter();
@@ -22,26 +24,53 @@ export default function PokemonListingClient({
   const currentActivePokemonId = pathname.split('/').pop();
   const lastClickedId = useRef<number | null>(null);
 
-  const filteredPokemons = useMemo(
-    () =>
-      pokemons.filter((pokemon) =>
+  const filteredPokemons = useMemo(() => {
+    if (!search || !allPokemons) {
+      // If no search term, or no allPokemons provided, just filter the current gen (or show all if no search)
+      return pokemons.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(search.toLowerCase())
-      ),
-    [pokemons, search]
-  );
+      );
+    }
+    
+    const s = search.toLowerCase();
+    
+    // Global fuzzy search across all generations
+    const matches = allPokemons.filter((p) => p.name.toLowerCase().includes(s));
+    
+    return matches.map((match) => {
+      const existing = pokemons.find((p) => p.id === match.id);
+      if (existing) return { ...existing, gen: match.gen };
+      
+      // Fallback for pokemons from other generations
+      return {
+        id: match.id,
+        name: match.name,
+        url: "",
+        types: match.types,
+        gen: match.gen
+      } as Pokemon;
+    });
+  }, [pokemons, allPokemons, search]);
 
-  const handlePokemonClick = (pokemonId: number) => {
+  const handlePokemonClick = (pokemonId: number, pokemonGen?: number) => {
     if (lastClickedId.current === pokemonId) return;
     lastClickedId.current = pokemonId;
     playPokemonCry(pokemonId);
-    router.push(`/pokemons/${gen}/${pokemonId}`);
+    
+    const targetGen = pokemonGen || gen;
+    router.push(`/pokemons/${targetGen}/${pokemonId}`);
+    
     setTimeout(() => setIsOpen(true), 300);
   };
 
   useEffect(() => {
     if (currentActivePokemonId) {
-      const element = document.getElementById(`pokemon-${currentActivePokemonId}`);
-      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        const element = document.getElementById(`pokemon-${currentActivePokemonId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 100);
     }
   }, [currentActivePokemonId]);
 
@@ -51,8 +80,9 @@ export default function PokemonListingClient({
         <li key={pokemon.name} id={`pokemon-${pokemon.id}`}>
           <PokemonCard
             pokemon={pokemon}
-            onClick={handlePokemonClick}
+            onClick={(id) => handlePokemonClick(id, pokemon.gen)}
             activePokemon={currentActivePokemonId!}
+            currentGen={gen}
           />
         </li>
       ))}

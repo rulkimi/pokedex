@@ -14,6 +14,7 @@ export interface Pokemon {
   // image: string;
   url: string;
   types: string[];
+  gen?: number;
 }
 
 export interface Evolution {
@@ -28,12 +29,13 @@ export interface PokemonDetail {
   name: string;
   types: string[];
   stats: Stat[];
-  evolutions?: Evolution[];
+  evolutions: Evolution[];
+  variants?: { id: number; name: string }[];
 }
 
 const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "force-cache" });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -51,7 +53,7 @@ const fetchPokemonTypes = async (url: string): Promise<{id: number, types: strin
 
 export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null> => {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, { cache: "force-cache" });
     
     if (!response.ok) {
       if (response.status === 404) {
@@ -62,6 +64,12 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
     }
 
     const pokemon = await response.json();
+    
+    let speciesId = pokemon.id;
+    if (pokemon.id > 10000 && pokemon.species?.url) {
+      const parts = pokemon.species.url.split('/').filter(Boolean);
+      speciesId = parseInt(parts[parts.length - 1]);
+    }
 
     const filePath = path.join(process.cwd(), "public", "evolutions.json");
     let evolutions: Evolution[] = [];
@@ -71,7 +79,7 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       const evolutionsData = JSON.parse(file);
 
       for (const chain of Object.values(evolutionsData) as Evolution[][]) {
-        if (chain.some((e) => e.id == id)) {
+        if (chain.some((e) => e.id == speciesId)) {
           evolutions = chain;
           break;
         }
@@ -79,6 +87,25 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
 
     } catch (e) {
       console.warn("Failed to read evolutions.json from disk:", e);
+    }
+    
+    let variants: { id: number; name: string }[] = [];
+    try {
+      const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${speciesId}`, { cache: "force-cache" });
+      if (speciesResponse.ok) {
+        const speciesData = await speciesResponse.json();
+        if (speciesData.varieties && speciesData.varieties.length > 1) {
+          variants = speciesData.varieties.map((v: any) => {
+            const parts = v.pokemon.url.split('/').filter(Boolean);
+            return {
+              id: parseInt(parts[parts.length - 1]),
+              name: v.pokemon.name
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch species data for varieties", e);
     }
 
     return {
@@ -90,6 +117,7 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
         value: s.base_stat
       })),
       evolutions,
+      variants,
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);
@@ -104,7 +132,8 @@ export const fetchPokemons = async ({
   
   try {
     const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon?limit=${generation.limit}&offset=${generation.offset}`
+      `https://pokeapi.co/api/v2/pokemon?limit=${generation.limit}&offset=${generation.offset}`,
+      { cache: "force-cache" }
     );
     
     if (!response.ok) {
@@ -116,13 +145,12 @@ export const fetchPokemons = async ({
     
     // Fetch detailed info for each Pokemon
     const pokemonsWithTypes = await Promise.all(
-      basePokemons.map(async (pokemon: any, index: number) => {
+      basePokemons.map(async (pokemon: any) => {
         const { id, types } = await fetchPokemonTypes(pokemon.url);
         
         return {
           id,
           name: pokemon.name,
-          // image: getPokemonImageUrl(id),
           url: pokemon.url,
           types,
         };

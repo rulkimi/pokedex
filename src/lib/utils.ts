@@ -20,9 +20,11 @@ export const GENERATION_LIMITS: { [key: number]: GenerationConfig } = {
 	7: { limit: 88, offset: 721 }, // Generation 7
 	8: { limit: 96, offset: 809 }, // Generation 8
 	9: { limit: 120, offset: 905 }, // Generation 9
+	10: { limit: 326, offset: 1025 }, // Forms & Variants
 };
 
 export const getPokemonGen = (id: number): number => {
+	if (id > 10000) return 10;
 	for (const [gen, config] of Object.entries(GENERATION_LIMITS)) {
 		const { offset, limit } = config;
 		if (id > offset && id <= offset + limit) {
@@ -53,6 +55,7 @@ export const formatName = (name: string) => {
 }
 
 export const getFirstPokemonId = (gen: number): number => {
+	if (gen === 10) return 10001;
 	return GENERATION_LIMITS[gen].offset + 1;
 }
 
@@ -93,7 +96,7 @@ const typeColors: { [key: string]: string } = {
 type Type = keyof typeof typeColors;
 
 export const getTypeColor = (pokemonType: Type) => {
-	return typeColors[pokemonType] || 'gray-500';
+	return typeColors[pokemonType] || 'bg-gray-500';
 };
 
 export const getArrangedTypes = (types: string[]) => {
