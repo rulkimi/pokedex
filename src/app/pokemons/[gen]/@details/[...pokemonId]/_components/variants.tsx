@@ -17,24 +17,27 @@ export default function Variants({ variants, speciesId }: { variants: { id: numb
   return (
     <section className="space-y-2 mt-4">
       <h2 className="text-lg font-bold uppercase">Forms & Variants</h2>
-      <ul className="grid grid-cols-3 gap-2 place-items-center">
+      <ul className="flex flex-wrap gap-4 justify-center items-end">
         {variants.map((variant) => {
           return (
             <li
               key={variant.id}
               onClick={() => handleVariantClick(variant.id)}
+              className="flex flex-col items-center gap-2 group cursor-pointer"
             >
               <PokemonImage
                 pokemonId={variant.id}
                 fallbackPokemonId={speciesId}
-                imageSize={100}
-                className="object-cover group-hover:scale-150 transition-transform duration-300 cursor-pointer hover:scale-105"
+                imageSize={90}
+                className="object-cover group-hover:scale-125 transition-transform duration-300 drop-shadow-md"
                 alt={`An image of ${variant.name}`}
               />
-              <p
-                className="text-sm text-center"
-                dangerouslySetInnerHTML={{ __html: formatName(variant.name)}}
-              ></p>
+              <div className="flex flex-col items-center">
+                <p
+                  className="text-sm font-bold text-center capitalize"
+                  dangerouslySetInnerHTML={{ __html: formatName(variant.name)}}
+                />
+              </div>
             </li>
           )
         })}

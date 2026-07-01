@@ -11,6 +11,17 @@ import { PokemonDetail } from "../../[gen]/actions";
 import { Lightbulb, RefreshCw, Eye, SkipForward, CheckCircle, XCircle, Info } from "lucide-react";
 import { motion } from "motion/react";
 import PokemonImage from "../../[gen]/_components/pokemon-image";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Message = {
 	type: "success" | "error" | "info";
@@ -287,13 +298,11 @@ export default function GuessClient() {
 	};
 
 	const resetGame = () => {
-		if (window.confirm("Are you sure you want to reset your score and history?")) {
-			setScore(0);
-			setHistory([]);
-			localStorage.removeItem("guessScore");
-			localStorage.removeItem("guessHistory");
-			generateRandomPokemon();
-		}
+		setScore(0);
+		setHistory([]);
+		localStorage.removeItem("guessScore");
+		localStorage.removeItem("guessHistory");
+		generateRandomPokemon();
 	};
 
 	// Group history by Pokemon ID
@@ -457,9 +466,27 @@ export default function GuessClient() {
 			<div className="w-full lg:w-1/3 bg-background flex flex-col border-t lg:border-t-0 border-border/50 lg:h-full">
 				<div className="p-6 border-b border-border/50 flex justify-between items-center bg-background/80 backdrop-blur-md z-10 sticky top-0">
 					<h3 className="text-lg font-bold">Recent Guesses</h3>
-					<Button variant="ghost" size="sm" onClick={resetGame} className="text-muted-foreground hover:text-destructive">
-						<RefreshCw className="mr-2 h-4 w-4" /> Reset
-					</Button>
+					<AlertDialog>
+						<AlertDialogTrigger asChild>
+							<Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
+								<RefreshCw className="mr-2 h-4 w-4" /> Reset
+							</Button>
+						</AlertDialogTrigger>
+						<AlertDialogContent>
+							<AlertDialogHeader>
+								<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+								<AlertDialogDescription>
+									This action cannot be undone. This will permanently reset your score and clear your guess history.
+								</AlertDialogDescription>
+							</AlertDialogHeader>
+							<AlertDialogFooter>
+								<AlertDialogCancel>Cancel</AlertDialogCancel>
+								<AlertDialogAction onClick={resetGame} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+									Reset Score
+								</AlertDialogAction>
+							</AlertDialogFooter>
+						</AlertDialogContent>
+					</AlertDialog>
 				</div>
 				
 				<div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar max-h-[400px] lg:max-h-none">
