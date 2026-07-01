@@ -11,6 +11,7 @@ import { useDetailsMobileView } from "@/app/pokemons/details-mobile-view-provide
 import { motion } from "motion/react";
 import DetailImage from "./detail-image";
 import Moves from "./moves";
+import TypeMatchups from "./type-matchups";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -137,6 +138,12 @@ export default function Detail({
           {pokemon.variants && pokemon.variants.length > 1 && (
             <motion.div variants={itemVariants} className="pt-4 border-t border-border/50">
               <Variants variants={pokemon.variants} speciesId={pokemon.speciesId} />
+            </motion.div>
+          )}
+
+          {pokemon.damageRelations && (
+            <motion.div variants={itemVariants} className="pt-4 border-t border-border/50">
+              <TypeMatchups damageRelations={pokemon.damageRelations} />
             </motion.div>
           )}
 

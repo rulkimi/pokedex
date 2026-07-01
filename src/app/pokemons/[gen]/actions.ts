@@ -48,6 +48,61 @@ export interface PokemonDetail {
   habitat?: string;
   gender_rate?: number;
   moves: string[];
+  damageRelations?: DamageRelations;
+}
+
+export interface DamageRelations {
+  weaknesses: { type: string; multiplier: number }[];
+  resistances: { type: string; multiplier: number }[];
+  strengths: string[];
+}
+
+const fetchDamageRelations = async (types: string[]): Promise<DamageRelations | undefined> => {
+  try {
+    const defensiveMultipliers: Record<string, number> = {};
+    const strengthsSet = new Set<string>();
+
+    for (const type of types) {
+      const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`, { cache: "force-cache" });
+      if (!res.ok) continue;
+      const data = await res.json();
+      
+      data.damage_relations.double_damage_to.forEach((t: any) => strengthsSet.add(t.name));
+      
+      data.damage_relations.double_damage_from.forEach((t: any) => {
+        defensiveMultipliers[t.name] = (defensiveMultipliers[t.name] ?? 1) * 2;
+      });
+      data.damage_relations.half_damage_from.forEach((t: any) => {
+        defensiveMultipliers[t.name] = (defensiveMultipliers[t.name] ?? 1) * 0.5;
+      });
+      data.damage_relations.no_damage_from.forEach((t: any) => {
+        defensiveMultipliers[t.name] = 0;
+      });
+    }
+
+    const weaknesses = [];
+    const resistances = [];
+
+    for (const [type, multiplier] of Object.entries(defensiveMultipliers)) {
+      if (multiplier > 1) {
+        weaknesses.push({ type, multiplier });
+      } else if (multiplier < 1) {
+        resistances.push({ type, multiplier });
+      }
+    }
+
+    weaknesses.sort((a, b) => b.multiplier - a.multiplier);
+    resistances.sort((a, b) => a.multiplier - b.multiplier);
+
+    return {
+      weaknesses,
+      resistances,
+      strengths: Array.from(strengthsSet).sort(),
+    };
+  } catch (error) {
+    console.error("Error fetching damage relations:", error);
+    return undefined;
+  }
 }
 
 const fetchPokemonTypes = async (url: string): Promise<{id: number, types: string[]}> => {
@@ -171,11 +226,14 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       console.warn("Failed to fetch species data for varieties", e);
     }
 
+    const types = pokemon.types.map((t: any) => t.type.name);
+    const damageRelations = await fetchDamageRelations(types);
+
     return {
       id: pokemon.id,
       speciesId,
       name: pokemon.name,
-      types: pokemon.types.map((t: any) => t.type.name),
+      types,
       stats: pokemon.stats.map((s: any) => ({
         name: s.stat.name,
         value: s.base_stat
@@ -185,16 +243,20 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       height: pokemon.height,
       weight: pokemon.weight,
       base_experience: pokemon.base_experience,
-      abilities: pokemon.abilities?.map((a: any) => ({
+      abilities: pokemon.abilities.map((a: any) => ({
         name: a.ability.name,
         is_hidden: a.is_hidden
-      })) || [],
-      cries: pokemon.cries,
+      })),
+      cries: pokemon.cries ? {
+        latest: pokemon.cries.latest,
+        legacy: pokemon.cries.legacy,
+      } : undefined,
       description,
       egg_groups,
       habitat,
       gender_rate,
-      moves: pokemon.moves?.map((m: any) => m.move.name) || [],
+      moves: pokemon.moves.map((m: any) => m.move.name),
+      damageRelations,
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);
