@@ -59,7 +59,7 @@ export default function Detail({
   const primaryColorClass = getTypeColor(arrangedTypes[0]);
 
   return (
-    <div className="relative w-full min-h-full flex flex-col bg-background">
+    <div className="relative w-full flex flex-col min-h-full bg-background overflow-x-hidden">
       
       {/* Top Banner (Color + Image) */}
       <motion.div 

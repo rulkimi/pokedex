@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
 
   if (pokemonId == 0) {
     return {
-      title: "Pokédex by Rulkimi — Select a Pokémon",
+      title: "Pokédex by rulkimi — Select a Pokémon",
       description: "Browse and explore detailed Pokémon data in this unofficial Pokédex built with PokéAPI. Select a Pokémon to view its stats, abilities, evolutions, and more.",
     };
   }
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
 
   if (!pokemon) {
     return {
-      title: "Pokémon Not Found — Pokédex by Rulkimi",
+      title: "Pokémon Not Found — Pokédex by rulkimi",
       description: "The requested Pokémon could not be found.",
     };
   }
@@ -64,11 +64,11 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
   ];
 
   return {
-    title: `${name} | Pokédex by Rulkimi`,
+    title: `${name} | Pokédex by rulkimi`,
     description: description.slice(0, 160),
     keywords: keywords.join(', '),
     openGraph: {
-      title: `${name} | Pokédex by Rulkimi`,
+      title: `${name} | Pokédex by rulkimi`,
       description,
       images: [
         {
@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
     },
     twitter: {
       card: "summary",
-      title: `${name} | Pokédex by Rulkimi`,
+      title: `${name} | Pokédex by rulkimi`,
       description: description.slice(0, 160),
       images: [imageUrl],
     },

@@ -61,7 +61,7 @@ export default function PokemonsLayout({
               >
                 <div className="w-12 h-1.5 bg-foreground/20 rounded-full" />
               </div>
-              <div className="flex-1 min-h-0 overflow-y-auto touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden touch-pan-y overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {details}
               </div>
             </motion.div>

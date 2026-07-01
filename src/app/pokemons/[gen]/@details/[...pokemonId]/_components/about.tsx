@@ -1,74 +1,24 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PokemonDetail } from "../../../actions";
 import { formatName } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { Ruler, Share2, Check, ChevronDown } from "lucide-react";
 
-function getComparisonMessage(userCm: number, pokemonName: string, pokeHeightM: number): string {
-  const userM = userCm / 100;
-  const ratio = pokeHeightM / userM;
-  const name = formatName(pokemonName).replace(/<[^>]*>/g, '');
-  const diff = Math.abs(pokeHeightM - userM);
-  const diffCm = Math.round(diff * 100);
-
-  if (ratio > 5) {
-    const msgs = [
-      `${name} is absolutely colossal — ${pokeHeightM.toFixed(1)}m tall! You'd barely reach its ankle. It's ${diffCm}cm taller than you.`,
-      `At ${pokeHeightM.toFixed(1)}m, ${name} would cast a shadow over your entire house. You're just a speck at ${userM.toFixed(2)}m!`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio > 3) {
-    const msgs = [
-      `${name} towers over you at ${pokeHeightM.toFixed(1)}m. You'd need binoculars to see its face — it's ${diffCm}cm taller!`,
-      `Standing at ${pokeHeightM.toFixed(1)}m, ${name} makes your ${userM.toFixed(2)}m feel incredibly small. That's a ${diffCm}cm difference!`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio > 1.5) {
-    const msgs = [
-      `${name} is noticeably taller at ${pokeHeightM.toFixed(1)}m — you'd be looking up by about ${diffCm}cm. It could rest its chin on your head!`,
-      `At ${pokeHeightM.toFixed(1)}m vs your ${userM.toFixed(2)}m, ${name} has ${diffCm}cm on you. You'd feel like a kid standing next to it.`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio > 1.1) {
-    const msgs = [
-      `${name} (${pokeHeightM.toFixed(1)}m) is just a tad taller than you — only ${diffCm}cm more. Almost eye level!`,
-      `You're close in height! ${name} edges you out by just ${diffCm}cm at ${pokeHeightM.toFixed(1)}m. A friendly rival size.`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio >= 0.9) {
-    const msgs = [
-      `You and ${name} are practically the same height! At ${pokeHeightM.toFixed(1)}m, you'd see perfectly eye-to-eye. High-five material!`,
-      `${name} is ${pokeHeightM.toFixed(1)}m and you're ${userM.toFixed(2)}m — only ${diffCm}cm apart. The perfect partner size.`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio > 0.5) {
-    const msgs = [
-      `At ${pokeHeightM.toFixed(1)}m, ${name} comes up to around your waist. It's ${diffCm}cm shorter — a perfect companion to walk beside.`,
-      `${name} is a comfortable ${pokeHeightM.toFixed(1)}m. You'd look down at it by ${diffCm}cm. Great size for head-pats!`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else if (ratio > 0.2) {
-    const msgs = [
-      `${name} is tiny at ${pokeHeightM.toFixed(1)}m! It would barely reach your knees — ${diffCm}cm shorter. You'd need to crouch to say hello.`,
-      `Only ${pokeHeightM.toFixed(1)}m tall, ${name} could comfortably sit on your lap. It's ${diffCm}cm shorter than you!`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  } else {
-    const msgs = [
-      `${name} is incredibly tiny at just ${(pokeHeightM * 100).toFixed(0)}cm! It could sit on your palm or perch on your shoulder. ${diffCm}cm smaller!`,
-      `At only ${(pokeHeightM * 100).toFixed(0)}cm, ${name} is pocket-sized! Be careful not to step on it — you're ${diffCm}cm taller!`,
-    ];
-    return msgs[Math.floor(Math.random() * msgs.length)];
-  }
-}
-
+import { getComparisonMessage } from "@/lib/height-messages";
 export default function About({ pokemon }: { pokemon: PokemonDetail }) {
   const [showCompare, setShowCompare] = useState(false);
   const [userHeight, setUserHeight] = useState("170");
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedHeight = localStorage.getItem("pokedexUserHeight");
+    if (savedHeight) {
+      setUserHeight(savedHeight);
+    }
+  }, []);
 
   const pokeHeightM = pokemon.height / 10;
   const pokeWeightKg = pokemon.weight / 10;
@@ -76,6 +26,7 @@ export default function About({ pokemon }: { pokemon: PokemonDetail }) {
   const handleCompare = () => {
     const h = parseFloat(userHeight);
     if (isNaN(h) || h <= 0) return;
+    localStorage.setItem("pokedexUserHeight", userHeight);
     setMessage(getComparisonMessage(h, pokemon.name, pokeHeightM));
   };
 
@@ -157,7 +108,7 @@ export default function About({ pokemon }: { pokemon: PokemonDetail }) {
                     exit={{ opacity: 0, y: -4 }}
                     className="flex items-start gap-2"
                   >
-                    <p className="text-xs leading-relaxed italic text-muted-foreground flex-1">
+                    <p className="text-xs leading-relaxed italic text-muted-foreground flex-1 whitespace-pre-wrap">
                       "{message}"
                     </p>
                     <button
