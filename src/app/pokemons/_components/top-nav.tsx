@@ -24,7 +24,7 @@ export default function TopNav() {
   const pathname = usePathname();
 
   const [defaultSprite, setDefaultSprite] = useState<
-    "default" | "artwork" | null
+    "default" | "artwork" | "home" | "showdown" | null
   >(null);
   const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess">(
     "pokedex"
@@ -34,6 +34,8 @@ export default function TopNav() {
     const saved = localStorage.getItem(SPRITE_TYPE_KEY) as
       | "default"
       | "artwork"
+      | "home"
+      | "showdown"
       | null;
     const initial = saved ?? "default";
     setDefaultSprite(initial);
@@ -48,7 +50,7 @@ export default function TopNav() {
   }, [setSpriteType, pathname]);
 
   const handleSpriteChange = (value: string) => {
-    const newValue = value as "default" | "artwork";
+    const newValue = value as "default" | "artwork" | "home" | "showdown";
     setSpriteType(newValue);
     localStorage.setItem(SPRITE_TYPE_KEY, newValue);
   };
@@ -84,6 +86,8 @@ export default function TopNav() {
             <SelectContent>
               <SelectItem value="default">Default</SelectItem>
               <SelectItem value="artwork">Artwork</SelectItem>
+              <SelectItem value="home">3D (HOME)</SelectItem>
+              <SelectItem value="showdown">Animated</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -93,7 +97,7 @@ export default function TopNav() {
           defaultValue={defaultSprite}
           onValueChange={handleSpriteChange}
         >
-          <Label className="mr-2">Sprite: </Label>
+          <Label className="mr-2 hidden lg:block self-center">Sprite: </Label>
           <div className="flex items-center gap-3">
             <RadioGroupItem value="default" id="sprite-default" />
             <Label htmlFor="sprite-default">Default</Label>
@@ -101,6 +105,14 @@ export default function TopNav() {
           <div className="flex items-center gap-3">
             <RadioGroupItem value="artwork" id="sprite-artwork" />
             <Label htmlFor="sprite-artwork">Artwork</Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <RadioGroupItem value="home" id="sprite-home" />
+            <Label htmlFor="sprite-home">3D</Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <RadioGroupItem value="showdown" id="sprite-showdown" />
+            <Label htmlFor="sprite-showdown">Animated</Label>
           </div>
         </RadioGroup>
       )}

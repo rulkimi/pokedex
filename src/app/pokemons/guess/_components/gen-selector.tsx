@@ -19,34 +19,8 @@ const LOCAL_STORAGE_KEY = "selectedGens";
 
 export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
 	const [open, setOpen] = useState(false);
-	const isFirstLoad = useRef(true);
 
 	const allGenerations = Object.keys(GENERATION_LIMITS).map(Number);
-
-	// On mount, load from localStorage if available
-	useEffect(() => {
-		const stored = typeof window !== "undefined" ? localStorage.getItem(LOCAL_STORAGE_KEY) : null;
-		if (stored) {
-			try {
-				const parsed = JSON.parse(stored);
-				if (Array.isArray(parsed) && parsed.every((g) => typeof g === "number")) {
-					setSelectedGens(parsed);
-				}
-			} catch {}
-		}
-		// eslint-disable-next-line
-	}, []);
-
-	// Save to localStorage whenever selectedGens changes (but not on first load if it came from storage)
-	useEffect(() => {
-		if (isFirstLoad.current) {
-			isFirstLoad.current = false;
-			return;
-		}
-		if (typeof window !== "undefined") {
-			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(selectedGens));
-		}
-	}, [selectedGens]);
 
 	const toggleGen = (gen: number) => {
 		setSelectedGens((prev: number[]) =>
@@ -103,8 +77,7 @@ export default function GenSelector({ selectedGens, setSelectedGens }: Props) {
 							>
 								<Checkbox
 									checked={selected}
-									onCheckedChange={() => toggleGen(genNum)}
-									className="mr-2"
+									className="mr-2 pointer-events-none"
 									aria-label={`Toggle Gen ${genNum}`}
 									tabIndex={-1}
 								/>

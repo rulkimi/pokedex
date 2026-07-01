@@ -28,14 +28,18 @@ export default function PokemonListingClient({
     if (!search || !allPokemons) {
       // If no search term, or no allPokemons provided, just filter the current gen (or show all if no search)
       return pokemons.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(search.toLowerCase())
+        pokemon.name.toLowerCase().includes(search.toLowerCase()) || 
+        pokemon.id.toString().includes(search.toLowerCase())
       );
     }
     
     const s = search.toLowerCase();
     
-    // Global fuzzy search across all generations
-    const matches = allPokemons.filter((p) => p.name.toLowerCase().includes(s));
+    // Global fuzzy search across all generations by name or id
+    const matches = allPokemons.filter((p) => 
+      p.name.toLowerCase().includes(s) || 
+      p.id.toString().includes(s)
+    );
     
     return matches.map((match) => {
       const existing = pokemons.find((p) => p.id === match.id);

@@ -6,7 +6,7 @@ import SearchPokemon from "../_components/search-pokemon";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDetailsMobileView } from "../details-mobile-view-provider";
 import { useViewport } from "@/hooks/use-viewport";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useDragControls } from "motion/react";
 
 export default function PokemonsLayout({
   children,
@@ -17,6 +17,7 @@ export default function PokemonsLayout({
 }) {
   const { isMobile } = useViewport();
   const { isOpen, setIsOpen } = useDetailsMobileView();
+  const dragControls = useDragControls();
 
   return (
     <div className={`relative flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4`}>
@@ -38,27 +39,37 @@ export default function PokemonsLayout({
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              className="fixed inset-0 z-50 bg-background top-20 border shadow-md rounded-t-4xl overflow-hidden"
+              className="fixed inset-0 z-50 bg-background top-20 border shadow-md rounded-t-4xl overflow-hidden flex flex-col"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ duration: 0.5 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.2 }}
+              dragListener={false}
+              dragControls={dragControls}
+              onDragEnd={(e, { offset, velocity }) => {
+                if (offset.y > 100 || velocity.y > 500) {
+                  setIsOpen(false);
+                }
+              }}
             >
-              <ScrollArea className="h-full w-full p-4">
-                <button 
-                  className="mb-4 text-lg font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  ← Back
-                </button>
+              <div 
+                className="w-full h-8 flex items-center justify-center cursor-grab touch-none flex-shrink-0 pt-2 absolute top-0 z-50"
+                onPointerDown={(e) => dragControls.start(e)}
+              >
+                <div className="w-12 h-1.5 bg-white/50 backdrop-blur-md rounded-full" />
+              </div>
+              <ScrollArea className="h-full w-full">
                 {details}
               </ScrollArea>
             </motion.div>
           )}
         </AnimatePresence>
       ) : (
-        <article className="w-1/2 flex-grow border shadow-inner rounded-lg h-[calc(100vh-175px)] overflow-hidden">
-          <ScrollArea className="h-full w-full p-4">
+        <article className="w-1/2 flex-grow h-[calc(100vh-120px)] rounded-3xl border overflow-hidden bg-background">
+          <ScrollArea className="h-full w-full">
             {details}
           </ScrollArea>
         </article>

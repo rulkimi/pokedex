@@ -45,13 +45,13 @@ export const formatName = (name: string) => {
   };
 
   const suffix = Object.keys(iconMappings).find(suffix => name.endsWith(suffix)) as '-f' | '-m' | undefined;
-  if (suffix) {
+  if (suffix && (name === 'nidoran-f' || name === 'nidoran-m')) {
     name = name.slice(0, -2);
     icon = iconMappings[suffix];
   }
 
-  const capitalizedString = name.charAt(0).toUpperCase() + name.slice(1);
-  return icon ? `${capitalizedString} ${icon}` : capitalizedString;
+  const formattedString = name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return icon ? `${formattedString} ${icon}` : formattedString;
 }
 
 export const getFirstPokemonId = (gen: number): number => {
@@ -170,4 +170,12 @@ export const getPokemonImageUrl = (id: number) => {
 
 export const getDefaultPokemonImageUrl = (id: number) => {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+}
+
+export const getHomePokemonImageUrl = (id: number) => {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
+}
+
+export const getShowdownPokemonImageUrl = (id: number) => {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${id}.gif`;
 }

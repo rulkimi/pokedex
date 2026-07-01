@@ -8,8 +8,27 @@ interface PokemonDetailProps {
 
 const PlaceholderText = ({ text }: { text: string}) => {
   return (
-    <div className="h-full w-full flex justify-center items-center text-muted-foreground">
-      {text}
+    <div className="flex flex-col items-center justify-center w-full h-full min-h-[70vh] bg-background">
+      <div className="flex flex-col items-center space-y-4 opacity-50">
+        <svg 
+          viewBox="0 0 100 100" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="3" 
+          className="w-20 h-20 text-muted-foreground opacity-60"
+        >
+          <circle cx="50" cy="50" r="40" />
+          <circle cx="50" cy="50" r="12" />
+          <path d="M10 50 H38" />
+          <path d="M62 50 H90" />
+        </svg>
+        <div className="flex flex-col items-center space-y-1 text-center">
+          <h3 className="text-xl font-medium tracking-tight text-foreground">{text}</h3>
+          <p className="text-sm text-muted-foreground max-w-[250px]">
+            Select a Pokémon from the list to view its complete Pokédex data.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

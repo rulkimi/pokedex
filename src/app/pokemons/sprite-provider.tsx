@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type SpriteType = "default" | "artwork";
+type SpriteType = "default" | "artwork" | "home" | "showdown";
 
 interface SpriteContextType {
 	spriteType: SpriteType;
