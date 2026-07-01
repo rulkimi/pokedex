@@ -30,7 +30,7 @@ export default function PokemonsLayout({
             <GenSelect />
           </div>
         </div>
-        <ScrollArea className="h-[calc(100vh-175px)]">
+        <ScrollArea className="h-[calc(100dvh-240px)]">
           {children}
         </ScrollArea>
       </aside>
@@ -68,7 +68,7 @@ export default function PokemonsLayout({
           )}
         </AnimatePresence>
       ) : (
-        <article className="w-1/2 flex-grow h-[calc(100vh-120px)] rounded-3xl border overflow-hidden bg-background">
+        <article className="w-1/2 flex-grow h-[calc(100dvh-190px)] rounded-3xl border overflow-hidden bg-background">
           <div className="h-full w-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {details}
           </div>

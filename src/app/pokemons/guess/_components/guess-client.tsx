@@ -317,7 +317,7 @@ export default function GuessClient() {
 	).sort((a, b) => b.timestamp - a.timestamp);
 
 	return (
-		<div className="relative w-full min-h-screen lg:min-h-0 lg:h-[calc(100dvh-120px)] flex flex-col lg:flex-row bg-background lg:overflow-hidden rounded-3xl border border-border/50">
+		<div className="relative w-full min-h-screen lg:min-h-0 lg:h-[calc(100dvh-190px)] flex flex-col lg:flex-row bg-background lg:overflow-hidden rounded-3xl border border-border/50">
 			
 			{/* LEFT COLUMN (Guessing Area) */}
 			<div className="flex flex-col w-full lg:w-2/3 lg:border-r border-border/50 bg-background flex-grow lg:overflow-hidden relative rounded-l-3xl">

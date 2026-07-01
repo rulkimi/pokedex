@@ -31,8 +31,19 @@ export default function TopNav() {
     "pokedex"
   );
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+  const [showLoader, setShowLoader] = useState(false);
 
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isPending) {
+      timeout = setTimeout(() => setShowLoader(true), 300); // Only show loader if it takes >300ms
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [isPending]);
 
   useEffect(() => {
     const saved = localStorage.getItem(SPRITE_TYPE_KEY) as
@@ -85,11 +96,11 @@ export default function TopNav() {
       <Tabs value={defaultRoute} onValueChange={handleRouteChange}>
         <TabsList>
           <TabsTrigger value="pokedex" disabled={isPending}>
-            {isPending && pendingRoute === "pokedex" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            {showLoader && pendingRoute === "pokedex" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
             Pokédex
           </TabsTrigger>
           <TabsTrigger value="guess" disabled={isPending}>
-            {isPending && pendingRoute === "guess" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            {showLoader && pendingRoute === "guess" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
             Guess
           </TabsTrigger>
         </TabsList>
@@ -105,7 +116,7 @@ export default function TopNav() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="default">Default</SelectItem>
+              <SelectItem value="default">Pixel</SelectItem>
               <SelectItem value="artwork">Artwork</SelectItem>
               <SelectItem value="home">3D (HOME)</SelectItem>
               {/* <SelectItem value="showdown">Animated</SelectItem> */}
@@ -121,7 +132,7 @@ export default function TopNav() {
           <Label className="mr-2 hidden lg:block self-center">Sprite: </Label>
           <div className="flex items-center gap-3">
             <RadioGroupItem value="default" id="sprite-default" />
-            <Label htmlFor="sprite-default">Default</Label>
+            <Label htmlFor="sprite-default">Pixel</Label>
           </div>
           <div className="flex items-center gap-3">
             <RadioGroupItem value="artwork" id="sprite-artwork" />

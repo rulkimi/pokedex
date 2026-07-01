@@ -1,9 +1,91 @@
+import { Metadata } from "next";
 import { getPokemonImageUrl } from "@/lib/utils";
 import { fetchPokemonById } from "../../actions";
 import PokemonDetail from "./_components/pokemon-detail";
 
 interface PokemonDetailProps {
   params: Promise<{ pokemonId: number }>
+}
+
+function formatPokemonName(name: string): string {
+  return name
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+export async function generateMetadata({ params }: PokemonDetailProps): Promise<Metadata> {
+  const { pokemonId } = await params;
+
+  if (pokemonId == 0) {
+    return {
+      title: "Pokédex by Rulkimi — Select a Pokémon",
+      description: "Browse and explore detailed Pokémon data in this unofficial Pokédex built with PokéAPI. Select a Pokémon to view its stats, abilities, evolutions, and more.",
+    };
+  }
+
+  const pokemon = await fetchPokemonById(pokemonId);
+
+  if (!pokemon) {
+    return {
+      title: "Pokémon Not Found — Pokédex by Rulkimi",
+      description: "The requested Pokémon could not be found.",
+    };
+  }
+
+  const name = formatPokemonName(pokemon.name);
+  const types = pokemon.types.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' / ');
+  const heightM = (pokemon.height / 10).toFixed(1);
+  const weightKg = (pokemon.weight / 10).toFixed(1);
+  const id = `#${String(pokemon.id).padStart(4, '0')}`;
+  const abilities = pokemon.abilities.map(a => 
+    a.name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  ).join(', ');
+
+  const desc = pokemon.description 
+    ? `${pokemon.description} ` 
+    : '';
+
+  const description = `${desc}${name} (${id}) is a ${types}-type Pokémon. Height: ${heightM}m, Weight: ${weightKg}kg. Abilities: ${abilities}.`;
+
+  const imageUrl = getPokemonImageUrl(pokemon.id);
+
+  const keywords = [
+    name,
+    ...pokemon.types,
+    `pokemon ${id}`,
+    `${name} stats`,
+    `${name} evolution`,
+    `${name} abilities`,
+    `${name} pokédex`,
+    'pokédex',
+    'pokemon',
+    ...pokemon.abilities.map(a => a.name.replace('-', ' ')),
+  ];
+
+  return {
+    title: `${name} | Pokédex by Rulkimi`,
+    description: description.slice(0, 160),
+    keywords: keywords.join(', '),
+    openGraph: {
+      title: `${name} | Pokédex by Rulkimi`,
+      description,
+      images: [
+        {
+          url: imageUrl,
+          width: 475,
+          height: 475,
+          alt: `Official artwork of ${name}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: `${name} | Pokédex by Rulkimi`,
+      description: description.slice(0, 160),
+      images: [imageUrl],
+    },
+  };
 }
 
 const PlaceholderText = ({ text }: { text: string}) => {
@@ -44,4 +126,3 @@ export default async function PokemonDetailPage({ params }: PokemonDetailProps) 
 
   return <PokemonDetail pokemon={pokemon} />
 }
-

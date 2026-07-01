@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pokédex",
-  description: "A modern Pokédex application to explore and learn about Pokémon. Browse through generations, view detailed information, and test your knowledge with the guessing game.",
+  title: "Pokédex by Rulkimi",
+  description: "An unofficial Pokédex application built for practicing web development using PokéAPI to showcase Pokémon. Browse through generations, view detailed information, and test your knowledge.",
   openGraph: {
-    title: "Pokédex",
-    description: "A modern Pokédex application to explore and learn about Pokémon. Browse through generations, view detailed information, and test your knowledge with the guessing game.",
+    title: "Pokédex by Rulkimi",
+    description: "An unofficial Pokédex application built for practicing web development using PokéAPI to showcase Pokémon.",
     images: [
       {
         url: "/og-image.png",
@@ -41,7 +41,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <NuqsAdapter>
+          <div className="flex flex-col min-h-screen">
+            <main className="flex-1">{children}</main>
+            <footer className="w-full py-4 px-6 text-center text-xs text-muted-foreground/60 border-t bg-muted/20">
+              <p>
+                <strong>Pokédex by Rulkimi</strong> is an unofficial, non-profit web application built for educational purposes and web development practice using <a href="https://pokeapi.co/" target="_blank" rel="noreferrer" className="underline hover:text-muted-foreground">PokéAPI</a>.
+              </p>
+              <p className="mt-1">
+                Pokémon and Pokémon character names are trademarks of Nintendo. No copyright infringement intended.
+              </p>
+            </footer>
+          </div>
+        </NuqsAdapter>
       </body>
     </html>
   );
