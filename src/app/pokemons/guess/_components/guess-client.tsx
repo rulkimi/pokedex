@@ -49,7 +49,7 @@ export default function GuessClient() {
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	// Helper to get a random pokemon from selected gens only
-	const getRandomPokemonFromSelectedGens = async (gensToUse: number[]) => {
+	const getRandomPokemonFromSelectedGens = async (gensToUse: number[], currentId?: number): Promise<PokemonDetail | null> => {
 		if (gensToUse.length === 0) {
 			setMessage({
 				type: "error",
@@ -61,17 +61,23 @@ export default function GuessClient() {
 		const gen = gensToUse[getRandomInt(0, gensToUse.length - 1)];
 		const { offset, limit } = getGeneration(gen);
 		const randomId = getRandomInt(offset + 1, offset + limit);
+		
+		// If we picked the exact same pokemon we are currently on, try again
+		if (currentId && randomId === currentId) {
+			return getRandomPokemonFromSelectedGens(gensToUse, currentId);
+		}
+
 		const poke = await fetchPokemonById(randomId);
 		if (poke && gensToUse.includes(getPokemonGen(poke.id))) {
 			return poke;
 		} else {
-			return getRandomPokemonFromSelectedGens(gensToUse);
+			return getRandomPokemonFromSelectedGens(gensToUse, currentId);
 		}
 	};
 
 	const generateRandomPokemon = async (overrideGens?: number[]) => {
 		const gensToUse = overrideGens || selectedGens;
-		const newPokemon = await getRandomPokemonFromSelectedGens(gensToUse);
+		const newPokemon = await getRandomPokemonFromSelectedGens(gensToUse, pokemon?.id);
 		setPokemon(newPokemon);
 		setGuess("");
 		setAttempts(0);
@@ -448,7 +454,7 @@ export default function GuessClient() {
 			</div>
 
 			{/* RIGHT COLUMN (History Sidebar) */}
-			<div className="w-full lg:w-1/3 bg-background flex flex-col border-t lg:border-t-0 border-l border-border/50 lg:h-full">
+			<div className="w-full lg:w-1/3 bg-background flex flex-col border-t lg:border-t-0 border-border/50 lg:h-full">
 				<div className="p-6 border-b border-border/50 flex justify-between items-center bg-background/80 backdrop-blur-md z-10 sticky top-0">
 					<h3 className="text-lg font-bold">Recent Guesses</h3>
 					<Button variant="ghost" size="sm" onClick={resetGame} className="text-muted-foreground hover:text-destructive">
@@ -486,31 +492,35 @@ export default function GuessClient() {
 									{groupState === 'solved' && <CheckCircle className="w-4 h-4 text-green-500" />}
 									{groupState === 'revealed' && <Eye className="w-4 h-4 text-blue-500" />}
 								</div>
-								<div className="p-3 space-y-2">
-									{group.attempts.map((attempt) => {
-										const isRevealed = attempt.guessedName === "[Revealed Answer]";
-										if (isRevealed) {
+								<div className="p-3">
+									<div className="text-xs flex flex-col gap-1.5">
+										{(() => {
+											const wrongAttempts = group.attempts.filter(a => !a.isCorrect && a.guessedName !== "[Revealed Answer]");
+											const isRevealed = group.attempts.some(a => a.guessedName === "[Revealed Answer]");
+											const isCorrect = group.attempts.some(a => a.isCorrect);
+											
 											return (
-												<div key={attempt.id} className="flex justify-between items-center text-xs bg-blue-50/50 dark:bg-blue-900/20 p-2 rounded-lg border border-blue-100 dark:border-blue-800">
-													<span className="text-blue-700 dark:text-blue-300 font-semibold">Answer Revealed</span>
-													<Eye className="w-4 h-4 text-blue-500" />
-												</div>
+												<>
+													{wrongAttempts.length > 0 && (
+														<div className="text-muted-foreground">
+															<span className="font-semibold text-red-400">Wrong:</span>{" "}
+															{wrongAttempts.map(a => a.guessedName).join(', ')}
+														</div>
+													)}
+													{isRevealed && (
+														<div className="text-blue-500 font-semibold flex items-center gap-1">
+															<Eye className="w-3 h-3" /> Answer Revealed
+														</div>
+													)}
+													{isCorrect && (
+														<div className="text-green-500 font-semibold flex items-center gap-1">
+															<CheckCircle className="w-3 h-3" /> Correct in {group.attempts.length} {group.attempts.length === 1 ? 'try' : 'tries'}!
+														</div>
+													)}
+												</>
 											);
-										}
-										return (
-											<div key={attempt.id} className="flex justify-between items-center text-xs p-1.5 px-2 rounded-lg hover:bg-muted/50 transition-colors">
-												<span className="text-muted-foreground">
-													{attempt.isCorrect ? "Correct: " : "Wrong: "}
-													<span className={attempt.isCorrect ? "text-green-600 font-bold" : "text-red-500 font-semibold italic"}>{attempt.guessedName}</span>
-												</span>
-												{attempt.isCorrect ? (
-													<CheckCircle className="w-4 h-4 text-green-500" />
-												) : (
-													<XCircle className="w-4 h-4 text-red-500" />
-												)}
-											</div>
-										);
-									})}
+										})()}
+									</div>
 								</div>
 							</div>
 						);

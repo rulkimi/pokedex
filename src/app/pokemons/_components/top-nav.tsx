@@ -3,7 +3,7 @@
 import { useSprite } from "../sprite-provider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useViewport } from "@/hooks/use-viewport";
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 
 const SPRITE_TYPE_KEY = "pokemon-sprite-type";
 
@@ -29,6 +30,9 @@ export default function TopNav() {
   const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess">(
     "pokedex"
   );
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
+
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const saved = localStorage.getItem(SPRITE_TYPE_KEY) as
@@ -47,7 +51,14 @@ export default function TopNav() {
     } else {
       setDefaultRoute("pokedex");
     }
-  }, [setSpriteType, pathname]);
+
+    // Reset pending route when navigation completes
+    setPendingRoute(null);
+
+    // Prefetch routes in background for instant navigation
+    router.prefetch("/pokemons/1/0");
+    router.prefetch("/pokemons/guess");
+  }, [setSpriteType, pathname, router]);
 
   const handleSpriteChange = (value: string) => {
     const newValue = value as "default" | "artwork" | "home" | "showdown";
@@ -56,21 +67,31 @@ export default function TopNav() {
   };
 
   const handleRouteChange = (value: string) => {
-    if (value === "pokedex") {
-      router.push("/pokemons/1/0");
-    } else if (value === "guess") {
-      router.push("/pokemons/guess");
-    }
+    if (value === defaultRoute) return;
+    setPendingRoute(value);
+    startTransition(() => {
+      if (value === "pokedex") {
+        router.push("/pokemons/1/0");
+      } else if (value === "guess") {
+        router.push("/pokemons/guess");
+      }
+    });
   };
 
   if (defaultSprite === null) return null; // prevent hydration mismatch
 
   return (
     <nav className="flex justify-between mb-4">
-      <Tabs defaultValue={defaultRoute} onValueChange={handleRouteChange}>
+      <Tabs value={defaultRoute} onValueChange={handleRouteChange}>
         <TabsList>
-          <TabsTrigger value="pokedex">Pokédex</TabsTrigger>
-          <TabsTrigger value="guess">Guess</TabsTrigger>
+          <TabsTrigger value="pokedex" disabled={isPending}>
+            {isPending && pendingRoute === "pokedex" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            Pokédex
+          </TabsTrigger>
+          <TabsTrigger value="guess" disabled={isPending}>
+            {isPending && pendingRoute === "guess" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            Guess
+          </TabsTrigger>
         </TabsList>
       </Tabs>
       {isMobile ? (
