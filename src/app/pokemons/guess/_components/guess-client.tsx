@@ -32,7 +32,6 @@ export default function GuessClient() {
 	const [hint, setHint] = useState("");
 	const [message, setMessage] = useState<Message | null>(null);
 	const [showAnswerState, setShowAnswerState] = useState(false);
-	const [showWrongAnswer, setShowWrongAnswer] = useState(false);
 	const attemptsRef = useRef(0);
 
 	// Helper to get a random pokemon from selected gens only
@@ -69,7 +68,6 @@ export default function GuessClient() {
 		setHint("");
 		setMessage(null);
 		setShowAnswerState(false);
-		setShowWrongAnswer(false);
 	};
 
 	const checkGuess = () => {
@@ -91,7 +89,6 @@ export default function GuessClient() {
 				description: `You guessed it in ${newAttempts} attempt${newAttempts === 1 ? "" : "s"}!`,
 			});
 			setShowAnswerState(true);
-			setShowWrongAnswer(false);
 			setTimeout(() => {
 				setMessage(null);
 				generateRandomPokemon();
@@ -102,10 +99,7 @@ export default function GuessClient() {
 				title: "Wrong guess!",
 				description: "Try again!",
 			});
-			setShowWrongAnswer(true);
-			// Hide the wrong answer message after 1.5s
 			setTimeout(() => {
-				setShowWrongAnswer(false);
 				setMessage(null);
 			}, 1500);
 		}
@@ -119,7 +113,7 @@ export default function GuessClient() {
 		setMessage({
 			type: "info",
 			title: "The answer is revealed!",
-			description: `It's ${pokemon.name}!`,
+			description: `It's ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}!`,
 		});
 		setTimeout(() => {
 			setMessage(null);
@@ -150,26 +144,28 @@ export default function GuessClient() {
 		let icon = null;
 		let color = "";
 		if (message.type === "success") {
-			icon = <CheckCircle className="text-green-500 mr-2" />;
+			icon = <CheckCircle className="text-green-500 mr-2 shrink-0" />;
 			color = "bg-green-50 border-green-200 text-green-800";
 		} else if (message.type === "error") {
-			icon = <XCircle className="text-red-500 mr-2" />;
+			icon = <XCircle className="text-red-500 mr-2 shrink-0" />;
 			color = "bg-red-50 border-red-200 text-red-800";
 		} else {
-			icon = <Info className="text-blue-500 mr-2" />;
+			icon = <Info className="text-blue-500 mr-2 shrink-0" />;
 			color = "bg-blue-50 border-blue-200 text-blue-800";
 		}
 		return (
-			<div
-				className={`max-w-lg mx-auto flex items-center gap-2 border rounded-lg px-4 py-2 mt-2 mb-2 shadow-sm transition-all ${color}`}
-				role="alert"
-			>
-				{icon}
-				<div>
-					<div className="font-semibold">{message.title}</div>
-					{message.description && (
-						<div className="text-sm">{message.description}</div>
-					)}
+			<div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-sm pointer-events-none">
+				<div
+					className={`flex items-center gap-3 border rounded-lg px-4 py-3 shadow-lg transition-all animate-in fade-in slide-in-from-top-4 zoom-in-95 duration-300 pointer-events-auto ${color}`}
+					role="alert"
+				>
+					{icon}
+					<div className="flex flex-col text-left">
+						<span className="font-semibold">{message.title}</span>
+						{message.description && (
+							<span className="text-sm">{message.description}</span>
+						)}
+					</div>
 				</div>
 			</div>
 		);
@@ -177,7 +173,8 @@ export default function GuessClient() {
 
 	return (
 		<div className="container max-w-4xl mx-auto p-2 sm:p-4">
-			<Card>
+			<Card className="relative">
+				{renderMessage()}
 				<CardHeader className="text-center border-b pb-4 sm:pb-6">
 					<CardTitle className="text-2xl sm:text-3xl font-bold">
 						Who's That Pokémon?
@@ -200,62 +197,50 @@ export default function GuessClient() {
 							<div className="relative">
 								<PokemonView pokemon={pokemon} show={showPokemon} />
 								{hint && (
-									<div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-blue-600/80 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm shadow-lg">
+									<div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-blue-600/80 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm shadow-lg animate-in fade-in slide-in-from-bottom-2">
 										{hint}
 									</div>
 								)}
 							</div>
 
-							{showAnswerState ? (
-								renderMessage()
-							) : (
-								<div className="flex flex-col gap-2 sm:gap-3">
-									<div className="flex gap-2 max-w-md mx-auto w-full">
-										<Input
-											placeholder="Enter Pokémon name..."
-											value={guess}
-											onChange={(e) => setGuess(e.target.value)}
-											onKeyDown={(e) => e.key === "Enter" && checkGuess()}
-											className="flex-1"
-											disabled={showAnswerState}
-										/>
-										<Button onClick={checkGuess} disabled={showAnswerState}>Guess</Button>
-									</div>
-									{showWrongAnswer && (
-										<div className="flex justify-center">
-											<div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-2 mt-2 shadow-sm transition-all">
-												<XCircle className="text-red-500" />
-												<span>Wrong guess! Try again!</span>
-											</div>
-										</div>
-									)}
-									<div className="flex flex-wrap gap-2 justify-center">
-										<Button
-											variant="outline"
-											onClick={showHint}
-											className="flex-1 sm:flex-none"
-											disabled={showAnswerState}
-										>
-											<Lightbulb className="mr-2 h-4 w-4" /> Hint
-										</Button>
-										<Button
-											variant="outline"
-											onClick={showAnswer}
-											className="flex-1 sm:flex-none"
-											disabled={showAnswerState}
-										>
-											<Eye className="mr-2 h-4 w-4" /> Show Answer
-										</Button>
-										<Button
-											variant="outline"
-											onClick={generateRandomPokemon}
-											className="flex-1 sm:flex-none"
-										>
-											<SkipForward className="mr-2 h-4 w-4" /> Skip
-										</Button>
-									</div>
+							<div className="flex flex-col gap-2 sm:gap-3">
+								<div className="flex gap-2 max-w-md mx-auto w-full">
+									<Input
+										placeholder="Enter Pokémon name..."
+										value={guess}
+										onChange={(e) => setGuess(e.target.value)}
+										onKeyDown={(e) => e.key === "Enter" && checkGuess()}
+										className="flex-1"
+										disabled={showAnswerState}
+									/>
+									<Button onClick={checkGuess} disabled={showAnswerState || guess.trim() === ""}>Guess</Button>
 								</div>
-							)}
+								<div className="flex flex-wrap gap-2 justify-center mt-2">
+									<Button
+										variant="outline"
+										onClick={showHint}
+										className="flex-1 sm:flex-none"
+										disabled={showAnswerState}
+									>
+										<Lightbulb className="mr-2 h-4 w-4" /> Hint
+									</Button>
+									<Button
+										variant="outline"
+										onClick={showAnswer}
+										className="flex-1 sm:flex-none"
+										disabled={showAnswerState}
+									>
+										<Eye className="mr-2 h-4 w-4" /> Show Answer
+									</Button>
+									<Button
+										variant="outline"
+										onClick={generateRandomPokemon}
+										className="flex-1 sm:flex-none"
+									>
+										<SkipForward className="mr-2 h-4 w-4" /> Skip
+									</Button>
+								</div>
+							</div>
 						</div>
 					)}
 				</CardContent>
