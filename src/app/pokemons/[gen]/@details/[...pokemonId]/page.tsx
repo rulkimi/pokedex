@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
     ...pokemon.abilities.map(a => a.name.replace('-', ' ')),
   ];
 
-  const ogImageUrl = `/api/og?id=${pokemon.id}`;
+  const ogImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
 
   return {
     title: `${name} | Pokédex by rulkimi`,
@@ -78,14 +78,14 @@ export async function generateMetadata({ params }: PokemonDetailProps): Promise<
       images: [
         {
           url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: `${name} Pokédex Stats Card`,
+          width: 475,
+          height: 475,
+          alt: `${name} Official Artwork`,
         },
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary",
       title: `${name} | Pokédex by rulkimi`,
       description: description.slice(0, 160),
       images: [ogImageUrl],
