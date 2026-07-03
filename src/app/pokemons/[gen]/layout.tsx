@@ -22,11 +22,11 @@ export default function PokemonsLayout({
   return (
     <div className={`relative flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4`}>
       <aside className={`${isMobile ? 'w-full' : 'w-1/2'} space-y-2`}>
-        <div className="flex gap-1">
-          <div className="w-2/3">
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
             <SearchPokemon />
           </div>
-          <div className="w-1/3">
+          <div className="w-[120px]">
             <GenSelect />
           </div>
         </div>

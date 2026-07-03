@@ -1,5 +1,5 @@
 import { Pokemon } from "@/app/pokemons/[gen]/actions";
-import { formatId, getTypeColor, getArrangedTypes, formatName } from "@/lib/utils";
+import { formatId, getTypeColor, getArrangedTypes, formatName, getPokemonCardBg } from "@/lib/utils";
 import PokemonImage from "./pokemon-image";
 
 interface PokemomCardProps {
@@ -22,8 +22,8 @@ export default function PokemonCard({
   return (
     <div
       className={`
-        ${isActive ? getTypeColor(pokemonTypes[0]) + '/20' : `hover:${getTypeColor(pokemonTypes[0])}/20`}
-        flex items-center justify-between gap-2 px-4 border border-transparent dark:border-slate-800 rounded-2xl group cursor-pointer`
+        ${getPokemonCardBg(pokemonTypes[0] as any, isActive)}
+        flex items-center justify-between gap-2 px-4 border border-transparent rounded-2xl group cursor-pointer`
       }
       onClick={() => onClick(pokemon.id)}
     >

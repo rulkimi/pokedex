@@ -31,29 +31,37 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://pokedex.rulkimi.com"),
 };
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NuqsAdapter>
-          <div className="flex flex-col min-h-screen">
-            <main className="flex-1">{children}</main>
-            <footer className="w-full py-4 px-6 text-center text-xs text-muted-foreground/60 border-t bg-muted/20">
-              <p>
-                <strong>Pokédex by rulkimi</strong> is an unofficial, non-profit web application built for educational purposes and web development practice using <a href="https://pokeapi.co/" target="_blank" rel="noreferrer" className="underline hover:text-muted-foreground">PokéAPI</a>.
-              </p>
-              <p className="mt-1">
-                Pokémon and Pokémon character names are trademarks of Nintendo. No copyright infringement intended.
-              </p>
-            </footer>
-          </div>
-        </NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <NuqsAdapter>
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-1">{children}</main>
+              <footer className="w-full py-4 px-6 text-center text-xs text-muted-foreground/60 border-t bg-muted/20">
+                <p>
+                  <strong>Pokédex by rulkimi</strong> is an unofficial, non-profit web app<span className="hidden sm:inline">lication built for educational purposes and web development practice</span> using <a href="https://pokeapi.co/" target="_blank" rel="noreferrer" className="underline hover:text-muted-foreground">PokéAPI</a>.
+                </p>
+                <p className="mt-1">
+                  <span className="hidden sm:inline">Pokémon and Pokémon character names are trademarks of Nintendo. </span>No copyright infringement intended.
+                </p>
+              </footer>
+            </div>
+          </NuqsAdapter>
+        </ThemeProvider>
       </body>
     </html>
   );

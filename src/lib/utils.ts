@@ -73,30 +73,74 @@ export const capitalizeFirstLetter = (str: string): string => {
 }
 
 const typeColors: { [key: string]: string } = {
-	grass: 'bg-emerald-500',
-	fire: 'bg-red-700',
-	water: 'bg-blue-500',
-	electric: 'bg-yellow-400',
-	bug: 'bg-green-700',
-	poison: 'bg-fuchsia-800',
-	normal: 'bg-gray-400',
-	ice: 'bg-cyan-300',
-	ground: 'bg-yellow-900',
-	fighting: 'bg-red-700',
-	flying: 'bg-indigo-400',
-	psychic: 'bg-pink-500',
-	rock: 'bg-yellow-600',
-	ghost: 'bg-indigo-700',
-	dragon: 'bg-indigo-900',
-	dark: 'bg-gray-800',
-	steel: 'bg-gray-600',
-	fairy: 'bg-pink-300'
+	grass: 'bg-emerald-500 dark:bg-emerald-700',
+	fire: 'bg-red-500 dark:bg-red-800',
+	water: 'bg-blue-500 dark:bg-blue-700',
+	electric: 'bg-yellow-400 dark:bg-yellow-600',
+	bug: 'bg-green-600 dark:bg-green-800',
+	poison: 'bg-fuchsia-700 dark:bg-fuchsia-900',
+	normal: 'bg-gray-400 dark:bg-gray-600',
+	ice: 'bg-cyan-400 dark:bg-cyan-700',
+	ground: 'bg-yellow-700 dark:bg-yellow-900',
+	fighting: 'bg-red-700 dark:bg-red-900',
+	flying: 'bg-indigo-400 dark:bg-indigo-700',
+	psychic: 'bg-pink-500 dark:bg-pink-800',
+	rock: 'bg-yellow-600 dark:bg-yellow-800',
+	ghost: 'bg-indigo-600 dark:bg-indigo-800',
+	dragon: 'bg-indigo-800 dark:bg-indigo-950',
+	dark: 'bg-gray-800 dark:bg-gray-950',
+	steel: 'bg-gray-500 dark:bg-gray-700',
+	fairy: 'bg-pink-400 dark:bg-pink-700'
 };
 
 type Type = keyof typeof typeColors;
 
 export const getTypeColor = (pokemonType: Type) => {
-	return typeColors[pokemonType] || 'bg-gray-500';
+	return typeColors[pokemonType] || 'bg-gray-500 dark:bg-gray-700';
+};
+
+export const getPokemonCardBg = (pokemonType: Type, isActive: boolean) => {
+	const activeColors: { [key: string]: string } = {
+		grass: 'bg-emerald-500/20 dark:bg-emerald-500/10',
+		fire: 'bg-red-500/20 dark:bg-red-500/10',
+		water: 'bg-blue-500/20 dark:bg-blue-500/10',
+		electric: 'bg-yellow-400/20 dark:bg-yellow-400/10',
+		bug: 'bg-green-600/20 dark:bg-green-600/10',
+		poison: 'bg-fuchsia-700/20 dark:bg-fuchsia-700/10',
+		normal: 'bg-gray-400/20 dark:bg-gray-400/10',
+		ice: 'bg-cyan-400/20 dark:bg-cyan-400/10',
+		ground: 'bg-yellow-700/20 dark:bg-yellow-700/10',
+		fighting: 'bg-red-700/20 dark:bg-red-700/10',
+		flying: 'bg-indigo-400/20 dark:bg-indigo-400/10',
+		psychic: 'bg-pink-500/20 dark:bg-pink-500/10',
+		rock: 'bg-yellow-600/20 dark:bg-yellow-600/10',
+		ghost: 'bg-indigo-600/20 dark:bg-indigo-600/10',
+		dragon: 'bg-indigo-800/20 dark:bg-indigo-800/10',
+		dark: 'bg-gray-800/20 dark:bg-gray-800/10',
+		steel: 'bg-gray-500/20 dark:bg-gray-500/10',
+		fairy: 'bg-pink-400/20 dark:bg-pink-400/10'
+	};
+	const hoverColors: { [key: string]: string } = {
+		grass: 'hover:bg-emerald-500/20 dark:hover:bg-emerald-500/10',
+		fire: 'hover:bg-red-500/20 dark:hover:bg-red-500/10',
+		water: 'hover:bg-blue-500/20 dark:hover:bg-blue-500/10',
+		electric: 'hover:bg-yellow-400/20 dark:hover:bg-yellow-400/10',
+		bug: 'hover:bg-green-600/20 dark:hover:bg-green-600/10',
+		poison: 'hover:bg-fuchsia-700/20 dark:hover:bg-fuchsia-700/10',
+		normal: 'hover:bg-gray-400/20 dark:hover:bg-gray-400/10',
+		ice: 'hover:bg-cyan-400/20 dark:hover:bg-cyan-400/10',
+		ground: 'hover:bg-yellow-700/20 dark:hover:bg-yellow-700/10',
+		fighting: 'hover:bg-red-700/20 dark:hover:bg-red-700/10',
+		flying: 'hover:bg-indigo-400/20 dark:hover:bg-indigo-400/10',
+		psychic: 'hover:bg-pink-500/20 dark:hover:bg-pink-500/10',
+		rock: 'hover:bg-yellow-600/20 dark:hover:bg-yellow-600/10',
+		ghost: 'hover:bg-indigo-600/20 dark:hover:bg-indigo-600/10',
+		dragon: 'hover:bg-indigo-800/20 dark:hover:bg-indigo-800/10',
+		dark: 'hover:bg-gray-800/20 dark:hover:bg-gray-800/10',
+		steel: 'hover:bg-gray-500/20 dark:hover:bg-gray-500/10',
+		fairy: 'hover:bg-pink-400/20 dark:hover:bg-pink-400/10'
+	};
+	return isActive ? activeColors[pokemonType] : hoverColors[pokemonType];
 };
 
 export const getArrangedTypes = (types: string[]) => {

@@ -40,120 +40,75 @@ export async function GET(request: NextRequest) {
             width: '100%',
             height: '100%',
             display: 'flex',
-            backgroundColor: '#0f172a',
+            backgroundColor: bgColor,
             fontFamily: 'sans-serif',
+            position: 'relative',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
           }}
         >
-          <div
-            style={{
-              width: '45%',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: bgColor,
-              padding: '40px',
-              position: 'relative',
-              justifyContent: 'center',
-              alignItems: 'center',
-              overflow: 'hidden',
+          {/* Background Pokeball */}
+          <svg 
+            viewBox="0 0 100 100" 
+            fill="none" 
+            stroke="rgba(255, 255, 255, 0.15)" 
+            strokeWidth="6" 
+            style={{ 
+              position: 'absolute', 
+              width: '800px', 
+              height: '800px', 
+              transform: 'rotate(15deg)',
+              right: '-100px',
+              top: '-100px',
             }}
           >
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" style={{ position: 'absolute', right: '-16%', top: '10%', width: '120%', height: '120%', opacity: 0.12, color: 'white', transform: 'rotate(12deg)' }}>
-              <circle cx="50" cy="50" r="40" />
-              <circle cx="50" cy="50" r="12" />
-              <path d="M10 50 H38" />
-              <path d="M62 50 H90" />
-            </svg>
+            <circle cx="50" cy="50" r="40" />
+            <circle cx="50" cy="50" r="12" />
+            <path d="M10 50 H38" />
+            <path d="M62 50 H90" />
+          </svg>
+
+          {/* Pokémon Asset */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
               alt={pokemon.name}
-              style={{ width: '400px', height: '400px', objectFit: 'contain' }}
+              style={{ width: '450px', height: '450px', objectFit: 'contain', filter: 'drop-shadow(0px 20px 30px rgba(0,0,0,0.3))' }}
             />
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '55%',
-              height: '100%',
-              padding: '60px 50px',
-              color: 'white',
-              justifyContent: 'center',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h1 style={{ fontSize: '72px', fontWeight: 'bold', textTransform: 'capitalize', margin: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', marginTop: '20px' }}>
+              <span style={{ fontSize: '64px', fontWeight: 'bold', color: 'white', textTransform: 'capitalize', letterSpacing: '-1px' }}>
                 {formatName(pokemon.name)}
-              </h1>
-              <span style={{ fontSize: '48px', fontWeight: 'bold', opacity: 0.7 }}>
+              </span>
+              <span style={{ fontSize: '42px', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.7)' }}>
                 {formatId(pokemon.id)}
               </span>
             </div>
+          </div>
 
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '40px' }}>
-              {pokemon.types.map((type) => (
-                <div
-                  key={type}
-                  style={{
-                    padding: '10px 20px',
-                    borderRadius: '30px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    border: '2px solid rgba(255, 255, 255, 0.2)',
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    letterSpacing: '2px',
-                  }}
-                >
-                  {type}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <h2 style={{ fontSize: '24px', textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '3px', marginBottom: '10px', marginTop: 0 }}>
-                Base Stats
-              </h2>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-                {pokemon.stats.map(stat => {
-                  const statNameMap: Record<string, string> = {
-                    'hp': 'HP', 'attack': 'ATK', 'defense': 'DEF',
-                    'special-attack': 'SATK', 'special-defense': 'SDEF', 'speed': 'SPD'
-                  };
-                  const shortName = statNameMap[stat.name] || stat.name;
-                  const percentage = Math.min(100, (stat.value / 150) * 100);
-                  const color = stat.value < 50 ? '#ef4444' : stat.value > 90 ? '#22c55e' : '#f59e0b';
-
-                  return (
-                    <div key={stat.name} style={{ display: 'flex', alignItems: 'center', width: '45%', fontSize: '22px' }}>
-                      <span style={{ width: '80px', fontWeight: 'bold', color: '#94a3b8' }}>{shortName}</span>
-                      <span style={{ width: '60px', textAlign: 'right', fontWeight: 'bold', marginRight: '20px' }}>{stat.value}</span>
-                      <div style={{ flex: 1, height: '12px', backgroundColor: '#334155', borderRadius: '10px', display: 'flex' }}>
-                        <div style={{ width: `${percentage}%`, height: '100%', backgroundColor: color, borderRadius: '10px' }} />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-            
-            <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', color: '#94a3b8' }}>
-               <div style={{ display: 'flex', gap: '20px', fontSize: '20px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                     <span style={{ opacity: 0.6, fontSize: '16px' }}>HT</span>
-                     <span>{(pokemon.height / 10).toFixed(1)}m</span>
-                  </div>
-                  <div style={{ opacity: 0.4 }}>|</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                     <span style={{ opacity: 0.6, fontSize: '16px' }}>WT</span>
-                     <span>{(pokemon.weight / 10).toFixed(1)}kg</span>
-                  </div>
-               </div>
-               <div style={{ fontSize: '18px', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase', opacity: 0.8 }}>
-                  Pokédex by rulkimi
-               </div>
+          {/* Footer Text */}
+          <div style={{
+            position: 'absolute',
+            bottom: '40px',
+            left: '0',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              padding: '12px 32px',
+              borderRadius: '100px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: '24px',
+              fontWeight: '600',
+              letterSpacing: '1px',
+              backdropFilter: 'blur(10px)',
+            }}>
+              Pokédex by rulkimi
             </div>
           </div>
         </div>
@@ -163,8 +118,8 @@ export async function GET(request: NextRequest) {
         height: 630,
       }
     );
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('OG Image generation failed:', error);
     return new Response('Failed to generate image', { status: 500 });
   }
 }
