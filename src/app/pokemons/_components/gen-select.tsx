@@ -36,14 +36,13 @@ export default function GenSelect() {
 		<Select
       value={selectedGen.toString()}
       onValueChange={handleChange}
+      disabled={isPending}
     >
-			<SelectTrigger className="w-full relative">
+			<SelectTrigger 
+        className="w-full relative" 
+        icon={isPending ? <Loader2 className="size-4 animate-spin opacity-50" /> : undefined}
+      >
 				<SelectValue placeholder="Select gen" />
-        {isPending && (
-          <div className="absolute right-8 top-1/2 -translate-y-1/2">
-            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-          </div>
-        )}
 			</SelectTrigger>
 			<SelectContent>
 				{Array.from({ length: 10 }, (_, i) => i + 1).map((gen) => (

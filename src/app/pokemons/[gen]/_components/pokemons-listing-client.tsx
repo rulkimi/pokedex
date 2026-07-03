@@ -78,6 +78,23 @@ export default function PokemonListingClient({
     }
   }, [currentActivePokemonId]);
 
+  if (filteredPokemons.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-muted-foreground opacity-70">
+        <div className="relative mb-4">
+          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" className="w-16 h-16 opacity-30 text-muted-foreground rotate-12">
+            <circle cx="50" cy="50" r="40" />
+            <circle cx="50" cy="50" r="12" />
+            <path d="M10 50 H38" />
+            <path d="M62 50 H90" />
+          </svg>
+        </div>
+        <p className="text-lg font-medium">No Pokémon found</p>
+        <p className="text-sm">Try searching for a different name or ID.</p>
+      </div>
+    );
+  }
+
   return (
     <ul className="space-y-1">
       {filteredPokemons.map((pokemon) => (
