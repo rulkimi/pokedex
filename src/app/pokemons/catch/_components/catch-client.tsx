@@ -389,7 +389,14 @@ export default function CatchClient() {
     );
   };
 
-  if (!isLoaded) return null;
+  if (!isLoaded) {
+    return (
+      <div className="relative w-full h-[calc(100dvh-200px)] flex flex-col items-center justify-center rounded-3xl border border-border/50 overflow-hidden shadow-inner bg-muted/20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mb-4" />
+        <span className="text-muted-foreground font-medium animate-pulse">Loading Safari Zone...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-[calc(100dvh-200px)] rounded-3xl border border-border/50 overflow-hidden shadow-inner bg-sky-200 dark:bg-sky-950">
