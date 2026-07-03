@@ -12,6 +12,7 @@ import { motion } from "motion/react";
 import DetailImage from "./detail-image";
 import Moves from "./moves";
 import TypeMatchups from "./type-matchups";
+import SharePokemon from "./share-pokemon";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -71,7 +72,7 @@ export default function Detail({
       >
         <PokeballBg />
 
-        <div className="w-full flex justify-between items-start z-10 text-white/90 mb-4">
+        <div className="w-full flex justify-between items-start z-30 text-white/90 mb-4 relative">
           <div className="flex flex-col gap-2">
             <motion.h2 
               initial={{ x: -20, opacity: 0 }}
@@ -94,13 +95,16 @@ export default function Detail({
             </div>
           </div>
           
-          <motion.span 
+          <motion.div 
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="text-2xl font-bold opacity-80 drop-shadow-md pt-2"
+            className="flex flex-col items-end gap-2 pt-2"
           >
-            {formatId(pokemon.id)}
-          </motion.span>
+            <span className="text-2xl font-bold opacity-80 drop-shadow-md">
+              {formatId(pokemon.id)}
+            </span>
+            <SharePokemon pokemon={pokemon} />
+          </motion.div>
         </div>
 
         <motion.div 

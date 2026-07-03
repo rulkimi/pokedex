@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import PokemonImage from "../../[gen]/_components/pokemon-image";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Loader2, XCircle } from "lucide-react";
+import { CheckCircle, Loader2, XCircle, Share2, Check, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { playPokemonCry, getPokemonGen } from "@/lib/utils";
 import Link from "next/link";
 import { fetchPokemonById, PokemonDetail } from "../../[gen]/actions";
+import { toPng } from "html-to-image";
 import {
   Dialog,
   DialogContent,
@@ -126,6 +127,74 @@ export default function CatchClient() {
   const [hasCaughtToday, setHasCaughtToday] = useState(false);
   const [pokemonTypesMap, setPokemonTypesMap] = useState<Record<number, { isFlying: boolean, isWater: boolean }>>({});
   const [isBagOpen, setIsBagOpen] = useState(false);
+  const bagRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingShare, setIsGeneratingShare] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleShareBagImage = async () => {
+    if (!bagRef.current) return;
+    setIsGeneratingShare(true);
+    
+    try {
+      const dataUrl = await toPng(bagRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: "#0f172a", // Match dark mode slate-900 background roughly
+        style: { transform: 'none' }
+      });
+      
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      
+      const file = new File([blob], `my-pokemon-bag.png`, { type: 'image/png' });
+      
+      let shared = false;
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: `My Pokémon Bag`,
+            text: `I've caught ${caughtPokemons.length} Pokémon! Can you catch 'em all? #PokédexByrulkimi`
+          });
+          shared = true;
+        } catch(e) {}
+      } 
+      
+      if (!shared) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `my-pokemon-bag.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("Failed to generate or share image", err);
+    } finally {
+      setIsGeneratingShare(false);
+    }
+  };
+
+  const handleShareBagLink = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Play Catch on Pokédex!`,
+          url: url
+        });
+        return;
+      } catch (err) {}
+    }
+    await navigator.clipboard.writeText(url);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+
 
   // Quiz state
   const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
@@ -401,9 +470,14 @@ export default function CatchClient() {
           >
             <div className="flex justify-between items-center mb-3 px-2">
               <h3 className="font-bold text-lg">My Pokémon</h3>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground" onClick={() => setIsBagOpen(false)}>
-                <XCircle className="h-5 w-5" />
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground" onClick={() => setIsShareModalOpen(true)}>
+                  <Share2 className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground" onClick={() => setIsBagOpen(false)}>
+                  <XCircle className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar p-1">
               {caughtPokemons.length === 0 ? (
@@ -427,6 +501,46 @@ export default function CatchClient() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+        <DialogContent className="sm:max-w-md bg-background overflow-hidden p-0 rounded-[2.5rem] border-none shadow-2xl">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle>Share My Pokémon</DialogTitle>
+          </DialogHeader>
+          <div className="px-6 pb-6 space-y-6">
+            <div className="flex justify-center bg-muted/30 p-4 rounded-3xl border border-border/50 overflow-hidden relative">
+              <div ref={bagRef} className="w-[300px] overflow-hidden rounded-[2rem] bg-background shadow-xl flex flex-col p-4 relative z-10 border border-border/20">
+                <h3 className="font-bold text-lg mb-3 text-center">My Pokémon</h3>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {caughtPokemons.length === 0 ? (
+                    <span className="text-muted-foreground text-sm opacity-70">Bag is empty</span>
+                  ) : (
+                    caughtPokemons.map(id => (
+                      <div key={id} className="relative w-12 h-12 bg-muted/30 rounded-xl flex items-center justify-center border border-border/50">
+                        <PokemonImage pokemonId={id} alt={`Caught ${id}`} imageSize={80} className="w-10 h-10 object-contain" />
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="mt-4 pt-3 border-t border-border/50 flex justify-center items-center gap-1.5 opacity-60">
+                   <span className="text-[10px] font-semibold tracking-wider">Pokédex by rulkimi</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <Button onClick={handleShareBagImage} disabled={isGeneratingShare} className="w-full rounded-2xl h-12 font-bold shadow-md">
+                {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
+                {isGeneratingShare ? "Generating Image..." : "Share as Image"}
+              </Button>
+              <Button onClick={handleShareBagLink} variant="outline" className="w-full rounded-2xl h-12 font-bold">
+                {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-500" /> : <LinkIcon className="w-5 h-5 mr-2" />}
+                {copiedLink ? "Link Copied!" : "Copy Link"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Quiz Modal */}
       <Dialog open={selectedPokemonId !== null} onOpenChange={(open) => {
