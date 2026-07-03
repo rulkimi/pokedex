@@ -6,10 +6,6 @@ export default function Loading() {
       <div className="flex flex-col items-center p-6 space-y-8 animate-pulse">
         {/* Detail Image Skeleton */}
         <div className="relative flex justify-center items-center w-full min-h-[300px] mt-4">
-          <div className="absolute right-0 sm:right-4 z-20 flex flex-col gap-2 w-32 sm:w-48">
-            <div className="h-[72px] bg-muted/40 rounded-2xl border border-border/20"></div>
-            <div className="h-[36px] bg-muted/40 rounded-xl border border-border/20"></div>
-          </div>
           <div className="w-[220px] h-[220px] bg-muted/30 rounded-full flex items-center justify-center">
             <Loader2 className="w-10 h-10 text-muted-foreground/30 animate-spin" />
           </div>

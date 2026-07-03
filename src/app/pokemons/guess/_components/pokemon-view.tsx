@@ -124,7 +124,7 @@ export default function PokemonView({ pokemon, show }: Props) {
 							pokemonId={pokemon.id}
 							alt={show ? pokemon.name : "Pokemon silhouette"}
 							imageSize={spriteType === "default" ? 350 : 350}
-							className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${!show ? "brightness-0" : ""} ${spriteType === "default" || spriteType === "showdown" ? "scale-[1.8] [image-rendering:pixelated]" : "scale-[0.8]"}`}
+							className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${!show ? "brightness-0" : ""} ${spriteType === "default" || spriteType === "showdown" ? "scale-[1.5] [image-rendering:pixelated]" : "scale-[0.8] -translate-y-2 sm:-translate-y-4"}`}
 						/>
 					</motion.div>
 				</motion.div>

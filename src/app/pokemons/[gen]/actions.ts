@@ -256,7 +256,7 @@ export const fetchPokemonById = async (id: number): Promise<PokemonDetail | null
       habitat,
       gender_rate,
       moves: pokemon.moves.map((m: any) => m.move.name),
-      damageRelations,
+      damageRelations
     };
   } catch (error) {
     console.error(`Error fetching pokemon ${id}:`, error);

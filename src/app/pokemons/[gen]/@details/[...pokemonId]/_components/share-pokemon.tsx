@@ -41,10 +41,15 @@ export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
     
     try {
       // html-to-image is much better at rendering modern CSS (z-index, flex, grids)
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      // iOS Safari workaround: Render once to cache assets, then render again
+      await toPng(cardRef.current, { cacheBust: false, pixelRatio: 1 });
+      
       const dataUrl = await toPng(cardRef.current, {
         quality: 1,
         pixelRatio: 2,
-        backgroundColor: '#020817', // Match the dark background
+        backgroundColor: isDark ? '#020817' : '#ffffff', // Match the current theme background
         style: {
           transform: 'none', // Prevent visual scaling from affecting the render
           borderRadius: '0', // Make corners sharp for the saved image
@@ -154,7 +159,7 @@ export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
                 </div>
                 
                 {/* Right Panel - Stats & Data */}
-                <div className="flex-1 bg-background/95 p-8 flex flex-col gap-5 z-10 relative overflow-hidden">
+                <div className="flex-1 bg-background p-8 flex flex-col gap-5 z-10 relative overflow-hidden">
                   
                   {/* Description */}
                   {pokemon.description && (

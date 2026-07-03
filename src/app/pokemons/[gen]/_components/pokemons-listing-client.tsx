@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueryState } from "nuqs";
+import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo, useRef, useEffect } from "react";
 import PokemonCard from "@/app/pokemons/[gen]/_components/pokemon-card";
@@ -18,6 +18,7 @@ export default function PokemonListingClient({
   allPokemons?: { id: number; name: string; types: string[]; gen: number }[];
 }) {
   const [search] = useQueryState("search", { defaultValue: "" });
+  const [types] = useQueryState("types", parseAsArrayOf(parseAsString).withDefault([]));
   const router = useRouter();
   const { setIsOpen } = useDetailsMobileView();
   const pathname = usePathname();
@@ -25,36 +26,42 @@ export default function PokemonListingClient({
   const lastClickedId = useRef<number | null>(null);
 
   const filteredPokemons = useMemo(() => {
-    if (!search || !allPokemons) {
-      // If no search term, or no allPokemons provided, just filter the current gen (or show all if no search)
-      return pokemons.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(search.toLowerCase()) || 
-        pokemon.id.toString().includes(search.toLowerCase())
+    let sourceList = allPokemons && (search || types.length > 0) ? allPokemons : pokemons;
+    
+    // Filter by search string
+    let result = sourceList;
+    if (search) {
+      const s = search.toLowerCase();
+      result = result.filter((p) => 
+        p.name.toLowerCase().includes(s) || 
+        p.id.toString().includes(s)
       );
     }
-    
-    const s = search.toLowerCase();
-    
-    // Global fuzzy search across all generations by name or id
-    const matches = allPokemons.filter((p) => 
-      p.name.toLowerCase().includes(s) || 
-      p.id.toString().includes(s)
-    );
-    
-    return matches.map((match) => {
-      const existing = pokemons.find((p) => p.id === match.id);
-      if (existing) return { ...existing, gen: match.gen };
-      
-      // Fallback for pokemons from other generations
-      return {
-        id: match.id,
-        name: match.name,
-        url: "",
-        types: match.types,
-        gen: match.gen
-      } as Pokemon;
-    });
-  }, [pokemons, allPokemons, search]);
+
+    // Filter by types
+    if (types.length > 0) {
+      result = result.filter((p) => types.every((t) => p.types.includes(t)));
+    }
+
+    // Map to full Pokemon objects if searching globally
+    if (sourceList === allPokemons) {
+      return result.map((match) => {
+        const existing = pokemons.find((p) => p.id === match.id);
+        if (existing) return { ...existing, gen: match.gen };
+        
+        // Fallback for pokemons from other generations
+        return {
+          id: match.id,
+          name: match.name,
+          url: "",
+          types: match.types,
+          gen: match.gen
+        } as Pokemon;
+      });
+    }
+
+    return result as Pokemon[];
+  }, [pokemons, allPokemons, search, types]);
 
   const handlePokemonClick = (pokemonId: number, pokemonGen?: number) => {
     if (lastClickedId.current === pokemonId) return;
@@ -79,8 +86,21 @@ export default function PokemonListingClient({
   }, [currentActivePokemonId]);
 
   if (filteredPokemons.length === 0) {
+    let emptyTitle = "No Pokémon found";
+    let emptySubtitle = "Try searching for a different name or ID.";
+
+    if (types.length === 1) {
+      emptyTitle = `No ${types[0]} Pokémon found`;
+      emptySubtitle = search ? "Try adjusting your search term or filter." : "Try selecting a different type.";
+    } else if (types.length > 1) {
+      emptyTitle = "No Pokémon match these types";
+      emptySubtitle = "Try removing some type filters to see more results.";
+    } else if (search) {
+      emptySubtitle = "Try searching for a different name or ID.";
+    }
+
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-muted-foreground opacity-70">
+      <div className="flex flex-col items-center justify-center h-64 text-muted-foreground opacity-70 text-center">
         <div className="relative mb-4">
           <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" className="w-16 h-16 opacity-30 text-muted-foreground rotate-12">
             <circle cx="50" cy="50" r="40" />
@@ -89,8 +109,8 @@ export default function PokemonListingClient({
             <path d="M62 50 H90" />
           </svg>
         </div>
-        <p className="text-lg font-medium">No Pokémon found</p>
-        <p className="text-sm">Try searching for a different name or ID.</p>
+        <p className="text-lg font-medium capitalize">{emptyTitle}</p>
+        <p className="text-sm">{emptySubtitle}</p>
       </div>
     );
   }

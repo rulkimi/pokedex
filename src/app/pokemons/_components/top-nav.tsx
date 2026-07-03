@@ -29,7 +29,7 @@ export default function TopNav() {
   const [defaultSprite, setDefaultSprite] = useState<
     "default" | "artwork" | "home" | "showdown" | null
   >(null);
-  const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess" | "catch">(
+  const [defaultRoute, setDefaultRoute] = useState<"pokedex" | "guess" | "safari">(
     "pokedex"
   );
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
@@ -60,8 +60,8 @@ export default function TopNav() {
 
     if (pathname.includes("/guess")) {
       setDefaultRoute("guess");
-    } else if (pathname.includes("/catch")) {
-      setDefaultRoute("catch");
+    } else if (pathname.includes("/safari")) {
+      setDefaultRoute("safari");
     } else {
       setDefaultRoute("pokedex");
     }
@@ -72,7 +72,7 @@ export default function TopNav() {
     // Prefetch routes in background for instant navigation
     router.prefetch("/pokemons/1/0");
     router.prefetch("/pokemons/guess");
-    router.prefetch("/pokemons/catch");
+    router.prefetch("/pokemons/safari");
   }, [setSpriteType, pathname, router]);
 
   const handleSpriteChange = (value: string) => {
@@ -89,8 +89,8 @@ export default function TopNav() {
         router.push("/pokemons/1/0");
       } else if (value === "guess") {
         router.push("/pokemons/guess");
-      } else if (value === "catch") {
-        router.push("/pokemons/catch");
+      } else if (value === "safari") {
+        router.push("/pokemons/safari");
       }
     });
   };
@@ -109,9 +109,9 @@ export default function TopNav() {
             {showLoader && pendingRoute === "guess" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
             Guess
           </TabsTrigger>
-          <TabsTrigger value="catch" disabled={isPending}>
-            {showLoader && pendingRoute === "catch" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
-            Catch
+          <TabsTrigger value="safari" disabled={isPending}>
+            {showLoader && pendingRoute === "safari" && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+            Safari
           </TabsTrigger>
         </TabsList>
       </Tabs>

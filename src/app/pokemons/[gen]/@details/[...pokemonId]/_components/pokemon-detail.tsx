@@ -13,6 +13,7 @@ import DetailImage from "./detail-image";
 import Moves from "./moves";
 import TypeMatchups from "./type-matchups";
 import SharePokemon from "./share-pokemon";
+import Encounters from "./encounters";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -58,6 +59,7 @@ export default function Detail({
   }, []);
 
   const arrangedTypes = getArrangedTypes(pokemon.types);
+
   const primaryColorClass = getTypeColor(arrangedTypes[0]);
 
   return (
@@ -108,7 +110,7 @@ export default function Detail({
         </div>
 
         <motion.div 
-          className="absolute -bottom-16 z-20"
+          className="absolute -bottom-16 z-40"
           initial={{ y: 50, scale: 0.8, opacity: 0 }}
           animate={{ y: 0, scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.3 }}

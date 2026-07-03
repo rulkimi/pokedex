@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
+import { useTheme } from "next-themes";
 import PokemonImage from "../../[gen]/_components/pokemon-image";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2, XCircle, Share2, Check, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
-import { playPokemonCry, getPokemonGen } from "@/lib/utils";
+import { playPokemonCry, getPokemonGen, getPokemonImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { fetchPokemonById, PokemonDetail } from "../../[gen]/actions";
 import { toPng } from "html-to-image";
@@ -16,6 +18,22 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function mulberry32(a: number) {
   return function() {
@@ -117,13 +135,30 @@ const RoamingPokemon = ({ id, onClick, isFleeing, isFlying, isWater }: { id: num
   );
 };
 
-export default function CatchClient() {
+type PokemonTypeMap = {
+  [id: number]: { isFlying: boolean; isWater: boolean };
+};
+
+export default function SafariClient() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [dailyPokemons, setDailyPokemons] = useState<number[]>([]);
   const [caughtPokemons, setCaughtPokemons] = useState<number[]>([]);
   const [activePokemons, setActivePokemons] = useState<number[]>([]);
   const [fleeingPokemons, setFleeingPokemons] = useState<number[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [message, setMessage] = useState<{ title: string, desc?: string, type: 'success' | 'error' } | null>(null);
+  const [pokemonToRelease, setPokemonToRelease] = useState<number | null>(null);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [pendingPokemonId, setPendingPokemonId] = useState<number | null>(null);
+
+  const handleOpenPokedex = (id: number) => {
+    setPendingPokemonId(id);
+    startTransition(() => {
+      router.push(`/pokemons/${getPokemonGen(id)}/${id}`);
+    });
+  };
   const [hasCaughtToday, setHasCaughtToday] = useState(false);
   const [pokemonTypesMap, setPokemonTypesMap] = useState<Record<number, { isFlying: boolean, isWater: boolean }>>({});
   const [isBagOpen, setIsBagOpen] = useState(false);
@@ -137,28 +172,34 @@ export default function CatchClient() {
     setIsGeneratingShare(true);
     
     try {
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      // iOS Safari workaround: Render once to cache assets, then render again
+      await toPng(bagRef.current, { cacheBust: false, pixelRatio: 1 });
+      
       const dataUrl = await toPng(bagRef.current, {
         quality: 1,
         pixelRatio: 2,
-        backgroundColor: "#0f172a", // Match dark mode slate-900 background roughly
-        style: { transform: 'none' }
+        backgroundColor: isDark ? '#0f172a' : '#ffffff', // Match dark mode slate-900 or light mode white
+        style: { transform: 'none', borderRadius: '0' }
       });
       
       const res = await fetch(dataUrl);
       const blob = await res.blob();
-      
       const file = new File([blob], `my-pokemon-bag.png`, { type: 'image/png' });
       
       let shared = false;
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
-            files: [file],
-            title: `My Pokémon Bag`,
-            text: `I've caught ${caughtPokemons.length} Pokémon! Can you catch 'em all? #PokédexByrulkimi`
+            files: [file]
           });
           shared = true;
-        } catch(e) {}
+        } catch (e: any) {
+          if (e.name === 'AbortError') {
+            shared = true;
+          }
+        }
       } 
       
       if (!shared) {
@@ -172,7 +213,7 @@ export default function CatchClient() {
         URL.revokeObjectURL(url);
       }
     } catch (err) {
-      console.error("Failed to generate or share image", err);
+      console.error("Failed to generate image", err);
     } finally {
       setIsGeneratingShare(false);
     }
@@ -180,15 +221,6 @@ export default function CatchClient() {
 
   const handleShareBagLink = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : '';
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Play Catch on Pokédex!`,
-          url: url
-        });
-        return;
-      } catch (err) {}
-    }
     await navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
@@ -374,6 +406,14 @@ export default function CatchClient() {
     setTimeout(() => setMessage(null), 3000);
   };
 
+  const handleReleasePokemon = () => {
+    if (pokemonToRelease === null) return;
+    const newCaught = caughtPokemons.filter(id => id !== pokemonToRelease);
+    setCaughtPokemons(newCaught);
+    localStorage.setItem("caughtPokemons", JSON.stringify(newCaught));
+    setPokemonToRelease(null);
+  };
+
   const renderMessage = () => {
     if (!message) return null;
     return (
@@ -443,7 +483,7 @@ export default function CatchClient() {
         {renderMessage()}
 
         <div className="absolute inset-4 flex items-center justify-center pointer-events-none text-xl font-bold text-black/30 dark:text-white/30 uppercase tracking-widest text-center z-0">
-          {hasCaughtToday ? "You have already caught a Pokémon today! Come back tomorrow." : (activePokemons.length > 0 ? "Wild Pokemon appeared!" : "The field is empty...")}
+          {hasCaughtToday ? "You have already caught a Pokémon today! Come back tomorrow." : (activePokemons.length > 0 ? "Wild Pokémon appeared!" : "The field is empty...")}
         </div>
 
         <div className="absolute inset-0 z-10">
@@ -494,13 +534,33 @@ export default function CatchClient() {
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {caughtPokemons.map(id => (
-                    <Link 
-                      href={`/pokemons/${getPokemonGen(id)}/${id}`}
-                      key={id} 
-                      className="relative w-14 h-14 bg-muted/30 rounded-xl flex items-center justify-center border border-border/50 hover:bg-muted/50 transition-colors hover:scale-105 active:scale-95"
-                    >
-                      <PokemonImage pokemonId={id} alt={`Caught ${id}`} imageSize={80} className="w-12 h-12 object-contain" />
-                    </Link>
+                    <DropdownMenu key={id}>
+                      <DropdownMenuTrigger asChild>
+                        <button className="relative w-14 h-14 bg-muted/30 rounded-xl flex items-center justify-center border border-border/50 hover:bg-muted/50 transition-colors hover:scale-105 active:scale-95 cursor-pointer overflow-hidden">
+                          {isPending && pendingPokemonId === id && (
+                            <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] z-20 flex items-center justify-center">
+                              <Loader2 className="w-5 h-5 text-foreground animate-spin" />
+                            </div>
+                          )}
+                          <PokemonImage pokemonId={id} alt={`Caught ${id}`} imageSize={80} className="w-12 h-12 object-contain" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="bottom" align="start">
+                        <DropdownMenuItem 
+                          className="cursor-pointer w-full font-medium"
+                          onClick={() => handleOpenPokedex(id)}
+                          disabled={isPending && pendingPokemonId === id}
+                        >
+                          Open Pokédex
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer font-medium"
+                          onClick={() => setPokemonToRelease(id)}
+                        >
+                          Release to the wild
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   ))}
                 </div>
               )}
@@ -510,41 +570,100 @@ export default function CatchClient() {
       </AnimatePresence>
 
       <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
-        <DialogContent className="sm:max-w-md bg-background overflow-hidden p-0 rounded-[2.5rem] border-none shadow-2xl">
-          <DialogHeader className="px-6 pt-6 pb-2">
+        <DialogContent className="sm:max-w-3xl bg-transparent border-none shadow-none overflow-visible p-0 flex flex-col items-center justify-center gap-6 outline-none">
+          <DialogHeader className="sr-only">
             <DialogTitle>Share My Pokémon</DialogTitle>
           </DialogHeader>
-          <div className="px-6 pb-6 space-y-6">
-            <div className="flex justify-center bg-muted/30 p-4 rounded-3xl border border-border/50 overflow-hidden relative">
-              <div ref={bagRef} className="w-[300px] overflow-hidden rounded-[2rem] bg-background shadow-xl flex flex-col p-4 relative z-10 border border-border/20">
-                <h3 className="font-bold text-lg mb-3 text-center">My Pokémon</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {caughtPokemons.length === 0 ? (
-                    <span className="text-muted-foreground text-sm opacity-70">Bag is empty</span>
-                  ) : (
-                    caughtPokemons.map(id => (
-                      <div key={id} className="relative w-12 h-12 bg-muted/30 rounded-xl flex items-center justify-center border border-border/50">
-                        <PokemonImage pokemonId={id} alt={`Caught ${id}`} imageSize={80} className="w-10 h-10 object-contain" />
-                      </div>
-                    ))
-                  )}
+          
+          {/* Scaled wrapper for preview */}
+          <div className="flex justify-center w-full relative z-10 h-[210px] sm:h-[300px] md:h-[420px]">
+            <div className="origin-top shrink-0 scale-[0.35] sm:scale-[0.5] md:scale-[0.7]" style={{ width: '1050px', height: '600px' }}>
+              <div 
+                ref={bagRef} 
+                className={`w-[1050px] h-[600px] overflow-hidden rounded-[3rem] bg-background shadow-2xl flex relative z-10 border-none ${isDark ? 'dark' : ''}`}
+              >
+                {/* Left Panel - Theme Color & Titles */}
+                <div className="w-[420px] relative bg-emerald-600 dark:bg-emerald-800 p-12 flex flex-col justify-center shrink-0">
+                  <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" className="absolute -right-16 top-10 w-[120%] h-[120%] opacity-[0.12] text-white rotate-12 pointer-events-none">
+                    <circle cx="50" cy="50" r="40" />
+                    <circle cx="50" cy="50" r="12" />
+                    <path d="M10 50 H38" />
+                    <path d="M62 50 H90" />
+                  </svg>
+                  <div className="relative z-10">
+                    <h3 className="font-extrabold text-[4.5rem] leading-[1.1] text-white tracking-tight drop-shadow-md mb-4">My Safari Catch</h3>
+                    <p className="text-white/80 text-2xl font-bold tracking-widest uppercase mb-12">
+                      Pokédex by rulkimi
+                    </p>
+                    
+                    <div className="bg-white/25 border border-white/40 px-6 py-3 rounded-full inline-flex items-center justify-center shadow-sm">
+                      <span className="text-white text-2xl font-black tracking-widest uppercase">{caughtPokemons.length} Caught</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-border/50 flex justify-center items-center gap-1.5 opacity-60">
-                   <span className="text-[10px] font-semibold tracking-wider">Pokédex by rulkimi</span>
+                
+                {/* Right Panel - Stats & Data */}
+                <div className="flex-1 bg-background flex flex-col items-center justify-center relative overflow-hidden z-10">
+                  {caughtPokemons.length === 0 ? (
+                    <span className="text-muted-foreground text-4xl font-medium">No Pokémon caught yet.</span>
+                  ) : (
+                    (() => {
+                      const items = caughtPokemons.slice(0, 100); 
+                      const n = items.length;
+                      if (n === 1) {
+                        return <img src={getPokemonImageUrl(items[0])} className="w-[350px] h-[350px] object-contain drop-shadow-2xl z-10" crossOrigin="anonymous" />;
+                      }
+
+                      // Vogel's spiral
+                      const maxRadius = n > 1 ? 220 : 0;
+                      const c = n > 1 ? maxRadius / Math.sqrt(n - 1) : 0;
+                      const size = Math.max(50, Math.min(250, c * 1.8));
+
+                      return (
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          {items.map((id, i) => {
+                            const theta = i * 2.39996323; // Golden angle in radians
+                            const radius = c * Math.sqrt(i);
+                            const x = radius * Math.cos(theta);
+                            const y = radius * Math.sin(theta);
+
+                            return (
+                              <div 
+                                key={`${id}-${i}`}
+                                className="absolute flex items-center justify-center"
+                                style={{
+                                  transform: `translate(${x}px, ${y}px)`,
+                                  width: size,
+                                  height: size,
+                                  zIndex: 100 - i
+                                }}
+                              >
+                                <img 
+                                  src={getPokemonImageUrl(id)} 
+                                  className="w-full h-full object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.3)]" 
+                                  crossOrigin="anonymous"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()
+                  )}
                 </div>
               </div>
             </div>
-            
-            <div className="flex flex-col gap-3">
-              <Button onClick={handleShareBagImage} disabled={isGeneratingShare} className="w-full rounded-2xl h-12 font-bold shadow-md">
-                {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
-                {isGeneratingShare ? "Generating Image..." : "Share as Image"}
-              </Button>
-              <Button onClick={handleShareBagLink} variant="outline" className="w-full rounded-2xl h-12 font-bold">
-                {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-500" /> : <LinkIcon className="w-5 h-5 mr-2" />}
-                {copiedLink ? "Link Copied!" : "Copy Link"}
-              </Button>
-            </div>
+          </div>
+          
+          <div className="flex gap-4 w-full max-w-sm px-4">
+            <Button onClick={handleShareBagImage} disabled={isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
+              {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
+              {isGeneratingShare ? "Saving..." : "Save Image"}
+            </Button>
+            <Button onClick={handleShareBagLink} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
+              {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <LinkIcon className="w-5 h-5 mr-2" />}
+              {copiedLink ? "Copied!" : "Copy Link"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -618,6 +737,23 @@ export default function CatchClient() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={pokemonToRelease !== null} onOpenChange={(open) => !open && setPokemonToRelease(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Release Pokémon?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to release this Pokémon back into the wild? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReleasePokemon} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Release
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
