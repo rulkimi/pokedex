@@ -13,7 +13,7 @@ import DetailImage from "./detail-image";
 import Moves from "./moves";
 import TypeMatchups from "./type-matchups";
 import SharePokemon from "./share-pokemon";
-import Encounters from "./encounters";
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
