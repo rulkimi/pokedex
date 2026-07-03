@@ -15,10 +15,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Pokédex by rulkimi",
-  description: "An unofficial Pokédex application built for practicing web development using PokéAPI to showcase Pokémon. Browse through generations, view detailed information, and test your knowledge.",
+  description: "An unofficial, non-profit Pokédex built for educational purposes. Explore Pokémon stats, abilities, and evolutions.",
   openGraph: {
     title: "Pokédex by rulkimi",
-    description: "An unofficial Pokédex application built for practicing web development using PokéAPI to showcase Pokémon.",
+    description: "An unofficial, non-profit Pokédex built for educational purposes. Explore Pokémon stats, abilities, and evolutions.",
+    type: "website",
+    url: "https://pokedex.rulkimi.com",
     images: [
       {
         url: "/og-image.png",
