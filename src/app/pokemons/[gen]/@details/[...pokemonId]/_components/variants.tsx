@@ -16,9 +16,9 @@ export default function Variants({ variants, speciesId }: { variants: { id: numb
   
   return (
     <section className="space-y-2 mt-4">
-      <h2 className="text-lg font-bold uppercase">Forms & Variants</h2>
+      <h2 className="text-lg font-bold uppercase">Variants</h2>
       <ul className="flex flex-wrap gap-4 justify-center items-end">
-        {variants.map((variant) => {
+        {variants.filter(v => v.id !== speciesId).map((variant) => {
           return (
             <li
               key={variant.id}

@@ -92,27 +92,22 @@ export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
           <Share2 className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl bg-background overflow-hidden p-0 rounded-[2.5rem] border-none shadow-2xl flex flex-col">
-        <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
+      <DialogContent className="sm:max-w-3xl bg-transparent border-none shadow-none overflow-visible p-0 flex flex-col items-center justify-center gap-6 outline-none">
+        <DialogHeader className="sr-only">
           <DialogTitle>Share {formatName(pokemon.name)}</DialogTitle>
         </DialogHeader>
         
-        <div className="px-6 pb-6 flex flex-col items-center space-y-6">
-          {/* Preview container */}
-          <div className="w-full flex justify-center bg-muted/30 p-6 rounded-3xl border border-border/50 overflow-hidden relative">
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-background via-muted/50 to-background opacity-50" />
+        {/* Scaled wrapper for preview */}
+        <div className="flex justify-center w-full relative z-10 h-[216px] sm:h-[288px] md:h-[408px]">
+          <div className="origin-top shrink-0 scale-[0.45] sm:scale-[0.6] md:scale-[0.85]" style={{ width: '850px', height: '480px' }}>
             
-            {/* Scaled wrapper for preview */}
-            <div className="flex justify-center w-full h-[264px] relative z-10">
-              <div className="origin-top shrink-0" style={{ transform: 'scale(0.55)', width: '850px', height: '480px' }}>
-                
-                {/* Horizontal Card Design */}
-              <div 
-                ref={cardRef} 
-                className="w-[850px] h-[480px] overflow-hidden rounded-[2.5rem] bg-background shadow-2xl flex relative z-10 border border-border/30"
-              >
-                {/* Left Panel - Theme Color & Image */}
-                <div className={`w-[340px] relative ${primaryColorClass} p-7 flex flex-col shrink-0`}>
+            {/* Horizontal Card Design */}
+            <div 
+              ref={cardRef} 
+              className="w-[850px] h-[480px] overflow-hidden rounded-[2.5rem] bg-background shadow-2xl flex relative z-10 border border-white/10"
+            >
+              {/* Left Panel - Theme Color & Image */}
+              <div className={`w-[340px] relative ${primaryColorClass} p-7 flex flex-col shrink-0`}>
                   <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6" className="absolute -right-16 top-10 w-[120%] h-[120%] opacity-[0.12] text-white rotate-12 pointer-events-none">
                     <circle cx="50" cy="50" r="40" />
                     <circle cx="50" cy="50" r="12" />
@@ -274,59 +269,76 @@ export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
                     )}
 
                     {/* Evolutions & Variants */}
-                    {(pokemon.evolutions?.length > 1 || (pokemon.variants && pokemon.variants.length > 1)) && (
-                      <div className="pt-2 border-t border-border/50 flex flex-wrap justify-between gap-4">
-                        {pokemon.evolutions?.length > 1 && (
-                          <div className="flex-1">
-                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Evolution Line</h4>
+                    {(() => {
+                      const hasEvolutions = pokemon.evolutions && pokemon.evolutions.length > 1;
+                      const actualVariants = pokemon.variants ? pokemon.variants.filter(v => v.id !== pokemon.speciesId) : [];
+                      const hasVariants = actualVariants.length > 0;
+                      const totalCount = (hasEvolutions ? pokemon.evolutions.length : 0) + actualVariants.length;
+                      
+                      if (!hasEvolutions && !hasVariants) return null;
+                      
+                      const renderEvolution = (ev: any) => (
+                        <div key={`ev-${ev.id}`} className="bg-muted/30 rounded-full p-0.5 border border-border/50">
+                          <PokemonImage pokemonId={ev.id} fallbackPokemonId={ev.id} imageSize={40} className="w-7 h-7 object-contain drop-shadow-sm" alt={ev.name} />
+                        </div>
+                      );
+                      
+                      const renderVariant = (v: any) => (
+                        <div key={`var-${v.id}`} className="bg-muted/30 rounded-full p-0.5 border border-border/50">
+                          <PokemonImage pokemonId={v.id} fallbackPokemonId={pokemon.speciesId} imageSize={40} className="w-7 h-7 object-contain drop-shadow-sm" alt={v.name} />
+                        </div>
+                      );
+
+                      if (totalCount > 10 && hasEvolutions && hasVariants) {
+                        return (
+                          <div className="pt-2 border-t border-border/50 flex flex-col gap-1.5 w-full">
+                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Family & Variants</h4>
                             <div className="flex flex-wrap items-center gap-1.5">
-                              {pokemon.evolutions.slice(0, 9).map((ev) => (
-                                <div key={ev.id} className="bg-muted/30 rounded-full p-0.5 border border-border/50">
-                                  <PokemonImage pokemonId={ev.id} fallbackPokemonId={ev.id} imageSize={40} className="w-7 h-7 object-contain drop-shadow-sm" alt={ev.name} />
-                                </div>
-                              ))}
-                              {pokemon.evolutions.length > 9 && (
-                                <span className="text-[9px] text-muted-foreground font-bold ml-0.5">+{pokemon.evolutions.length - 9}</span>
-                              )}
+                              {pokemon.evolutions.map(renderEvolution)}
+                              {actualVariants.map(renderVariant)}
                             </div>
                           </div>
-                        )}
-                        
-                        {(pokemon.variants && pokemon.variants.length > 1) && (
-                          <div className="shrink-0">
-                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 text-right">Variants</h4>
-                            <div className="flex items-center justify-end gap-1.5">
-                              {pokemon.variants.filter(v => v.id !== pokemon.id).slice(0, 4).map(v => (
-                                <div key={v.id} className="bg-muted/30 rounded-full p-0.5 border border-border/50">
-                                  <PokemonImage pokemonId={v.id} fallbackPokemonId={pokemon.speciesId} imageSize={40} className="w-7 h-7 object-contain drop-shadow-sm" alt={v.name} />
-                                </div>
-                              ))}
-                              {pokemon.variants.length > 5 && (
-                                <span className="text-[9px] text-muted-foreground font-bold ml-0.5">+{pokemon.variants.length - 5}</span>
-                              )}
+                        );
+                      }
+
+                      return (
+                        <div className="pt-2 border-t border-border/50 flex flex-wrap justify-between gap-4">
+                          {hasEvolutions && (
+                            <div className="flex-1">
+                              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Evolution Line</h4>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                {pokemon.evolutions.map(renderEvolution)}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                          )}
+                          
+                          {hasVariants && (
+                            <div className="flex-1">
+                              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 text-right">Variants</h4>
+                              <div className="flex flex-wrap items-center justify-end gap-1.5">
+                                {actualVariants.map(renderVariant)}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                 </div>
               </div>
             </div>
           </div>
-          </div>
-          
-          <div className="flex gap-4 w-full">
-            <Button onClick={handleShareImage} disabled={isGenerating} className="flex-1 rounded-2xl h-14 font-bold shadow-md text-lg">
-              {isGenerating ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
-              {isGenerating ? "Generating..." : "Save Image"}
-            </Button>
-            <Button onClick={handleShareLink} variant="outline" className="flex-1 rounded-2xl h-14 font-bold text-lg">
-              {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-500" /> : <LinkIcon className="w-5 h-5 mr-2" />}
-              {copiedLink ? "Link Copied!" : "Copy Link"}
-            </Button>
-          </div>
+        
+          <div className="flex gap-4 w-full max-w-sm px-4">
+          <Button onClick={handleShareImage} disabled={isGenerating} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
+            {isGenerating ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
+            {isGenerating ? "Saving..." : "Save Image"}
+          </Button>
+          <Button onClick={handleShareLink} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
+            {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <LinkIcon className="w-5 h-5 mr-2" />}
+            {copiedLink ? "Copied!" : "Copy Link"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
