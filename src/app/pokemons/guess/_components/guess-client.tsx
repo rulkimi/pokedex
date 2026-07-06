@@ -75,6 +75,7 @@ export default function GuessClient() {
 	
 	const [shareData, setShareData] = useState<{pokemonId: number, message?: string} | null>(null);
 	const [isGeneratingShare, setIsGeneratingShare] = useState(false);
+	const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
 	const [copiedLink, setCopiedLink] = useState(false);
 	const shareCardRef = useRef<HTMLDivElement>(null);
 
@@ -353,13 +354,43 @@ export default function GuessClient() {
 		generateRandomPokemon();
 	};
 
-	const handleShareImage = async () => {
+	const handleDownloadImage = async () => {
+		if (!shareCardRef.current || !shareData) return;
+		try {
+			setIsGeneratingDownload(true);
+			const isDark = document.documentElement.classList.contains('dark');
+			
+			await toPng(shareCardRef.current, { cacheBust: false, pixelRatio: 1 });
+			
+			const dataUrl = await toPng(shareCardRef.current, { 
+				quality: 1,
+				pixelRatio: 2,
+				backgroundColor: isDark ? '#0f172a' : '#ffffff',
+				style: { transform: 'none', borderRadius: '0' }
+			});
+			
+			const res = await fetch(dataUrl);
+			const blob = await res.blob();
+			
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.download = `guess-pokemon-${shareData.pokemonId}.png`;
+			link.href = url;
+			link.click();
+			URL.revokeObjectURL(url);
+		} catch (err) {
+			console.error("Failed to generate image", err);
+		} finally {
+			setIsGeneratingDownload(false);
+		}
+	};
+
+	const handleShare = async () => {
 		if (!shareCardRef.current || !shareData) return;
 		try {
 			setIsGeneratingShare(true);
 			const isDark = document.documentElement.classList.contains('dark');
 			
-			// iOS Safari workaround: Render once to cache assets, then render again
 			await toPng(shareCardRef.current, { cacheBust: false, pixelRatio: 1 });
 			
 			const dataUrl = await toPng(shareCardRef.current, { 
@@ -373,47 +404,28 @@ export default function GuessClient() {
 			const blob = await res.blob();
 			const file = new File([blob], `guess-pokemon-${shareData.pokemonId}.png`, { type: 'image/png' });
 
-			let shared = false;
+			const encodedId = btoa(shareData.pokemonId.toString());
+			const shareUrl = `${window.location.origin}/pokemons/guess?p=${encodedId}`;
+			const shareText = shareData.message || "Can you guess this Pokémon? Play with me!";
+
 			if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
 				try {
+          await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`).catch(() => {});
 					await navigator.share({
+						text: `${shareText}\n${shareUrl}`,
 						files: [file]
 					});
-					shared = true;
-				} catch (e: any) {
-					if (e.name === 'AbortError') {
-						shared = true;
-					}
-				}
-			}
-			
-			if (!shared) {
-				const url = URL.createObjectURL(blob);
-				const link = document.createElement('a');
-				link.download = `guess-pokemon-${shareData.pokemonId}.png`;
-				link.href = url;
-				link.click();
-				URL.revokeObjectURL(url);
+				} catch (e: any) {}
+			} else {
+				await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+				setCopiedLink(true);
+				setTimeout(() => setCopiedLink(false), 2000);
 			}
 		} catch (err) {
 			console.error("Failed to generate image", err);
 		} finally {
 			setIsGeneratingShare(false);
 		}
-	};
-
-	const handleShareLink = async () => {
-		if (!shareData) return;
-		try {
-			const encodedId = btoa(shareData.pokemonId.toString());
-			const shareUrl = `${window.location.origin}/pokemons/guess?p=${encodedId}`;
-			
-			const shareText = shareData.message || "Can you guess this Pokémon? Play with me!";
-			
-			await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-			setCopiedLink(true);
-			setTimeout(() => setCopiedLink(false), 2000);
-		} catch {}
 	};
 
 	const openShareModal = (pokemonId: number, isCurrent: boolean) => {
@@ -789,13 +801,13 @@ export default function GuessClient() {
 					</div>
 					
 					<div className="flex gap-4 w-full max-w-sm px-4">
-						<Button onClick={handleShareImage} disabled={isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
-							{isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
-							{isGeneratingShare ? "Saving..." : "Save Image"}
+						<Button onClick={handleDownloadImage} disabled={isGeneratingDownload || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
+							{isGeneratingDownload ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
+							{isGeneratingDownload ? "Saving..." : "Save Image"}
 						</Button>
-						<Button onClick={handleShareLink} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
-							{copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <LinkIcon className="w-5 h-5 mr-2" />}
-							{copiedLink ? "Copied!" : "Copy Link"}
+						<Button onClick={handleShare} disabled={isGeneratingDownload || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
+							{isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : (copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <Share2 className="w-5 h-5 mr-2" />)}
+							{isGeneratingShare ? "Sharing..." : (copiedLink ? "Copied Link!" : "Share")}
 						</Button>
 					</div>
 				</DialogContent>

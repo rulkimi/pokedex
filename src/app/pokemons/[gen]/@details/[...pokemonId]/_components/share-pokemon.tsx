@@ -12,80 +12,84 @@ import PokemonImage from "../../../_components/pokemon-image";
 export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingShare, setIsGeneratingShare] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const arrangedTypes = getArrangedTypes(pokemon.types);
   const primaryColorClass = getTypeColor(arrangedTypes[0]);
 
-  const handleShareLink = async () => {
-    const url = typeof window !== 'undefined' ? window.location.href : '';
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Check out ${formatName(pokemon.name)}!`,
-          url: url
-        });
-        return;
-      } catch (err) {}
-    }
-    
-    await navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
-
-  const handleShareImage = async () => {
+  const handleDownloadImage = async () => {
     if (!cardRef.current) return;
     setIsGenerating(true);
     
     try {
-      // html-to-image is much better at rendering modern CSS (z-index, flex, grids)
       const isDark = document.documentElement.classList.contains('dark');
-      
-      // iOS Safari workaround: Render once to cache assets, then render again
       await toPng(cardRef.current, { cacheBust: false, pixelRatio: 1 });
       
       const dataUrl = await toPng(cardRef.current, {
         quality: 1,
         pixelRatio: 2,
-        backgroundColor: isDark ? '#020817' : '#ffffff', // Match the current theme background
-        style: {
-          transform: 'none', // Prevent visual scaling from affecting the render
-          borderRadius: '0', // Make corners sharp for the saved image
-        }
+        backgroundColor: isDark ? '#020817' : '#ffffff',
+        style: { transform: 'none', borderRadius: '0' }
       });
       
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       
-      const file = new File([blob], `${pokemon.name}-stats.png`, { type: 'image/png' });
-      
-      let shared = false;
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file]
-          });
-          shared = true;
-        } catch (e) {}
-      }
-      
-      if (!shared) {
-        // Fallback to download
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${pokemon.name}-stats.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${pokemon.name}-stats.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Failed to generate or share image", err);
+      console.error("Failed to generate image", err);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    setIsGeneratingShare(true);
+    
+    try {
+      const isDark = document.documentElement.classList.contains('dark');
+      await toPng(cardRef.current, { cacheBust: false, pixelRatio: 1 });
+      
+      const dataUrl = await toPng(cardRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: isDark ? '#020817' : '#ffffff',
+        style: { transform: 'none', borderRadius: '0' }
+      });
+      
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `${pokemon.name}-stats.png`, { type: 'image/png' });
+      const url = typeof window !== 'undefined' ? window.location.href : '';
+      const shareText = `Check out ${formatName(pokemon.name)}'s Pokédex entry by rulkimi!`;
+      
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.clipboard.writeText(`${shareText}\n${url}`).catch(() => {});
+          await navigator.share({
+            text: `${shareText}\n${url}`,
+            files: [file]
+          });
+        } catch (e) {}
+      } else {
+        await navigator.clipboard.writeText(`${shareText}\n${url}`);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to share image", err);
+    } finally {
+      setIsGeneratingShare(false);
     }
   };
 
@@ -319,13 +323,13 @@ export default function SharePokemon({ pokemon }: { pokemon: PokemonDetail }) {
           </div>
           
           <div className="flex gap-4 w-full max-w-sm px-4">
-          <Button onClick={handleShareImage} disabled={isGenerating} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
+          <Button onClick={handleDownloadImage} disabled={isGenerating || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
             {isGenerating ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
             {isGenerating ? "Saving..." : "Save Image"}
           </Button>
-          <Button onClick={handleShareLink} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
-            {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <LinkIcon className="w-5 h-5 mr-2" />}
-            {copiedLink ? "Copied!" : "Copy Link"}
+          <Button onClick={handleShare} disabled={isGenerating || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
+            {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : (copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <Share2 className="w-5 h-5 mr-2" />)}
+            {isGeneratingShare ? "Sharing..." : (copiedLink ? "Copied Link!" : "Share")}
           </Button>
         </div>
       </DialogContent>

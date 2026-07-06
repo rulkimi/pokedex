@@ -143,6 +143,25 @@ export default function SafariClient() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const [dailyPokemons, setDailyPokemons] = useState<number[]>([]);
+  const [loadingText, setLoadingText] = useState("Loading Safari Zone...");
+  
+  useEffect(() => {
+    const texts = [
+      "Packing bait and Safari Balls...",
+      "Looking for tall grass...",
+      "Entering the Safari Zone...",
+      "Preparing your adventure...",
+      "Searching for wild Pokémon..."
+    ];
+    setLoadingText(texts[Math.floor(Math.random() * texts.length)]);
+    const interval = setInterval(() => {
+      setLoadingText(t => {
+        const nextIdx = (texts.indexOf(t) + 1) % texts.length;
+        return texts[nextIdx];
+      });
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
   const [caughtPokemons, setCaughtPokemons] = useState<number[]>([]);
   const [activePokemons, setActivePokemons] = useState<number[]>([]);
   const [fleeingPokemons, setFleeingPokemons] = useState<number[]>([]);
@@ -164,23 +183,57 @@ export default function SafariClient() {
   const [isBagOpen, setIsBagOpen] = useState(false);
   const bagRef = useRef<HTMLDivElement>(null);
   const [isGeneratingShare, setIsGeneratingShare] = useState(false);
+  const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const handleShareBagImage = async () => {
+  const handleDownloadBagImage = async () => {
+    if (!bagRef.current) return;
+    setIsGeneratingDownload(true);
+    
+    try {
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      await toPng(bagRef.current, { cacheBust: false, pixelRatio: 1 });
+      
+      const dataUrl = await toPng(bagRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: isDark ? '#0f172a' : '#ffffff',
+        style: { transform: 'none', borderRadius: '0' }
+      });
+      
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `my-pokemon-bag.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to generate image", err);
+    } finally {
+      setIsGeneratingDownload(false);
+    }
+  };
+
+  const handleShareBag = async () => {
     if (!bagRef.current) return;
     setIsGeneratingShare(true);
     
     try {
       const isDark = document.documentElement.classList.contains('dark');
       
-      // iOS Safari workaround: Render once to cache assets, then render again
       await toPng(bagRef.current, { cacheBust: false, pixelRatio: 1 });
       
       const dataUrl = await toPng(bagRef.current, {
         quality: 1,
         pixelRatio: 2,
-        backgroundColor: isDark ? '#0f172a' : '#ffffff', // Match dark mode slate-900 or light mode white
+        backgroundColor: isDark ? '#0f172a' : '#ffffff',
         style: { transform: 'none', borderRadius: '0' }
       });
       
@@ -188,42 +241,27 @@ export default function SafariClient() {
       const blob = await res.blob();
       const file = new File([blob], `my-pokemon-bag.png`, { type: 'image/png' });
       
-      let shared = false;
+      const url = typeof window !== 'undefined' ? window.location.href : '';
+      const shareText = `I've caught ${caughtPokemons.length} Pokémon in the Safari Zone in Pokédex by rulkimi!`;
+      
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
+          await navigator.clipboard.writeText(`${shareText}\n${url}`).catch(() => {});
           await navigator.share({
+            text: `${shareText}\n${url}`,
             files: [file]
           });
-          shared = true;
-        } catch (e: any) {
-          if (e.name === 'AbortError') {
-            shared = true;
-          }
-        }
-      } 
-      
-      if (!shared) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `my-pokemon-bag.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        } catch (e: any) {}
+      } else {
+        await navigator.clipboard.writeText(`${shareText}\n${url}`);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
       }
     } catch (err) {
-      console.error("Failed to generate image", err);
+      console.error("Failed to share image", err);
     } finally {
       setIsGeneratingShare(false);
     }
-  };
-
-  const handleShareBagLink = async () => {
-    const url = typeof window !== 'undefined' ? window.location.href : '';
-    await navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
   };
 
 
@@ -433,7 +471,7 @@ export default function SafariClient() {
     return (
       <div className="relative w-full h-[calc(100dvh-200px)] flex flex-col items-center justify-center rounded-3xl border border-border/50 overflow-hidden shadow-inner bg-muted/20">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mb-4" />
-        <span className="text-muted-foreground font-medium animate-pulse">Loading Safari Zone...</span>
+        <span className="text-muted-foreground font-medium animate-pulse">{loadingText}</span>
       </div>
     );
   }
@@ -656,13 +694,13 @@ export default function SafariClient() {
           </div>
           
           <div className="flex gap-4 w-full max-w-sm px-4">
-            <Button onClick={handleShareBagImage} disabled={isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
-              {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
-              {isGeneratingShare ? "Saving..." : "Save Image"}
+            <Button onClick={handleDownloadBagImage} disabled={isGeneratingDownload || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white transition-all">
+              {isGeneratingDownload ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />}
+              {isGeneratingDownload ? "Saving..." : "Save Image"}
             </Button>
-            <Button onClick={handleShareBagLink} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
-              {copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <LinkIcon className="w-5 h-5 mr-2" />}
-              {copiedLink ? "Copied!" : "Copy Link"}
+            <Button onClick={handleShareBag} disabled={isGeneratingDownload || isGeneratingShare} className="flex-1 rounded-full h-14 font-bold shadow-xl bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white transition-all">
+              {isGeneratingShare ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : (copiedLink ? <Check className="w-5 h-5 mr-2 text-green-400" /> : <Share2 className="w-5 h-5 mr-2" />)}
+              {isGeneratingShare ? "Sharing..." : (copiedLink ? "Copied Link!" : "Share")}
             </Button>
           </div>
         </DialogContent>
