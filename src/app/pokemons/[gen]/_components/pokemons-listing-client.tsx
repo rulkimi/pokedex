@@ -26,7 +26,8 @@ export default function PokemonListingClient({
   const lastClickedId = useRef<number | null>(null);
 
   const filteredPokemons = useMemo(() => {
-    let sourceList = allPokemons && (search || types.length > 0) ? allPokemons : pokemons;
+    type PokemonListItem = Pokemon | NonNullable<typeof allPokemons>[number];
+    let sourceList: PokemonListItem[] = allPokemons && (search || types.length > 0) ? allPokemons : pokemons;
     
     // Filter by search string
     let result = sourceList;
